@@ -10,6 +10,17 @@ dotenv.config({
 
 
 connectDB()
+.then(()=>{
+    app.on("error",(error)=>{
+        console.log("ERRR:",error);
+    })
+    app.listen(process.env.PORT || 8000,()=>{
+        console.log(`Server listening on port ${process.env.PORT}`)
+    })
+})
+.catch((error)=>{
+    console.error("MongoDB connection Error: ",error)
+})
 
 
 
@@ -32,5 +43,4 @@ const app = express()
         console.error("Error: ",error)
         throw err;
     }
-})() //ifee - immediately invoked function expression
- */
+})() //ifee - immediately invoked function expression*/
