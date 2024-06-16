@@ -51,7 +51,7 @@ const userSchema = new Schema({
     timestamps:true
 })
 
-userSchema.pre('save', async function(next){ //arrow callback not given because it don't have this reference (no context)
+userSchema.pre('save', async function(next){ //arrow callback not given because it don't have 'this' reference (no context)
     if(!this.isModified('password')){ // encryptin ONLY WHEN password is modified
         return next()
     }
