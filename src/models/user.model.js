@@ -55,7 +55,7 @@ userSchema.pre('save', async function(next){ //arrow callback not given because 
     if(!this.isModified('password')){ // encryptin ONLY WHEN password is modified
         return next()
     }
-    this.password = bcrypt.hash(this.password,10)
+    this.password = await bcrypt.hash(this.password,10)
     next()
 })
 
