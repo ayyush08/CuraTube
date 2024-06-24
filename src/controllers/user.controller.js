@@ -12,7 +12,7 @@ const generateAccessAndRefreshTokens = async(userId) => {
         const accessToken = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
         user.refreshToken = refreshToken;
-        user.save({validateBeforeSave:false});
+        await user.save({ validateBeforeSave:false });
 
         return {accessToken,refreshToken}
 
@@ -123,14 +123,15 @@ const loginUser = asyncHandler(async (req,res)=>{
 
     //user to empty h ji refreshtoken me kyuki reference
 
-    const loggedInUser = User.findById(user._id).select("-password -refreshToken");
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
     const options = { //options for cookies, so that they can be modified only by server
         httpOnly:true,
         secure:true
     }
 
-    return res.status(200)
+    return res
+    .status(200)
     .cookie('accessToken',accessToken,options)
     .cookie('refreshToken',refreshToken,options)
     .json(
