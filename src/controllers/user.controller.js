@@ -105,7 +105,7 @@ const loginUser = asyncHandler(async (req,res)=>{
 
     const {email,username,password} = req.body;
 
-    if(!(email || username)){
+    if(!email && !username){
         throw new ApiError(400,"Email or Username is required");
     }
 
@@ -149,8 +149,8 @@ const logoutUser = asyncHandler(async(req,res)=>{
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: {
-                refreshToken: undefined
+            $unset: {
+                refreshToken: 1
             }
         },
         {
