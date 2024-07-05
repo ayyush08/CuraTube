@@ -45,7 +45,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     const subsList = await Subscription.aggregate([
         {
             $match:{
-                channel:mongoose.Types.ObjectId(channelId)
+                channel:channelId
             
             },
         },
@@ -61,7 +61,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
                             _id:1,
                             name:1,
                             email:1,
-                            profilePic:1
+                            avatar:1
                         }
                     }
                 ]
@@ -96,6 +96,54 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 // controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res) => {
     const { subscriberId } = req.params
+    if(!isValidObjectId(subscriberId)){
+        throw new ApiError(400, "Invalid subscriber id")
+    }
+    const channelList = await Subscription.aggregate([
+        {
+            $match:{
+                subscriber: new mongoose.Types.ObjectId(subscriberId)
+            }
+        },
+        {
+            $lookup:{
+                from:'users',
+                localField:'channel',
+                foreignField:'_id',
+                as:'channel',
+                pipeline:[
+                    {
+                        $project:{
+                            _id:1,
+                            name:1,
+                            email:1,
+                            avatar:1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $unwind:'$channel'
+        },
+        {
+            $project:{
+                _id:0,
+                channel:{
+                    _id:1,
+                    username:1,
+                    email:1,
+                    avatar:1
+                }
+            }
+        }
+    ])
+    if(!channelList){
+        throw new ApiError(404, "No subscribed channels found")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,channelList,'Subscribed channels fetched successfully'))
 })
 
 export {
