@@ -9,25 +9,47 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     //TODO: toggle like on video
     const userId = req.user?._id
     const isLiked = await Like.findOne({video:videoId,likedBy:userId});
-    if(isLiked){
-        await Like.findByIdAndDelete(isLiked._id);
-        return res
-        .status(200)
-        .json(new ApiResponse(200, null, "Video unliked successfully"));
-    }
-    else{
-        await Like.create({video:videoId,likedBy:userId});
-        return res
-        .status(200)
-        .json(new ApiResponse(200, null,"Video liked successfully" ));
-
+    try {
+        if(isLiked){
+            await Like.findByIdAndDelete(isLiked._id);
+            return res
+            .status(200)
+            .json(new ApiResponse(200, null, "Video unliked successfully"));
+        }
+        else{
+            await Like.create({video:videoId,likedBy:userId});
+            return res
+            .status(200)
+            .json(new ApiResponse(200, null,"Video liked successfully" ));
+    
+        }
+    } catch (error) {
+        throw new ApiError(501,error.message || "Error occured while liking/unliking video");
+        
     }
 })
 
 const toggleCommentLike = asyncHandler(async (req, res) => {
     const {commentId} = req.params
     //TODO: toggle like on comment
-
+    const userId = req.user?._id
+    const likedComment = Like.findOne({comment:commentId,likedBy:userId});
+    try {
+        if(likedComment){
+            await Like.findByIdAndDelete(likedComment._id)
+            return res
+            .status(200)
+            .json(new ApiResponse(200,null,"Comment Liked Successfully"));
+        }
+        else{
+            await Like.create({comment:commentId,likedBy:userId});
+            return res
+            .status(200)
+            .json(new ApiResponse(200,null,"Comment Unliked Successfully"));
+        }
+    } catch (error) {
+        throw new ApiError(501,error.message || "Error occured while liking/unliking comment");
+    }
 })
 
 const toggleTweetLike = asyncHandler(async (req, res) => {
