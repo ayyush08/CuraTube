@@ -56,20 +56,24 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     const {tweetId} = req.params
     const userId = req.user?._id
     const likedTweet = Like.findOne({tweet:tweetId,likedBy:userId});
-    if(likedTweet){
-        await Like.findByIdAndDelete(likedTweet._id);
-        return res
-        .status(200)
-        .json(new ApiResponse(200,null,"Tweet Unliked Successfully"));
+    try {
+        if(likedTweet){
+            await Like.findByIdAndDelete(likedTweet._id);
+            return res
+            .status(200)
+            .json(new ApiResponse(200,null,"Tweet Unliked Successfully"));
+        }
+        else{
+            await Like.create({tweet:tweetId,likedBy:userId});
+            return res
+            .status(200)
+            .json(new ApiResponse(200,null,"Tweet Liked Successfully"))}
+    } catch (error) {
+        console.log("Error while toggling tweet likes",error);
     }
-    else{
-        await Like.create({tweet:tweetId,likedBy:userId});
-        return res
-        .status(200)
-        .json(new ApiResponse(200,null,"Tweet Liked Successfully"))
     }
     //TODO: toggle like on tweet
-}
+
 )
 
 const getLikedVideos = asyncHandler(async (req, res) => {
