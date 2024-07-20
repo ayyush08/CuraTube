@@ -13,6 +13,23 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
 const addComment = asyncHandler(async (req, res) => {
     // TODO: add a comment to a video
+    const {userId} = req.params
+    if(!mongoose.isValidObjectId(userId)){
+        throw new ApiError(400,"Invalid user id")
+    }
+    const {comment} = req.body
+    if(!comment){
+        throw new ApiError(400,"Comment is required")
+    }
+    const user = await User.findById(userId)
+    if(!user){
+        throw new ApiError(404,"User not found")
+    }
+    const newComment = new Comment({comment,owner:userId})
+    await newComment.save()
+    res
+    .status(201)
+    .json(new ApiResponse(201,{comment:newComment},"Comment added successfully"))
 })
 
 const updateComment = asyncHandler(async (req, res) => {
