@@ -31,31 +31,39 @@ const addComment = asyncHandler(async (req, res) => {
         content,
         owner: req.user._id,
     });
-    await comment.save()
+    if (!comment) throw new ApiError(400, 'Error while adding comment');
     res
         .status(201)
-        .json(new ApiResponse(201, { comment: newComment }, "Comment added successfully"))
+        .json(new ApiResponse(201, content, "Comment added successfully"))
 })
 
 const updateComment = asyncHandler(async (req, res) => {
     // TODO: update a comment
-    const { videoId } = req.params;
-    if (!isValidObjectId(videoId)) {
+    const { commentId } = req.params;
+    const { content } = req.body
+    if (!isValidObjectId(commentId)) {
         throw new ApiError(400, "Invalid user id")
     }
-    const comment = req.body
-    if (!comment) {
+    if (!content) {
         throw new ApiError(400, "Comment is required");
     }
-    if(Comment.owner.toString()!==req.user?._id.toString()){
+    const comment = await Comment.findById(commentId)
+    if (comment?.owner.toString() !== req.user?._id.toString()) {
         throw new ApiError(400, "only comment owner can edit their comment");
     }
-    const user = User.findById(userId)
-    if (!user) {
-        throw new ApiError(404, 'User not found')
-    }
-    const updatedComment = await Comment.findByIdAndUpdate()
-})
+    const updatedComment = await Comment.findByIdAndUpdate(
+        commentId,
+        {
+            $set: { content }
+        },
+        { new: true }
+    )
+    if (!updatedComment) throw new ApiError(500, "Error updating comment");
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, updatedComment, "Comment updated"));
+});
 
 const deleteComment = asyncHandler(async (req, res) => {
     // TODO: delete a comment
