@@ -16,8 +16,8 @@ const addComment = asyncHandler(async (req, res) => {
     // TODO: add a comment to a video
     const { videoId } = req.params
     const { content } = req.body
-    if (!isValidObjectId(userId)) {
-        throw new ApiError(400, "Invalid user id")
+    if (!isValidObjectId(videoId)) {
+        throw new ApiError(400, "Invalid video id")
     }
     if (!content) {
         throw new ApiError(400, "Comment is required")
@@ -42,7 +42,7 @@ const updateComment = asyncHandler(async (req, res) => {
     const { commentId } = req.params;
     const { content } = req.body
     if (!isValidObjectId(commentId)) {
-        throw new ApiError(400, "Invalid user id")
+        throw new ApiError(400, "Invalid comment id")
     }
     if (!content) {
         throw new ApiError(400, "Comment is required");
@@ -69,7 +69,7 @@ const deleteComment = asyncHandler(async (req, res) => {
     // TODO: delete a comment
     const {commentId} = req.params
     if (!isValidObjectId(commentId)) {
-        throw new ApiError(400, "Invalid user id")
+        throw new ApiError(400, "Invalid comment id")
     }
     const comment = await Comment.findById(commentId)
     if (comment?.owner.toString() !== req.user?._id.toString()) {
