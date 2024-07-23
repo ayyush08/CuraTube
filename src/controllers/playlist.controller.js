@@ -14,7 +14,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
     if(!description){
         throw new ApiError(400,"Description is required")
     }
-    const playlist = await Playlisy.create({
+    const playlist = await Playlist.create({
         name,
         description,
         owner:req.user._id
