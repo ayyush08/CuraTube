@@ -84,7 +84,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
             }
         }
     ])
-    res
+    return res
         .status(200)
         .json(new ApiResponse(200, playlist, "User playlists retrieved successfully"))
 })
@@ -125,7 +125,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     if (!updatedPlaylist) {
         throw new ApiError(500, "Error adding video to playlist")
     }
-    res
+    return res
         .status(200)
         .json(new ApiResponse(200, updatedPlaylist, "Video added to playlist successfully"))
 })
@@ -162,7 +162,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     if (!updatedPlaylist) {
         throw new ApiError(500, "Error removing video from playlist")
     }
-    res
+    return res
         .status(200)
         .json(new ApiResponse(200, updatedPlaylist, "Video removed from playlist successfully"))
 
@@ -182,7 +182,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Only playlist owner can delete playlist")
     }
     const deletedPlaylist = await Playlist.findByIdAndDelete(playlistId)
-    res
+    return res
         .status(200)
         .json(new ApiResponse(200, deletedPlaylist, "Playlist deleted successfully"))
 })
@@ -214,7 +214,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
         },
         { new: true }
     )
-    res
+    return res
         .status(200)
         .json(new ApiResponse(200, updatedPlaylist, "Playlist updated successfully"))
 })
