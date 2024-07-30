@@ -60,7 +60,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
                                             input: "$videos",
                                             sort: { createdAt: -1 }
                                         }
-                                    }, 
+                                    },
                                     0
                                 ]
                             }
@@ -92,6 +92,137 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 const getPlaylistById = asyncHandler(async (req, res) => {
     const { playlistId } = req.params
     //TODO: get playlist by id
+    if (!isValidObjectId(playlistId)) {
+        throw new ApiError(400, "Invalid playlist id")
+    }
+    const playlist = await Playlist.findById(playlistId)
+    if (!playlist) {
+        throw new ApiError(400, "Playlist not found")
+    }
+    const playlistById = Playlist.aggregate([
+        {
+            $match: new mongoose.Types.ObjectId(playlistId)
+        },
+        {
+            $lookup: {
+                from: 'videos',
+                localField: 'videos',
+                foreignField: '_id',
+                as: "videos"
+            }
+        },
+        {
+            $match: {
+                '$videos.isPublished': true,
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                as: 'owner'
+            }
+        },
+        {
+            $lookup: {
+                from: 'subscriptions',
+                let: { ownerId: { $arrayElemAt: ["$owner._id", 0] } },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: ["$channel", "$$ownerId"]
+                            },
+                        },
+                    },
+                    {
+                        $count: "subscriberCount",
+                    },
+                ],
+                as: "subscriberInfo"
+            }
+        },
+        {
+            $addFields: {
+                totalVideos: {
+                    $size: "$videos"
+                },
+                totalDuration: {
+                    $sum: "$videos.duration"
+                },
+                totalViews: {
+                    $sum: "$videos.views"
+                },
+                owner: {
+                    $mergeObjects: [
+                        { $arrayElemAt: ["$owner", 0] },
+                        {
+                            subscribers: {
+                                $ifNull: [
+                                    { $arrayElemAt: ["$subscriberInfo.subscriberCount", 0] }, 0,
+                                ],
+                            },
+                        },
+                    ],
+                },
+                coverImage: {
+                    $let: {
+                        vars: {
+                            latestVideo: {
+                                $arrayElemAt: [
+                                    {
+                                        $sortArray: { input: "$videos", sortBy: { createdAt: -1 } },
+                                    },
+                                    0,
+                                ],
+                            },
+                        },
+                        in: "$$latestVideo.thumbnail.url",
+                    },
+                },
+            }
+        },
+        {
+            $project: {
+                name: 1,
+                description: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                totalVideos: 1,
+                totalViews: 1,
+                coverImage: 1,
+                videos: {
+                    _id: 1,
+                    "video.url": 1,
+                    "thumbnail.url": 1,
+                    title: 1,
+                    description: 1,
+                    duration: 1,
+                    createdAt: 1,
+                    views: 1,
+                },
+                owner: {
+                    username: 1,
+                    fullName: 1,
+                    "avatar.url": 1,
+                    _id: 1,
+                    subscribers: 1,
+                }
+            },
+        }
+    ])
+
+    if (playlistVideos[0] === undefined) {
+        return res.status(200).json(new ApiResponse(200, [], "playlist fetched successfully"))
+    }
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, playlistVideos[0], "playlist fetched successfully")
+        );
+
+
 })
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
