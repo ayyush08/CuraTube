@@ -213,7 +213,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
         }
     ])
 
-    if (playlistVideos[0] === undefined) {
+    if (playlistById[0] === undefined) {
         return res.status(200).json(new ApiResponse(200, [], "playlist fetched successfully"))
     }
     return res
