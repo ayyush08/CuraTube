@@ -18,23 +18,23 @@ router.route('/register').post(
             maxCount: 1
         }
     ]),
-    registerUser)
+    registerUser)//done
 
 
-router.route('/login').post(loginUser)
+router.route('/login').post(loginUser)//done
 
 //secured routes
-router.route('/logout').post(verifyJWT, logoutUser)
-router.route('/refresh-token').post(refreshAccessToken) //verifyjwt ni lgaya kyuki controller me hi decode kr rhe h refrshaccestoken function me
-router.route('/change-password').post(verifyJWT, changeCurrentPassword)
+router.route('/logout').post(verifyJWT, logoutUser)//done
+router.route('/refresh-token').post(refreshAccessToken) ////done
+router.route('/change-password').post(verifyJWT, changeCurrentPassword)//done
 
-router.route('/current-user').get(verifyJWT,getCurrentUser);
+router.route('/current-user').get(verifyJWT,getCurrentUser);//done
 
-router.route('/update-account').patch(verifyJWT,updateAccountDetails) //post rkhne se sari update hojatis
-router.route('/avatar').patch(verifyJWT,upload.single('avatar'),updateUserAvatar)
+router.route('/update-account').patch(verifyJWT,updateAccountDetails)//done, //post rkhne se sari update hojatis
+router.route('/avatar').patch(verifyJWT,upload.single('avatar'),updateUserAvatar)//done
 
 
-router.route('/cover-image').patch(verifyJWT,upload.single('coverImage'),updateUserCoverImage)
+router.route('/cover-image').patch(verifyJWT,upload.single('coverImage'),updateUserCoverImage)//done
 
 router.route('/channel/:username').get(verifyJWT,getUserChannelProfile)
 

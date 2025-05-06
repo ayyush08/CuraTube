@@ -26,7 +26,7 @@ export const uploadOnImageKit = async (localFilePath, folder) => {
             useUniqueFileName: true, // optional, if you want to use a unique file name
         })
         //file has been uploaded successfully
-        console.log('File Upload Successfully on Imagekit', response);
+        console.log('File Upload Successfully on Imagekit');
         fs.unlinkSync(localFilePath)
         return response
 
@@ -46,9 +46,13 @@ export const deleteFileFromImageKit = async (fileUrl, folder) => {
 
 
     const existingFile = allFiles.find(file => file.name === fileName);
+    console.log(existingFile);
 
     if (existingFile) {
-        await imagekit.deleteFile(existingFile.fileId);
+        await imagekit.deleteFile(existingFile.fileId, function (error, result) {
+            if (error) console.log(error);
+            else console.log(result)
+        });
     }
 
 

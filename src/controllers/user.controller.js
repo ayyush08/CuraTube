@@ -313,11 +313,19 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     if (!coverImageLocalPath) {
         throw new ApiError(400, 'Cover Image file is missing');
     }
+    const existingUser = await User.findById(req.user?._id);
+    const oldcoverImage = existingUser.coverImage;
+    
 
     const coverImage = await uploadOnImageKit(coverImageLocalPath, 'user-cover-images')
 
     if (!coverImage.url) {
         throw new ApiError(400, 'Error while uploading Cover Image')
+    }
+
+    if (oldcoverImage) {
+
+        await deleteFileFromImageKit(oldcoverImage, 'user-cover-images');
     }
 
     const user = await User.findByIdAndUpdate(
