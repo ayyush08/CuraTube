@@ -67,8 +67,8 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Avatar is required");
     }
 
-    const avatar = await uploadOnImageKit(avatarLocalPath, "user-avatars");
-    const coverImage = await uploadOnImageKit(coverImageLocalPath, "user-cover-images");
+    const avatar = await uploadOnImageKit(avatarLocalPath, "curatube-user-avatars");
+    const coverImage = await uploadOnImageKit(coverImageLocalPath, "curatube-user-cover-images");
 
     if (!avatar) {
         throw new ApiError(400, "Avatar is required");
@@ -290,7 +290,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     //delete existing file from imagekit
     if (oldAvatar) {
 
-        await deleteFileFromImageKit(oldAvatar, 'user-avatars');
+        await deleteFileFromImageKit(oldAvatar, 'curatube-user-avatars');
     }
 
     const user = await User.findByIdAndUpdate(
@@ -325,7 +325,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
     if (oldcoverImage) {
 
-        await deleteFileFromImageKit(oldcoverImage, 'user-cover-images');
+        await deleteFileFromImageKit(oldcoverImage, 'curatube-user-cover-images');
     }
 
     const user = await User.findByIdAndUpdate(
