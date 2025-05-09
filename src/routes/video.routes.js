@@ -33,9 +33,9 @@ router
 
 router
     .route("/:videoId")
-    .get(getVideoById)
-    .delete(deleteVideo)
-    .patch(upload.single("thumbnail"), updateVideo);
+    .get(getVideoById)//done
+    .delete(deleteVideo)//done
+    .patch(upload.single("thumbnail"), updateVideo);//done
 
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);//done
 
