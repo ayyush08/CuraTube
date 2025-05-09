@@ -1,58 +1,68 @@
-import mongoose, {isValidObjectId} from "mongoose"
-import {Video} from "../models/video.model.js"
-import {User} from "../models/user.model.js"
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import mongoose, { isValidObjectId } from "mongoose"
+import { Video } from "../models/video.model.js"
+import { User } from "../models/user.model.js"
+import { ApiError } from "../utils/ApiError.js"
+import { ApiResponse } from "../utils/ApiResponse.js"
+import { asyncHandler } from "../utils/asyncHandler.js"
 import { uploadOnImageKit } from "../utils/imagekit.js"
-
+import fs from 'fs';
 
 const getAllVideos = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, query='', sortBy='createdAt', sortType='desc', userId } = req.query
+    const { page = 1, limit = 10, query = '', sortBy = 'createdAt', sortType = 'desc', userId } = req.query
     //TODO: get all videos based on query, sort, pagination
 
 
 
     const options = {
-        page: parseInt(page,10),
-        limit: parseInt(limit,10),
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
     }
-    
+
 })
 
 const publishAVideo = asyncHandler(async (req, res) => {
-    const { title, description,isPublished} = req.body
+    const { title, description, isPublished } = req.body
     // TODO: get video, upload to cloudinary, create video
-    if(!title || !description){
-        throw new ApiError(400,"All fields are required");
+    if (!title || !description) {
+        throw new ApiError(400, "All fields are required");
+    }
+    let videoLocalPath;
+    let thumbnailLocalPath
+    if (req.files) {
+        if (Array.isArray(req.files.videoFile) && req.files.videoFile.length > 0) {
+            videoLocalPath = req.files.videoFile[0]?.path;
+        } else {
+            throw new ApiError(400, "Video is required");
+        }
+        if (Array.isArray(req.files.thumbnail) && req.files.thumbnail.length > 0) {
+            thumbnailLocalPath = req.files.thumbnail[0]?.path;
+        } else {
+            fs.unlinkSync(videoLocalPath);
+            throw new ApiError(400, "Thumbnail is required");
+        }
     }
 
-    const videoLocalPath = req.files?.videoFile[0]?.path;
-    const thumbnailLocalPath = req.files?.thumbnail[0]?.path;
 
-    if(!videoLocalPath) throw new ApiError(400,"Video is required");
-    if(!thumbnailLocalPath) throw new ApiError(400,"Thumbnail is required");
-
-    const video = await uploadOnImageKit(videoLocalPath,"curatube-videos");
-    const thumbnail = await uploadOnImageKit(thumbnailLocalPath,"curatube-thumbnails");
+    const video = await uploadOnImageKit(videoLocalPath, "curatube-videos");
+    const thumbnail = await uploadOnImageKit(thumbnailLocalPath, "curatube-thumbnails");
 
     const createdVideo = await Video.create({
         title,
         description,
         videoFile: video.url,
-        thumbnail:thumbnail.url,
-        duration:video.duration,
+        thumbnail: thumbnail.url,
+        duration: video.duration,
         isPublished,
         owner: req?.user._id,
     })
 
-    if(!createdVideo){
-        throw new ApiError(400,"Failed to upload video");
+    if (!createdVideo) {
+        throw new ApiError(400, "Failed to upload video");
     }
 
     return res
-    .status(200)
-    .json(new ApiResponse(200,createdVideo,"Video Published Successfully"));
+        .status(200)
+        .json(new ApiResponse(200, createdVideo, "Video Published Successfully"));
 
 })
 
@@ -74,6 +84,35 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
     const { videoId } = req.params
+
+    const videoExists = await Video.findById(videoId);
+
+    if (!videoExists) {
+        throw new ApiError(400, "Video not found");
+    }
+
+
+    const toggleStatus = await Video.findByIdAndUpdate(
+        videoId,
+        {
+            $set: {
+                isPublished: !(videoExists.isPublished),
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    if (!toggleStatus) {
+        throw new ApiError(400, "Failed to toggle publish status");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200,
+            { isPublished: toggleStatus.isPublished },
+            "Publish status updated successfully"));
 })
 
 export {
