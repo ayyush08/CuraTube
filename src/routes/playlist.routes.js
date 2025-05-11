@@ -14,16 +14,16 @@ const router = Router();
 
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
-router.route("/").post(createPlaylist)
+router.route("/").post(createPlaylist)//done
 
 router
     .route("/:playlistId")
     .get(getPlaylistById)
-    .patch(updatePlaylist)
-    .delete(deletePlaylist);
+    .patch(updatePlaylist)//done
+    .delete(deletePlaylist);//done
 
-router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);
-router.route("/remove/:videoId/:playlistId").patch(removeVideoFromPlaylist);
+router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);//done
+router.route("/remove/:videoId/:playlistId").patch(removeVideoFromPlaylist);//done
 
 router.route("/user/:userId").get(getUserPlaylists);
 
