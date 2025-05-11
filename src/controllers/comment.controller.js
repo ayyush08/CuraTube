@@ -16,19 +16,21 @@ const addComment = asyncHandler(async (req, res) => {
     // TODO: add a comment to a video
     const { videoId } = req.params
     const { content } = req.body
-    if (!isValidObjectId(videoId)) {
-        throw new ApiError(400, "Invalid video id")
+
+    if(!isValidObjectId(videoId)){
+        throw new ApiError(400,"Invalid video id");
     }
+
     if (!content) {
         throw new ApiError(400, "Comment is required")
     }
-    const video = Video.findById(videoId)
+    const video = await Video.findById(videoId)
     if (!video) {
         throw new ApiError(404, "Video not found")
     }
     const comment = await Comment.create({
         video: videoId,
-        content,
+        comment:content,
         owner: req.user._id,
     });
     if (!comment) throw new ApiError(400, 'Error while adding comment');
@@ -41,20 +43,24 @@ const updateComment = asyncHandler(async (req, res) => {
     // TODO: update a comment
     const { commentId } = req.params;
     const { content } = req.body
-    if (!isValidObjectId(commentId)) {
-        throw new ApiError(400, "Invalid comment id")
+
+    if(!isValidObjectId(commentId)){
+        throw new ApiError(400,"Invalid comment id");
     }
+    
     if (!content) {
         throw new ApiError(400, "Comment is required");
     }
     const comment = await Comment.findById(commentId)
-    if (comment?.owner.toString() !== req.user?._id.toString()) {
-        throw new ApiError(400, "only comment owner can edit their comment");
+
+    if(!comment){
+        throw new ApiError(400,"Comment not found");
     }
+
     const updatedComment = await Comment.findByIdAndUpdate(
         commentId,
         {
-            $set: { content }
+            $set: { comment:content }
         },
         { new: true }
     )
@@ -72,8 +78,9 @@ const deleteComment = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid comment id")
     }
     const comment = await Comment.findById(commentId)
-    if (comment?.owner.toString() !== req.user?._id.toString()) {
-        throw new ApiError(400, "only comment owner can delete their comment");
+
+    if(!comment){
+        throw new ApiError(400,"Comment not found");
     }
     await Comment.findByIdAndDelete(commentId);
     res
