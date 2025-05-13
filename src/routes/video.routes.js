@@ -38,8 +38,8 @@ router
     .patch(verifyJWT, upload.single("thumbnail"), updateVideo);//done
 
 
-router.route("/toggle/publish/:videoId").patch(togglePublishStatus);//done
+router.route("/toggle/publish/:videoId").patch(verifyJWT,togglePublishStatus);//done
 
-router.route('/v/views/:videoId').patch(verifyJWT,updateVideoViews);
+router.route('/views/:videoId').patch(verifyJWT,updateVideoViews);//done
 
 export default router
