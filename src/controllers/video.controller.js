@@ -19,7 +19,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         if (process.env.NODE_ENV === "production") {
             aggregationPipeline.push({
                 $search: {
-                    index: "search-curatube-videos",//TODO: Create a search index in mongo atlas cloud
+                    index: "search-curatube-videos",//TODO: Create a search index in mongo atlas cloud for production
                     text: {
                         query: query,
                         path: ["title", "description"],
@@ -27,6 +27,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
                 },
             });
         } else {
+            //using regex for lightweight testin in development
             aggregationPipeline.push({
                 $match: {
                     $or: [
@@ -342,6 +343,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Video not found");
     }
 
+    if(videoExists.owner.toString() !== req.user._id.toString()) throw new ApiError(400,"Not your video")
 
     const toggleStatus = await Video.findByIdAndUpdate(
         videoId,
@@ -383,14 +385,14 @@ const updateVideoViews = asyncHandler(async (req, res) => {
 
     if (alreadyWatched) {
         alreadyWatched.watchedAt = new Date();
-        await user.save();
     } else {
         user.watchHistory.push({
             video: videoId,
             watchedAt: new Date()
         })
     }
-
+    await user.save();
+    
     const updatedVideo = await Video.findByIdAndUpdate(videoId, {
         $inc: {
             views: 1

@@ -281,7 +281,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
     const existingUser = await User.findById(req.user?._id);
     const oldAvatar = existingUser.avatar;
-    
+
     const avatar = await uploadOnImageKit(avatarLocalPath, 'user-avatars')
     if (!avatar.url) {
         throw new ApiError(400, 'Error while uploading on avatar')
@@ -315,7 +315,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     }
     const existingUser = await User.findById(req.user?._id);
     const oldcoverImage = existingUser.coverImage;
-    
+
 
     const coverImage = await uploadOnImageKit(coverImageLocalPath, 'user-cover-images')
 
@@ -420,44 +420,80 @@ const getWatchHistory = asyncHandler(async (req, res) => {
 
         },
         {
+            $unwind: "$watchHistory"
+        },
+        {
             $lookup: {
-                from: 'videos',
-                localField: 'watchHistory',
-                foreignField: '_id',
-                as: 'watchHistory',
+                from: "videos",
+                localField: "watchHistory.video",
+                foreignField: "_id",
+                as: "videoDetails"
+            }
+        },
+        {
+            $unwind: "$videoDetails"
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "videoDetails.owner",
+                foreignField: "_id",
+                as: "videoDetails.owner",
                 pipeline: [
                     {
-                        $lookup: {
-                            from: 'users',
-                            localField: 'owner',
-                            foreignField: '_id',
-                            as: 'owner',
-                            pipeline: [
-                                {
-                                    $project: {
-                                        fullName: 1,
-                                        username: 1,
-                                        avatar: 1,
-                                    }
-                                },
-                            ]
-                        }
-                    },
-                    {
-                        $addFields: {
-                            owner: {
-                                $first: '$owner'
-                            }
+                        $project: {
+                            username: 1,
+                            fullName: 1,
+                            avatar: 1,
+
                         }
                     }
                 ]
             }
+        },
+        {
+            $unwind: "$videoDetails.owner"
+        },
+        {
+            $sort: {
+                'watchHistory.watchedAt': -1
+            }
+        },
+        {
+            $project: {
+                username: 1,
+                email: 1,
+                fullName: 1,
+                avatar: 1,
+                coverImage: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                watchHistory: {
+                    video: "$videoDetails",
+                    watchedAt: "$watchHistory.watchedAt"
+                }
+            }
+        },
+        {
+            $group: {
+                _id: "$_id",
+                username: { $first: "$username" },
+                email: { $first: "$email" },
+                fullName: { $first: "$fullName" },
+                avatar: { $first: "$avatar" },
+                coverImage: { $first: "$coverImage" },
+                createdAt: { $first: "$createdAt" },
+                updatedAt: { $first: "$updatedAt" },
+                watchHistory: { $push: "$watchHistory" }
+            }
         }
+
     ])
+
 
     return res
         .status(200)
-        .jsoN(
+        .json(
             new ApiResponse(
                 200,
                 user[0].watchHistory,

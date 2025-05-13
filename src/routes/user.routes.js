@@ -30,7 +30,7 @@ router.route('/change-password').post(verifyJWT, changeCurrentPassword)//done
 
 router.route('/current-user').get(verifyJWT,getCurrentUser);//done
 
-router.route('/update-account').patch(verifyJWT,updateAccountDetails)//done, //post rkhne se sari update hojatis
+router.route('/update-account').patch(verifyJWT,updateAccountDetails)//done, 
 router.route('/avatar').patch(verifyJWT,upload.single('avatar'),updateUserAvatar)//done
 
 
@@ -38,7 +38,7 @@ router.route('/cover-image').patch(verifyJWT,upload.single('coverImage'),updateU
 
 router.route('/channel/:username').get(verifyJWT,getUserChannelProfile)
 
-router.route('/watch-history').get(verifyJWT,getWatchHistory)
+router.route('/watch-history').get(verifyJWT,getWatchHistory)//done
 
 
 export default router
