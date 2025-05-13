@@ -2,7 +2,8 @@ import { Router } from 'express';
 import {
     deleteVideo,
     getAllVideos,
-    getVideoById,
+    getVideoByIdForGuest,
+    getVideoByIdForOwner,
     publishAVideo,
     togglePublishStatus,
     updateVideo,
@@ -32,10 +33,12 @@ router
 
 router
     .route("/:videoId")
-    .get(getVideoById)//half done - add pipelines to get additonal details of the video, and add published/unpublished checks based on user/guest
+    .get(verifyJWT,getVideoByIdForOwner)//done
     .delete(verifyJWT, deleteVideo)//done
     .patch(verifyJWT, upload.single("thumbnail"), updateVideo);//done
 
+
+router.route('/v/:videoId').get(getVideoByIdForGuest)
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);//done
 
 export default router

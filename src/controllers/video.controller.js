@@ -98,17 +98,17 @@ const getAllVideos = asyncHandler(async (req, res) => {
         limit: parseInt(limit, 10),
     }
 
-    const allVideos = await Video.aggregatePaginate(aggregatedVideos,options);
+    const allVideos = await Video.aggregatePaginate(aggregatedVideos, options);
 
-    if(!allVideos){
-        throw new ApiError(400,"Failed to get all videos");
+    if (!allVideos) {
+        throw new ApiError(400, "Failed to get all videos");
     }
 
     return res
-    .status(200)
-    .json(new ApiResponse(200,{
-        videos:allVideos.docs
-    },"Videos fetched successfully"))
+        .status(200)
+        .json(new ApiResponse(200, {
+            videos: allVideos.docs
+        }, "Videos fetched successfully"))
 
 })
 
@@ -158,16 +158,104 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 })
 
-const getVideoById = asyncHandler(async (req, res) => {
+const getVideoByIdForOwner = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: get video by id
-
+    if (!isValidObjectId(videoId)) {
+        throw new ApiError(400, "Invalid video id");
+    }
     const video = await Video.findById(videoId);
+    
+    if (!video.owner.equals(req.user._id)) {
+        throw new ApiError(400, "Not your video")
+    }
 
     if (!video) throw new ApiError(400, "Video not found");
 
+    const videoDetails = await Video.aggregate([
+        { $match: { _id: new mongoose.Types.ObjectId(videoId) } },
+
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "video",
+                as: "likes"
+            }
+        },
+
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "subscriptions",
+                            localField: "_id",
+                            foreignField: "channel",
+                            as: "subscribers"
+                        }
+                    },
+                    {
+                        $addFields: {
+                            subscribersCount: { $size: "$subscribers" },
+                        }
+                    },
+                    {
+                        $project: {
+                            username: 1,
+                            fullName: 1,
+                            "avatar.url": 1,
+                            subscribersCount: 1,
+                        }
+                    }
+                ]
+            }
+        },
+
+        {
+            $addFields: {
+                likeCount: { $size: "$likes" },
+                isLiked: {
+                    $in: [req.user._id, "$likes.likedBy"]
+                },
+                owner: { $first: "$owner" }
+            }
+        },
+
+        {
+            $project: {
+                videoFile: 1,
+                title: 1,
+                description: 1,
+                views: 1,
+                createdAt: 1,
+                duration: 1,
+                isPublished:1,
+                owner: 1,
+                likeCount: 1,
+                isLiked: 1
+            }
+        }
+    ]
+    )
+
+    if (!videoDetails) {
+        throw new ApiError(400, "Failed to get video details")
+    }
+
     return res.status(200)
-        .json(new ApiResponse(200, video, "Video fetched successfully"))
+        .json(new ApiResponse(200, {
+            video: videoDetails[0]
+        }, "Video fetched successfully"))
+})
+
+
+const getVideoByIdForGuest = asyncHandler(async (req, res) => {
+    //TODO
 })
 
 const updateVideo = asyncHandler(async (req, res) => {
@@ -277,7 +365,8 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 export {
     getAllVideos,
     publishAVideo,
-    getVideoById,
+    getVideoByIdForOwner,
+    getVideoByIdForGuest,
     updateVideo,
     deleteVideo,
     togglePublishStatus
