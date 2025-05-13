@@ -168,7 +168,6 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 
     if (!videoExists) throw new ApiError(400, "Video not found");
-    // Conditional match stage based on userId presence
     const video = await Video.aggregate([
         {
             $match: {
@@ -236,7 +235,7 @@ const getVideoById = asyncHandler(async (req, res) => {
         {
             $project: {
                 videoFile: 1,
-                thumbnail:1,
+                thumbnail: 1,
                 title: 1,
                 description: 1,
                 views: 1,
@@ -252,7 +251,7 @@ const getVideoById = asyncHandler(async (req, res) => {
         },
     ]);
 
-    if (!video.length) throw new ApiError(404, "Video not found");
+    if (!video.length) throw new ApiError(404, "Failed to get video");
 
 
     return res.status(200)
@@ -260,7 +259,6 @@ const getVideoById = asyncHandler(async (req, res) => {
             video: video[0]
         }, "Video fetched successfully"))
 })
-
 
 
 
@@ -368,11 +366,56 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
             "Publish status updated successfully"));
 })
 
+const updateVideoViews = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+    if (!isValidObjectId(videoId)) {
+        throw new ApiError(400, "Invalid video id");
+    }
+    const videoExists = await Video.findById(videoId);
+
+    if (!videoExists) throw new ApiError(400, "Video not found");
+
+    const user = await User.findById(req.user._id);
+
+    const alreadyWatched = user.watchHistory.find(
+        (history) => history.video.toString() === videoId
+    )
+
+    if (alreadyWatched) {
+        alreadyWatched.watchedAt = new Date();
+        await user.save();
+    } else {
+        user.watchHistory.push({
+            video: videoId,
+            watchedAt: new Date()
+        })
+    }
+
+    const updatedVideo = await Video.findByIdAndUpdate(videoId, {
+        $inc: {
+            views: 1
+        }
+    },{
+        new:true
+    })
+
+    if (!updatedVideo) throw new ApiError(400, "Failed to update views");
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {
+            video: updatedVideo,
+            user
+        }
+            , "Views updated Successfully"))
+})
+
 export {
     getAllVideos,
     publishAVideo,
     getVideoById,
     updateVideo,
     deleteVideo,
+    updateVideoViews,
     togglePublishStatus
 }
