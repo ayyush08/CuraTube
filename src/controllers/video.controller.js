@@ -158,32 +158,31 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 })
 
-const getVideoByIdForOwner = asyncHandler(async (req, res) => {
+const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: get video by id
     if (!isValidObjectId(videoId)) {
         throw new ApiError(400, "Invalid video id");
     }
-    const video = await Video.findById(videoId);
-    
-    if (!video.owner.equals(req.user._id)) {
-        throw new ApiError(400, "Not your video")
-    }
+    const videoExists = await Video.findById(videoId);
 
-    if (!video) throw new ApiError(400, "Video not found");
 
-    const videoDetails = await Video.aggregate([
-        { $match: { _id: new mongoose.Types.ObjectId(videoId) } },
-
+    if (!videoExists) throw new ApiError(400, "Video not found");
+    // Conditional match stage based on userId presence
+    const video = await Video.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(videoId),
+            },
+        },
         {
             $lookup: {
                 from: "likes",
                 localField: "_id",
                 foreignField: "video",
-                as: "likes"
-            }
+                as: "likes",
+            },
         },
-
         {
             $lookup: {
                 from: "users",
@@ -196,67 +195,74 @@ const getVideoByIdForOwner = asyncHandler(async (req, res) => {
                             from: "subscriptions",
                             localField: "_id",
                             foreignField: "channel",
-                            as: "subscribers"
-                        }
+                            as: "subscribers",
+                        },
                     },
                     {
                         $addFields: {
-                            subscribersCount: { $size: "$subscribers" },
-                        }
+                            subscribersCount: {
+                                $size: "$subscribers",
+                            },
+                            isSubscribed: {
+                                $in: [req.user?._id, "$subscribers.subscriber"],
+                            },
+                        },
                     },
                     {
                         $project: {
                             username: 1,
                             fullName: 1,
-                            "avatar.url": 1,
+                            avatar: 1,
                             subscribersCount: 1,
-                        }
-                    }
-                ]
-            }
+                            isSubscribed: 1,
+                        },
+                    },
+                ],
+            },
         },
-
         {
             $addFields: {
-                likeCount: { $size: "$likes" },
-                isLiked: {
-                    $in: [req.user._id, "$likes.likedBy"]
+                likesCount: {
+                    $size: "$likes",
                 },
-                owner: { $first: "$owner" }
-            }
+                owner: {
+                    $first: "$owner",
+                },
+                isLiked: {
+                    $in: [req.user?._id, "$likes.likedBy"]
+                },
+            },
         },
-
         {
             $project: {
                 videoFile: 1,
+                thumbnail:1,
                 title: 1,
                 description: 1,
                 views: 1,
                 createdAt: 1,
                 duration: 1,
-                isPublished:1,
+                comments: 1,
                 owner: 1,
-                likeCount: 1,
-                isLiked: 1
-            }
-        }
-    ]
-    )
+                likesCount: 1,
+                isLiked: 1,
+                isSubscribed: 1,
+                subscribersCount: 1,
+            },
+        },
+    ]);
 
-    if (!videoDetails) {
-        throw new ApiError(400, "Failed to get video details")
-    }
+    if (!video.length) throw new ApiError(404, "Video not found");
+
 
     return res.status(200)
         .json(new ApiResponse(200, {
-            video: videoDetails[0]
+            video: video[0]
         }, "Video fetched successfully"))
 })
 
 
-const getVideoByIdForGuest = asyncHandler(async (req, res) => {
-    //TODO
-})
+
 
 const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
@@ -365,8 +371,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 export {
     getAllVideos,
     publishAVideo,
-    getVideoByIdForOwner,
-    getVideoByIdForGuest,
+    getVideoById,
     updateVideo,
     deleteVideo,
     togglePublishStatus
