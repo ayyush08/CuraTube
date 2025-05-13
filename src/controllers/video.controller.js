@@ -11,14 +11,104 @@ import { Comment } from "../models/comment.model.js"
 
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query = '', sortBy = 'createdAt', sortType = 'desc', userId } = req.query
-    //TODO: get all videos based on query, sort, pagination
+    // get all videos based on query, sort, pagination
+
+    const aggregationPipeline = []
+
+    if (query) {
+        if (process.env.NODE_ENV === "production") {
+            aggregationPipeline.push({
+                $search: {
+                    index: "search-curatube-videos",//TODO: Create a search index in mongo atlas cloud
+                    text: {
+                        query: query,
+                        path: ["title", "description"],
+                    },
+                },
+            });
+        } else {
+            aggregationPipeline.push({
+                $match: {
+                    $or: [
+                        { title: { $regex: query, $options: 'i' } },
+                        { description: { $regex: query, $options: 'i' } },
+                    ],
+                },
+            });
+        }
+    }
 
 
+    if (userId) {
+        if (!isValidObjectId(userId)) throw new ApiError(400, "invalid user id");
+        aggregationPipeline.push({
+            $match: {
+                owner: userId
+            }
+        })
+    }
+
+    aggregationPipeline.push({
+        $match: {
+            isPublished: true
+        }
+    })
+
+    if (sortBy && sortType) {
+        aggregationPipeline.push({
+            $sort: {
+                [sortBy]: sortType === "asc" ? 1 : -1
+            },
+        });
+    } else {
+        aggregationPipeline.push({
+            $sort: {
+                createdAt: -1
+            }
+        })
+    }
+
+
+    aggregationPipeline.push(
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "ownerDetails",
+                pipeline: [
+                    {
+                        $project: {
+                            username: 1,
+                            "avatar": 1,
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            $unwind: "$ownerDetails",
+        }
+    );
+
+    const aggregatedVideos = Video.aggregate(aggregationPipeline);
 
     const options = {
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
     }
+
+    const allVideos = await Video.aggregatePaginate(aggregatedVideos,options);
+
+    if(!allVideos){
+        throw new ApiError(400,"Failed to get all videos");
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{
+        videos:allVideos.docs
+    },"Videos fetched successfully"))
 
 })
 
@@ -89,14 +179,14 @@ const updateVideo = asyncHandler(async (req, res) => {
 
     const thumbnailLocalPath = req.file?.path;
 
-    if(!(title || description || thumbnailLocalPath)){
-        throw new ApiError(400,"Atleast one field is required to update");
+    if (!(title || description || thumbnailLocalPath)) {
+        throw new ApiError(400, "Atleast one field is required to update");
     }
 
     let newThumbnail;
-    if(thumbnailLocalPath){
-        await deleteFileFromImageKit(video.thumbnail,'curatube-thumbnails');
-        newThumbnail = await uploadOnImageKit(thumbnailLocalPath,'curatube-thumbnails');
+    if (thumbnailLocalPath) {
+        await deleteFileFromImageKit(video.thumbnail, 'curatube-thumbnails');
+        newThumbnail = await uploadOnImageKit(thumbnailLocalPath, 'curatube-thumbnails');
     }
 
     let updateOptions = {
@@ -104,7 +194,7 @@ const updateVideo = asyncHandler(async (req, res) => {
         description,
     }
 
-    if(thumbnailLocalPath) updateOptions.thumbnail = newThumbnail.url;
+    if (thumbnailLocalPath) updateOptions.thumbnail = newThumbnail.url;
 
     const updatedVideo = await Video.findByIdAndUpdate(
         videoId,
@@ -112,17 +202,17 @@ const updateVideo = asyncHandler(async (req, res) => {
             $set: updateOptions
         },
         {
-            new:true
+            new: true
         }
     )
 
-    if(!updatedVideo){
-        throw new Error(400,"Failed to update video details");
+    if (!updatedVideo) {
+        throw new Error(400, "Failed to update video details");
     }
 
     return res
-    .status(200)
-    .json(new ApiResponse(200,updatedVideo,"Video Details Updated Successfully"));
+        .status(200)
+        .json(new ApiResponse(200, updatedVideo, "Video Details Updated Successfully"));
 
 
 
@@ -141,8 +231,8 @@ const deleteVideo = asyncHandler(async (req, res) => {
     await Promise.all([
         Like.deleteMany({ video: videoId }),
         Comment.deleteMany({ video: videoId }),
-        await deleteFileFromImageKit(videoUrl,'curatube-videos'),
-        await deleteFileFromImageKit(thumbnail,'curatube-thumbnails')
+        await deleteFileFromImageKit(videoUrl, 'curatube-videos'),
+        await deleteFileFromImageKit(thumbnail, 'curatube-thumbnails')
     ])
     //delete from db
     await Video.findByIdAndDelete(videoId);

@@ -7,16 +7,15 @@ import {
     togglePublishStatus,
     updateVideo,
 } from "../controllers/video.controller.js"
-import {verifyJWT} from "../middlewares/auth.middleware.js"
-import {upload} from "../middlewares/multer.middleware.js"
+import { verifyJWT } from "../middlewares/auth.middleware.js"
+import { upload } from "../middlewares/multer.middleware.js"
 
 const router = Router();
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
 router
     .route("/")
-    .get(getAllVideos)
-    .post(
+    .get(getAllVideos)//done
+    .post(verifyJWT,
         upload.fields([
             {
                 name: "videoFile",
@@ -26,16 +25,16 @@ router
                 name: "thumbnail",
                 maxCount: 1,
             },
-            
+
         ]),
         publishAVideo //done
     );
 
 router
     .route("/:videoId")
-    .get(getVideoById)//done
-    .delete(deleteVideo)//done
-    .patch(upload.single("thumbnail"), updateVideo);//done
+    .get(getVideoById)//half done - add pipelines to get additonal details of the video, and add published/unpublished checks based on user/guest
+    .delete(verifyJWT, deleteVideo)//done
+    .patch(verifyJWT, upload.single("thumbnail"), updateVideo);//done
 
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);//done
 
