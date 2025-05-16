@@ -26,12 +26,12 @@ const userSchema = new Schema({
         index: true
     },
     avatar: {
-        type: String, //cloudnary url
+        type: String, 
         required: true,
 
     },
     coverImage: {
-        type: String, //cloudnary url
+        type: String, 
 
     },
     watchHistory: [
@@ -47,7 +47,7 @@ const userSchema = new Schema({
         }
     ],
     password: {
-        type: String, //challenge
+        type: String, 
         required: [true, "Password is required"]
     },
     refreshToken: {
@@ -57,8 +57,8 @@ const userSchema = new Schema({
     timestamps: true
 })
 
-userSchema.pre('save', async function (next) { //arrow callback not given because it don't have 'this' reference (no context)
-    if (!this.isModified('password')) { // encryptin ONLY WHEN password is modified
+userSchema.pre('save', async function (next) { 
+    if (!this.isModified('password')) { 
         return next()
     }
     this.password = await bcrypt.hash(this.password, 10)
@@ -66,7 +66,7 @@ userSchema.pre('save', async function (next) { //arrow callback not given becaus
 })
 
 userSchema.methods.isPasswordCorrect = async function (password) {
-    return await bcrypt.compare(password, this.password) //returns true/false
+    return await bcrypt.compare(password, this.password) 
 }
 
 

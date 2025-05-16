@@ -11,7 +11,6 @@ import { Comment } from "../models/comment.model.js"
 
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query = '', sortBy = 'createdAt', sortType = 'desc', userId } = req.query
-    // get all videos based on query, sort, pagination
 
     const aggregationPipeline = []
 
@@ -266,7 +265,6 @@ const getVideoById = asyncHandler(async (req, res) => {
 const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     const { title, description } = req.body;
-    //TODO: update video details like title, description, thumbnail
     const video = await Video.findById(videoId);
     if (!video) throw new ApiError(400, "Video not found");
 
@@ -313,7 +311,6 @@ const updateVideo = asyncHandler(async (req, res) => {
 
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
-    //TODO: delete video
     const video = await Video.findById(videoId);
 
     if (!video) throw new ApiError(400, "Video not found");

@@ -3,7 +3,7 @@ const asyncHandler = (requestHandler) =>{
     return (req,res,next) =>{
         Promise.resolve(requestHandler(req,res,next)).catch((err)=>next(err))
     }
-}//production centered code
+}
 
 
 // const asyncHandler = ()=>{} 
@@ -21,7 +21,7 @@ const asyncHandler = (requestHandler) =>{
 //             message: error.message
 //         })
 //     }
-// }// (fn)=>{()=>{}} hi h bs 
+// }// (fn)=>{()=>{}} it is
 
 
 

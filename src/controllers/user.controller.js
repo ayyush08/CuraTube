@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from 'jsonwebtoken'
 import mongoose from "mongoose";
 import { deleteFileFromImageKit, uploadOnImageKit } from "../utils/imagekit.js";
-//see things after console logging to getaa better understanding
+
 
 
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -26,19 +26,9 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 
 const registerUser = asyncHandler(async (req, res) => {
-    // get user data from frontend
-    // validation -- not empty
-    // check if user already exists: username,email
-    // check for images, check for avatar
-    // uplaod them to cloudinary, avatar check
-    // create user object - create entry in DB
-    // remove password and refresh token from response
-    // check for user creation
-    // return response
 
     const { fullName, username, email, password } = req.body;
     console.log(email);
-    //ek ek krke bhi kr skte check - no issues
     if (
         [fullName, email, username, password].some((field) => !field?.trim() === "")
     ) {
@@ -96,12 +86,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
 const loginUser = asyncHandler(async (req, res) => {
-    //req body -> data
-    //username or email
-    //find the user
-    //password check
-    //access and refresh token
-    //send cookies
 
     const { email, username, password } = req.body;
 
@@ -123,11 +107,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
 
-    //user to empty h ji refreshtoken me kyuki reference
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
-    const options = { //options for cookies, so that they can be modified only by server
+    const options = { 
         httpOnly: true,
         secure: true
     }
@@ -251,7 +234,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-    const { fullName, email, username } = req.body; //agar files update kra rhe to alag controller rkhe behtar hota h
+    const { fullName, email, username } = req.body; 
     if (!fullName || !email || !username) {
         throw new ApiError(400, 'All fields are required');
     }
@@ -265,7 +248,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
                 username: username
             }
         },
-        { new: true } //update ke baad ki info return hoti h aise
+        { new: true } 
     ).select('-password')
 
     return res

@@ -1,7 +1,6 @@
-//require('dotenv').config({path: './env'})//runs completely but damages code consistency
+
 import dotenv from 'dotenv'
-// import mongoose from "mongoose";
-// import { DB_NAME } from "./constants";
+
 import connectDB from "./db/index.js"; //APPROACH 2
 import { app } from './app.js';
 dotenv.config({
@@ -42,4 +41,4 @@ const app = express()
         console.error("Error: ",error)
         throw err;
     }
-})() //ifee - immediately invoked function expression*///
+})() //iife - immediately invoked function expression*///

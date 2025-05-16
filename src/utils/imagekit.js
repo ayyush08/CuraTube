@@ -20,20 +20,19 @@ export const uploadOnImageKit = async (localFilePath, folder) => {
         if (!localFilePath) return null
         const file = fs.readFileSync(localFilePath)
         const response = await imagekit.upload({
-            file: file, // required
-            fileName: localFilePath.split('/').pop(), // required, use the file name from the local path
-            folder: folder, // optional, specify the folder name if needed
-            useUniqueFileName: true, // optional, if you want to use a unique file name
+            file: file, 
+            fileName: localFilePath.split('/').pop(), 
+            folder: folder, 
+            useUniqueFileName: true, 
         })
-        //file has been uploaded successfully
         console.log('File Upload Successfully on Imagekit');
         fs.unlinkSync(localFilePath)
         return response
 
     } catch (error) {
-        fs.unlinkSync(localFilePath) //remove the locally saved temporary files as upload got failed
+        fs.unlinkSync(localFilePath) 
         return null;
-    }///user-cover-images/public_temp_ScreenShot-2025-3-9_0-48-17_PXzLufE_p.png
+    }
 }
 
 export const deleteFileFromImageKit = async (fileUrl, folder) => {
