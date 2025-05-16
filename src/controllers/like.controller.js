@@ -68,37 +68,77 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 
 const toggleTweetLike = asyncHandler(async (req, res) => {
     const { tweetId } = req.params
-    if(!isValidObjectId(tweetId)){
-        throw new ApiError(400,"Invalid tweet id");
+    if (!isValidObjectId(tweetId)) {
+        throw new ApiError(400, "Invalid tweet id");
     }
     const userId = req.user?._id
     const likedTweet = await Like.findOne({ tweet: tweetId, likedBy: userId });
 
-        if (likedTweet) {
-            await Like.findByIdAndDelete(likedTweet._id);
-            return res
-                .status(200)
-                .json(new ApiResponse(200, null, "Tweet Unliked Successfully"));
-        }
-        else {
-            await Like.create({ tweet: tweetId, likedBy: userId });
-            return res
-                .status(200)
-                .json(new ApiResponse(200, null, "Tweet Liked Successfully"))
-        }
+    if (likedTweet) {
+        await Like.findByIdAndDelete(likedTweet._id);
+        return res
+            .status(200)
+            .json(new ApiResponse(200, null, "Tweet Unliked Successfully"));
+    }
+    else {
+        await Like.create({ tweet: tweetId, likedBy: userId });
+        return res
+            .status(200)
+            .json(new ApiResponse(200, null, "Tweet Liked Successfully"))
+    }
 }
 
 
 )
 
 const getLikedVideos = asyncHandler(async (req, res) => {
-    //TODO: get all liked videos
-    const userId = req.user?._id
-    if (!isValidObjectId(userId)) {
-        throw new ApiError(400, "Invalid User Id")
-    }
+
     const likedVideos = await Like.aggregate([
-    //TODO
+        {
+            $match: {
+                likedBy: req.user._id
+            }
+        },
+        {
+            $lookup: {
+                from: 'videos',
+                localField: 'video',
+                foreignField: '_id',
+                as: 'videoDetails'
+            }
+        },
+        {
+            $unwind: '$videoDetails'
+        },
+        {
+            $match: { 'videoDetails.isPublished': true }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "videoDetails.owner",
+                foreignField: "_id",
+                as: "videoDetails.owner",
+                pipeline: [
+                    {
+                        $project: {
+                            username: 1,
+                            fullName: 1,
+                            avatar: 1,
+
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $unwind: "$videoDetails.owner"
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
+        }
     ])
 
     return res

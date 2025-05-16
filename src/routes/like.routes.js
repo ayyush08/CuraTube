@@ -13,6 +13,6 @@ router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 router.route("/toggle/v/:videoId").post(toggleVideoLike);//done
 router.route("/toggle/c/:commentId").post(toggleCommentLike);//done
 router.route("/toggle/t/:tweetId").post(toggleTweetLike);//done
-router.route("/videos").get(getLikedVideos);
+router.route("/videos").get(getLikedVideos);//done
 
 export default router
