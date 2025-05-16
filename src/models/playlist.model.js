@@ -14,10 +14,15 @@ const playlistSchema = new Schema(
         },
         videos:[
             {
-            type:Schema.Types.ObjectId,
-            ref:'Video',
-            required:true
+            video: {
+                type: Schema.Types.ObjectId,
+                ref: "Video"
+            },
+            addedAt: {
+                type: Date,
+                default: Date.now  
             }
+        }
         ],
         owner:{
             type:Schema.Types.ObjectId,
