@@ -98,9 +98,9 @@ const navigationData = {
 
 export function AppSidebar() {
     return (
-        <Sidebar variant="inset">
-            <SidebarHeader>
-                <SidebarMenu>
+        <Sidebar  variant="floating">
+            <SidebarHeader >
+                <SidebarMenu >
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <a href="/">
