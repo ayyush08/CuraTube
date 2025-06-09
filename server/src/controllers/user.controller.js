@@ -110,15 +110,17 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
-    const options = { 
+    const options = {
         httpOnly: true,
         secure: true
     }
 
+    res.cookie('accessToken', accessToken, options)
+        .cookie('refreshToken', refreshToken, options)
+
     return res
         .status(200)
-        .cookie('accessToken', accessToken, options)
-        .cookie('refreshToken', refreshToken, options)
+
         .json(
             new ApiResponse(200, {
                 user: loggedInUser,
@@ -185,16 +187,18 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             secure: true
         }
 
-        const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(user._id)
+        const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
+
+        res.cookie('accessToken', accessToken, options)
+        .cookie('refreshToken', refreshToken, options)
 
         return res
             .status(200)
-            .cookie('accessToken', accessToken, options)
-            .cookie('refreshToken', newRefreshToken, options)
+
             .json(
                 new ApiResponse(
                     200,
-                    { accessToken, newRefreshToken },
+                    { accessToken, refreshToken },
                     'Access token refreshed :)'
                 )
             )
@@ -234,7 +238,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-    const { fullName, email, username } = req.body; 
+    const { fullName, email, username } = req.body;
     if (!fullName || !email || !username) {
         throw new ApiError(400, 'All fields are required');
     }
@@ -248,7 +252,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
                 username: username
             }
         },
-        { new: true } 
+        { new: true }
     ).select('-password')
 
     return res
@@ -473,8 +477,8 @@ const getWatchHistory = asyncHandler(async (req, res) => {
 
     ])
 
-    if(!user.length){
-        return res.status(200).json(new ApiResponse(200,[],"Watch History fetched successfully"))
+    if (!user.length) {
+        return res.status(200).json(new ApiResponse(200, [], "Watch History fetched successfully"))
     }
 
     return res
