@@ -1,5 +1,5 @@
 
-import { Home, Library, LucideLayoutDashboard, Play, Settings, ThumbsUpIcon, User} from "lucide-react"
+import { Home, Library, LucideLayoutDashboard, Play, Settings, ThumbsUpIcon, User } from "lucide-react"
 
 import {
     Sidebar,
@@ -11,7 +11,6 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarRail,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -22,47 +21,51 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { APP_NAME } from "@/lib/constants"
+import { useLocation } from "@tanstack/react-router"
 
-// Navigation data for the streaming app
-const navigationData =  [
-        {
-            title: "Home",
-            url: "/",
-            icon: Home,
-        },
-        {
-            title: "My Playlists",
-            url: "/playlists",
-            icon: Library,
-        },
-        {
-            title: "Dashboard",
-            url: "/dashboard",
-            icon: LucideLayoutDashboard,
-        },
-        {
-            title: "Liked Videos",
-            url: "/liked-videos",
-            icon: ThumbsUpIcon,
-        },
-    ]
+
+const navigationData = [
+    {
+        title: "Home",
+        url: "/",
+        icon: Home,
+    },
+    {
+        title: "My Playlists",
+        url: "/playlists",
+        icon: Library,
+    },
+    {
+        title: "Dashboard",
+        url: "/dashboard",
+        icon: LucideLayoutDashboard,
+    },
+    {
+        title: "Liked Videos",
+        url: "/liked-videos",
+        icon: ThumbsUpIcon,
+    },
+]
 
 export function AppSidebar() {
+
+    const location = useLocation()
+
     return (
         <Sidebar variant="sidebar" collapsible="icon" >
             <SidebarHeader >
                 <SidebarMenu >
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <a href="/">
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 text-white">
+                        <SidebarMenuButton className="hover:bg-sidebar-accent-foreground-" size="lg" asChild>
+                            <div>
+                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-600 to-orange-600 text-white">
                                     <Play className="size-4" />
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-semibold">{APP_NAME}</span>
                                     <span className="truncate text-xs text-muted-foreground">Your Entertainment Hub</span>
                                 </div>
-                            </a>
+                            </div>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -73,16 +76,17 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {navigationData.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <a href={item.url}>
+                            {navigationData.map((item) => {
+                                const isActive = location.pathname === item.url
+                                return <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuButton  className={`${isActive ? "bg-sidebar-accent" : ''}  `} asChild>
+                                        <a href={item.url}  >
                                             <item.icon />
                                             <span>{item.title}</span>
                                         </a>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
-                            ))}
+                            })}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
@@ -133,7 +137,7 @@ export function AppSidebar() {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
-            <SidebarRail />
-        </Sidebar>
+
+        </Sidebar >
     )
 }

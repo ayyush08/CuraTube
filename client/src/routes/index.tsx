@@ -6,6 +6,6 @@ export const Route = createFileRoute('/')({
 })
 
 function RouteComponent() {
-  return <div >
+  return <div className='h-[200vh]' >
     Hello "/"!</div>
 }
