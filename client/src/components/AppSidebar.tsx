@@ -1,5 +1,5 @@
 
-import { BookmarkIcon, Clock, Home, Library, Play, Search, Settings, TrendingUp, Tv, User, Video, } from "lucide-react"
+import { Home, Library, LucideLayoutDashboard, Play, Settings, ThumbsUpIcon, User} from "lucide-react"
 
 import {
     Sidebar,
@@ -7,14 +7,11 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarHeader,
-    SidebarInput,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarRail,
-    SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -27,8 +24,7 @@ import {
 import { APP_NAME } from "@/lib/constants"
 
 // Navigation data for the streaming app
-const navigationData = {
-    main: [
+const navigationData =  [
         {
             title: "Home",
             url: "/",
@@ -40,65 +36,20 @@ const navigationData = {
             icon: Library,
         },
         {
-            title: "Trending",
-            url: "/trending",
-            icon: TrendingUp,
+            title: "Dashboard",
+            url: "/dashboard",
+            icon: LucideLayoutDashboard,
         },
         {
-            title: "Live TV",
-            url: "/live",
-            icon: Tv,
+            title: "Liked Videos",
+            url: "/liked-videos",
+            icon: ThumbsUpIcon,
         },
-    ],
-    library: [
-        {
-            title: "My Library",
-            url: "/library",
-            icon: Library,
-        },
-        {
-            title: "Watchlist",
-            url: "/watchlist",
-            icon: BookmarkIcon,
-        },
-        {
-            title: "Recently Watched",
-            url: "/recent",
-            icon: Clock,
-        },
-        {
-            title: "Continue Watching",
-            url: "/continue",
-            icon: Play,
-        },
-    ],
-    genres: [
-        {
-            title: "Movies",
-            url: "/movies",
-            icon: Video,
-        },
-        {
-            title: "TV Shows",
-            url: "/tv-shows",
-            icon: Tv,
-        },
-        {
-            title: "Documentaries",
-            url: "/documentaries",
-            icon: Video,
-        },
-        {
-            title: "Kids",
-            url: "/kids",
-            icon: Video,
-        },
-    ],
-}
+    ]
 
 export function AppSidebar() {
     return (
-        <Sidebar  variant="floating">
+        <Sidebar variant="sidebar" collapsible="icon" >
             <SidebarHeader >
                 <SidebarMenu >
                     <SidebarMenuItem>
@@ -115,21 +66,14 @@ export function AppSidebar() {
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
-                <form>
-                    <SidebarGroup className="py-0">
-                        <SidebarGroupContent className="relative">
-                            <SidebarInput id="search" placeholder="Search movies, shows..." className="pl-8" />
-                            <Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none opacity-50" />
-                        </SidebarGroupContent>
-                    </SidebarGroup>
-                </form>
+
             </SidebarHeader>
 
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {navigationData.main.map((item) => (
+                            {navigationData.map((item) => (
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton asChild>
                                         <a href={item.url}>
@@ -143,45 +87,8 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                <SidebarSeparator />
 
-                <SidebarGroup>
-                    <SidebarGroupLabel>My Library</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {navigationData.library.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <a href={item.url}>
-                                            <item.icon />
-                                            <span>{item.title}</span>
-                                        </a>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
 
-                <SidebarSeparator />
-
-                <SidebarGroup>
-                    <SidebarGroupLabel>Browse by Category</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {navigationData.genres.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <a href={item.url}>
-                                            <item.icon />
-                                            <span>{item.title}</span>
-                                        </a>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
             </SidebarContent>
 
             <SidebarFooter>

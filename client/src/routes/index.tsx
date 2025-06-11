@@ -1,30 +1,11 @@
 
-import { apiClient } from "@/api/api-client"
-import { createFileRoute } from "@tanstack/react-router"
-import { useEffect } from "react"
+import { createFileRoute } from '@tanstack/react-router'
 
-
-export const Route = createFileRoute("/")({
-    component: Index,
-    
+export const Route = createFileRoute('/')({
+  component: RouteComponent,
 })
 
-function Index() {
-
-    useEffect(() => {
-        async function checkHealth() {
-            try {
-                const res = await apiClient.healthCheck()
-                console.log("Health Check Response:", res);
-                
-            } catch (error) {
-                console.error("Error during health check:", error);
-            }
-        }
-        checkHealth();
-    },[])
-
-    return (
-        <h1>You are home</h1>
-    )
+function RouteComponent() {
+  return <div >
+    Hello "/"!</div>
 }
