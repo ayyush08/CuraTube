@@ -1,9 +1,9 @@
+import { login } from "@/api/auth.api"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
     DialogClose,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -11,40 +11,87 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useState } from "react"
 
 export function LoginDialog() {
+    const [identifier, setIdentifier] = useState<string>("")
+    const [password, setPassword] = useState<string>("")
+    const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false)
+
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        console.log("submitted")
+
+        try {
+            setIsLoggingIn(true)
+
+            const isEmail = identifier.includes("@")
+
+            const loginData = isEmail
+                ? { email: identifier, password }
+                : { identifier, password }
+
+            const res = await login(loginData)
+
+            if (res) {
+                console.log(res)
+            }
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setIsLoggingIn(false)
+        }
+    }
+
     return (
         <Dialog>
-            <form>
-                <DialogTrigger asChild>
-                    <Button className="p-5 text-base bg-orange-600 hover:bg-orange-800 text-white cursor-pointer">Login</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+            <DialogTrigger asChild>
+                <Button className="p-5 text-base bg-orange-600 hover:bg-orange-800 text-white cursor-pointer">
+                    Login
+                </Button>
+            </DialogTrigger>
+
+            <DialogContent className="sm:max-w-[425px] h-84 border-orange-400/60 bg-orange-900/10">
+                <form onSubmit={handleLogin} className="grid gap-4">
                     <DialogHeader>
-                        <DialogTitle>Edit profile</DialogTitle>
-                        <DialogDescription>
-                            Make changes to your profile here. Click save when you&apos;re
-                            done.
-                        </DialogDescription>
+                        <DialogTitle className="text-center text-2xl font-sans tracking-wide">Login</DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-4">
-                        <div className="grid gap-3">
-                            <Label htmlFor="name-1">Name</Label>
-                            <Input id="name-1" name="name" defaultValue="Pedro Duarte" />
-                        </div>
-                        <div className="grid gap-3">
-                            <Label htmlFor="username-1">Username</Label>
-                            <Input id="username-1" name="username" defaultValue="@peduarte" />
-                        </div>
+
+                    <div className="grid gap-3">
+                        <Label htmlFor="identifier">Email or Username</Label>
+                        <Input
+                            id="identifier"
+                            value={identifier}
+                            onChange={(e) => setIdentifier(e.target.value)}
+                            name="identifier"
+                            placeholder="Your email/username here..."
+                        />
                     </div>
+
+                    <div className="grid gap-3">
+                        <Label htmlFor="password">Password</Label>
+                        <Input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            id="password"
+                            name="password"
+                            placeholder="Your password here..."
+                        />
+                    </div>
+
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
+                            <Button variant="outline" type="button">
+                                Cancel
+                            </Button>
                         </DialogClose>
-                        <Button type="submit">Save changes</Button>
+                        <Button className="cursor-pointer" type="submit">
+                            {isLoggingIn ? "Logging In.." : "Login"}
+                        </Button>
                     </DialogFooter>
-                </DialogContent>
-            </form>
+                </form>
+            </DialogContent>
         </Dialog>
     )
 }
