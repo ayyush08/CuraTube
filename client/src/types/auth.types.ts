@@ -1,10 +1,10 @@
-export interface RegisterRequest {
+export interface RegisterRequest  {
     username: string;
     fullName: string;
     email: string;
     password: string;
-    avatar?: File;
-    coverImage?: File;
+    avatar: File | null;
+    coverImage?: File | null;
 }
 
 

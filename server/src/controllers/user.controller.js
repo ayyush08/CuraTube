@@ -74,7 +74,15 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     const createdUser = await User.findById(user._id).select("-password -refreshToken");
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(createdUser._id)
 
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    res.cookie('accessToken', accessToken, options)
+        .cookie('refreshToken', refreshToken, options)
     if (!createdUser) {
         throw new ApiError(500, "User not created");
     }
@@ -190,7 +198,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
 
         res.cookie('accessToken', accessToken, options)
-        .cookie('refreshToken', refreshToken, options)
+            .cookie('refreshToken', refreshToken, options)
 
         return res
             .status(200)

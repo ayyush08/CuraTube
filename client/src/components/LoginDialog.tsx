@@ -17,6 +17,7 @@ export function LoginDialog() {
     const [identifier, setIdentifier] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false)
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -24,12 +25,12 @@ export function LoginDialog() {
 
         try {
             setIsLoggingIn(true)
-
+            
             const isEmail = identifier.includes("@")
 
             const loginData = isEmail
                 ? { email: identifier, password }
-                : { identifier, password }
+                : { username: identifier, password }
 
             const res = await login(loginData)
 
@@ -44,14 +45,14 @@ export function LoginDialog() {
     }
 
     return (
-        <Dialog>
+        <Dialog open={isDialogOpen}>
             <DialogTrigger asChild>
-                <Button className="p-5 text-base bg-orange-600 hover:bg-orange-800 text-white cursor-pointer">
+                <Button onClick={()=>setIsDialogOpen(true)} className="p-5 text-base bg-orange-600 hover:bg-orange-800 text-white cursor-pointer">
                     Login
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-[425px] h-84 border-orange-400/60 bg-orange-900/10">
+            <DialogContent showCloseButton={false} className="sm:max-w-[425px] h-84 border-orange-400/60 bg-orange-900/10">
                 <form onSubmit={handleLogin} className="grid gap-4">
                     <DialogHeader>
                         <DialogTitle className="text-center text-2xl font-sans tracking-wide">Login</DialogTitle>
@@ -82,7 +83,7 @@ export function LoginDialog() {
 
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button variant="outline" type="button">
+                            <Button onClick={()=>setIsDialogOpen(false)} variant="outline" type="button" className="cursor-pointer">
                                 Cancel
                             </Button>
                         </DialogClose>
