@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { toast } from 'sonner'; // or whatever you're using
-import { useAppSelector } from '@/redux/hooks'; // your typed selector
+import { toast } from 'sonner'; 
+import { useAppSelector } from '@/redux/hooks'; 
 
 export function useAuthGuard(redirectTo: string = '/') {
     const navigate = useNavigate();

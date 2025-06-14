@@ -1,5 +1,5 @@
 
-import { Home, Library, LucideLayoutDashboard, Play, ThumbsUpIcon } from "lucide-react"
+import { Home, Library, LucideLayoutDashboard, Play, TestTube, ThumbsUpIcon } from "lucide-react"
 
 import {
     Sidebar,
@@ -39,6 +39,11 @@ const navigationData = [
         url: "/liked-videos",
         icon: ThumbsUpIcon,
     },
+    {
+        title: "component testing route",
+        url: '/test-component',
+        icon: TestTube
+    }
 ]
 
 export function AppSidebar() {
