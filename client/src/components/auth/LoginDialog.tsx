@@ -7,17 +7,28 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { loginSuccess } from "@/redux/authSlice"
+import { useAppDispatch } from "@/redux/hooks"
 import { useState } from "react"
 
-export function LoginDialog() {
+export function LoginDialog({
+    open,
+    onClose,
+    onSwitchToSignup,
+}: {
+
+    open: boolean
+    onClose: () => void
+    onSwitchToSignup: () => void
+}) {
     const [identifier, setIdentifier] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false)
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+    const dispatch = useAppDispatch()
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -25,7 +36,7 @@ export function LoginDialog() {
 
         try {
             setIsLoggingIn(true)
-            
+
             const isEmail = identifier.includes("@")
 
             const loginData = isEmail
@@ -36,7 +47,11 @@ export function LoginDialog() {
 
             if (res) {
                 console.log(res)
+                dispatch(loginSuccess({
+                    ...res.user
+                }))
             }
+            onClose()
         } catch (error) {
             console.log(error)
         } finally {
@@ -45,12 +60,12 @@ export function LoginDialog() {
     }
 
     return (
-        <Dialog open={isDialogOpen}>
-            <DialogTrigger asChild>
-                <Button onClick={()=>setIsDialogOpen(true)} className="p-5 text-base bg-orange-600 hover:bg-orange-800 text-white cursor-pointer">
+        <Dialog open={open} onOpenChange={onClose}>
+            {/* <DialogTrigger asChild>
+                <Button onClick={() => setIsDialogOpen(true)} className="p-5 text-base bg-orange-600 hover:bg-orange-800 text-white cursor-pointer">
                     Login
                 </Button>
-            </DialogTrigger>
+            </DialogTrigger> */}
 
             <DialogContent showCloseButton={false} className="sm:max-w-[425px] h-84 border-orange-400/60 bg-orange-900/10">
                 <form onSubmit={handleLogin} className="grid gap-4">
@@ -83,7 +98,7 @@ export function LoginDialog() {
 
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button onClick={()=>setIsDialogOpen(false)} variant="outline" type="button" className="cursor-pointer">
+                            <Button onClick={onClose} variant="outline" type="button" className="cursor-pointer">
                                 Cancel
                             </Button>
                         </DialogClose>
@@ -92,6 +107,15 @@ export function LoginDialog() {
                         </Button>
                     </DialogFooter>
                 </form>
+                <div className="text-center text-sm text-gray-500 mt-2">
+                    Don't have an account?
+                    <Button variant='link' className="cursor-pointer hover:text-blue-500" onClick={() => {
+                        onClose();
+                        onSwitchToSignup();
+                    }}>
+                        Sign up
+                    </Button>
+                </div>
             </DialogContent>
         </Dialog>
     )

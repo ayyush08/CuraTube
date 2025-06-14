@@ -33,3 +33,13 @@ export const login = async (data: LoginRequest): Promise<any> => {
         throw error.response.data;
     }
 }
+
+export const logout = async():Promise<any>=>{
+    try {
+        const res = await apiClient.post<ApiSuccessResponse>('/users/logout')
+        return res.data
+    } catch (error:any) {
+        console.error("Error during login:", error);
+        throw error.response.data;
+    }
+}
