@@ -8,20 +8,23 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
 
 export const Route = createRootRoute({
-    
-    component: () => (
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
 
+    component: RootLayout
+});
+
+
+export function RootLayout() {
+    return (
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
             <SidebarProvider>
                 <AppSidebar />
-                            
-                    <div className="flex flex-1 flex-col gap-4">
-                        <Header/>
-                        <Toaster position='top-center' richColors/>
-                        <Outlet />
-                    </div>
-                <TanStackRouterDevtools position='bottom-right' />
+                <div className="flex flex-1 flex-col gap-4">
+                    <Header />
+                    <Toaster closeButton position="top-center" richColors />
+                    <Outlet />
+                </div>
+                <TanStackRouterDevtools position="bottom-right" />
             </SidebarProvider>
         </ThemeProvider>
-    ),
-});
+    );
+}

@@ -6,6 +6,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { useAppDispatch } from '@/redux/hooks';
 import { useState } from 'react';
 import { logout } from '@/redux/authSlice';
+import { persistor } from '@/redux/store';
 
 const LogoutDialog = ({ open, onClose }: { open: boolean, onClose: () => void }) => {
 
@@ -19,6 +20,7 @@ const LogoutDialog = ({ open, onClose }: { open: boolean, onClose: () => void })
             if (res) {
                 console.log("Logout successful:", res);
                 dispatch(logout())
+                persistor.purge()
             }
             onClose()
         } catch (error) {

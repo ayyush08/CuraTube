@@ -1,3 +1,4 @@
+import { useAuthGuard } from '@/hooks/use-auth-guard'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/liked-videos/')({
@@ -5,5 +6,6 @@ export const Route = createFileRoute('/liked-videos/')({
 })
 
 function RouteComponent() {
+  useAuthGuard('/')
   return <div>Hello "/liked-videos/"!</div>
 }

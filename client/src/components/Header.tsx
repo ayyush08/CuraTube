@@ -5,12 +5,12 @@ import { Input } from "./ui/input"
 import { SidebarTrigger } from "./ui/sidebar"
 import { SearchIcon } from "lucide-react"
 import { Button } from "./ui/button"
-import { store } from "@/redux/store"
 import LogoutDialog from "./auth/LogoutDialog"
+import { useAppSelector } from "@/redux/hooks"
 
 const Header = () => {
     const [activeDialog, setActiveDialog] = useState<"login" | "signup" | "logout" | null>(null)
-    const isAuthenticated = store.getState().auth.isAuthenticated
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);  
     console.log("isAuthenticated:", isAuthenticated)
 
     const onSearchClick = () => {

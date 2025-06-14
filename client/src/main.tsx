@@ -5,7 +5,8 @@ import './index.css'
 import { Provider } from 'react-redux'
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-import { store } from './redux/store'
+import { persistor, store } from './redux/store'
+import { PersistGate } from 'redux-persist/integration/react'
 
 // Create a new router instance
 const router = createRouter({ routeTree })
@@ -24,7 +25,10 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <Provider store={store}>
-        <RouterProvider router={router} />
+        <PersistGate loading={null} persistor={persistor}>
+
+          <RouterProvider router={router} />
+        </PersistGate>
       </Provider>
     </StrictMode>,
   )
