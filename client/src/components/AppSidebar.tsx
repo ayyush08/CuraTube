@@ -1,10 +1,10 @@
 
-import { Home, Library, LucideLayoutDashboard, Play, Settings, ThumbsUpIcon, User } from "lucide-react"
+import { Home, Library, LucideLayoutDashboard, Play, ThumbsUpIcon } from "lucide-react"
 
 import {
     Sidebar,
     SidebarContent,
-    SidebarFooter,
+
     SidebarGroup,
     SidebarGroupContent,
     SidebarHeader,
@@ -12,14 +12,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+
+
 import { APP_NAME } from "@/lib/constants"
 import { useLocation } from "@tanstack/react-router"
 
@@ -95,48 +89,7 @@ export function AppSidebar() {
 
             </SidebarContent>
 
-            <SidebarFooter>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton
-                                    size="lg"
-                                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                                >
-                                    <Avatar className="h-8 w-8 rounded-lg">
-                                        <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                                        <AvatarFallback className="rounded-lg">JD</AvatarFallback>
-                                    </Avatar>
-                                    <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-semibold">John Doe</span>
-                                        <span className="truncate text-xs text-muted-foreground">Premium Member</span>
-                                    </div>
-                                </SidebarMenuButton>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                                side="bottom"
-                                align="end"
-                                sideOffset={4}
-                            >
-                                <DropdownMenuItem>
-                                    <User className="mr-2 h-4 w-4" />
-                                    <span>Profile</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Settings className="mr-2 h-4 w-4" />
-                                    <span>Settings</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <span>Sign out</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarFooter>
+            
 
         </Sidebar >
     )

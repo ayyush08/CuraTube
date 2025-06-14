@@ -74,15 +74,7 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     const createdUser = await User.findById(user._id).select("-password -refreshToken");
-    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(createdUser._id)
 
-    const options = {
-        httpOnly: true,
-        secure: true
-    }
-
-    res.cookie('accessToken', accessToken, options)
-        .cookie('refreshToken', refreshToken, options)
     if (!createdUser) {
         throw new ApiError(500, "User not created");
     }

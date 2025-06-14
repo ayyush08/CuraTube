@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import { loginSuccess } from "@/redux/authSlice"
 import { useAppDispatch } from "@/redux/hooks"
 import { useState } from "react"
+import { toast } from "sonner"
 
 export function LoginDialog({
     open,
@@ -47,12 +48,14 @@ export function LoginDialog({
 
             if (res) {
                 console.log(res)
+                toast.success(`Welcome back, ${res.user.username}`)
                 dispatch(loginSuccess({
                     ...res.user
                 }))
             }
             onClose()
         } catch (error) {
+            
             console.log(error)
         } finally {
             setIsLoggingIn(false)

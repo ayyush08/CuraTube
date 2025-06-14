@@ -1,4 +1,4 @@
-import { register } from "@/api/auth.api"
+import { login, register } from "@/api/auth.api"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -10,8 +10,11 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useEffect, useState } from "react"
+import {  useState } from "react"
 import ProfileImageUpload from "../ProfileImageUpload"
+import { toast } from "sonner"
+import { useAppDispatch } from "@/redux/hooks"
+import { loginSuccess } from "@/redux/authSlice"
 
 export function SignUpDialog({
     open,
@@ -33,9 +36,7 @@ export function SignUpDialog({
     })
 
 
-    useEffect(() => {
-
-    }, [])
+    const dispatch = useAppDispatch()
 
     const [isRegistering, setIsRegistering] = useState<boolean>(false)
 
@@ -54,7 +55,18 @@ export function SignUpDialog({
 
             console.log("Submitting FormData:", formData)
             const res = await register({ ...formData })
-            console.log(res)
+            if(res){
+                const loginUser = await login({
+                    username: formData.username,
+                    password: formData.password
+                })
+                if(loginUser){
+                    toast.success(`Welcome to CuraTube, ${loginUser.user.username}`)
+                    dispatch(loginSuccess({...loginUser.user}))
+                }
+                
+            }
+            
             onClose()
         } catch (error) {
             console.error(error)
@@ -66,11 +78,6 @@ export function SignUpDialog({
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            {/* <DialogTrigger asChild>
-                <Button onClick={() => setIsDialogOpen(true)} className="p-5 text-base bg-orange-600 hover:bg-orange-800 text-white cursor-pointer">
-                    SignUp
-                </Button>
-            </DialogTrigger> */}
 
             <DialogContent showCloseButton={false} onInteractOutside={(e) => e.preventDefault()} className="sm:max-w-[425px] max-h-screen border-orange-400/60 bg-orange-900/10">
 
