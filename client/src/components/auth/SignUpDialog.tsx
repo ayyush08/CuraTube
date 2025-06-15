@@ -1,4 +1,4 @@
-import { login, register } from "@/api/auth.api"
+
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -11,10 +11,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {  useState } from "react"
-import ProfileImageUpload from "../ProfileImageUpload"
-import { toast } from "sonner"
-import { useAppDispatch } from "@/redux/hooks"
-import { loginSuccess } from "@/redux/authSlice"
+import ProfileImageUpload from "./ProfileImageUpload"
+import { useRegisterLogin } from "@/hooks/auth.hooks"
 
 export function SignUpDialog({
     open,
@@ -35,15 +33,18 @@ export function SignUpDialog({
         coverImage: null as File | null,
     })
 
+    const {
+        mutate: createAccount,
+        isPending,
+        isError,
+    } = useRegisterLogin(onClose)
 
-    const dispatch = useAppDispatch()
 
-    const [isRegistering, setIsRegistering] = useState<boolean>(false)
+    if(isError) console.log(isError);
+    
 
     const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        try {
-            setIsRegistering(true)
             if (!formData.coverImage) {
                 alert("Please add a cover image")
                 return
@@ -52,27 +53,31 @@ export function SignUpDialog({
                 alert("Please add profile image")
                 return
             }
-
-            console.log("Submitting FormData:", formData)
-            const res = await register({ ...formData })
-            if(res){
-                const loginUser = await login({
-                    username: formData.username,
-                    password: formData.password
-                })
-                if(loginUser){
-                    toast.success(`Welcome to CuraTube, ${loginUser.user.username}`)
-                    dispatch(loginSuccess({...loginUser.user}))
-                }
-                
-            }
+            createAccount({...formData})
+        // try {
+        //     setIsRegistering(true)
             
-            onClose()
-        } catch (error) {
-            console.error(error)
-        } finally {
-            setIsRegistering(false)
-        }
+
+            // console.log("Submitting FormData:", formData)
+            // const res = await register({ ...formData })
+            // if(res){
+            //     const loginUser = await login({
+            //         username: formData.username,
+            //         password: formData.password
+            //     })
+            //     if(loginUser){
+            //         toast.success(`Welcome to CuraTube, ${loginUser.user.username}`)
+            //         dispatch(loginSuccess({...loginUser.user}))
+            //     }
+                
+            // }
+            
+            // onClose()
+        // } catch (error) {
+        //     console.error(error)
+        // } finally {
+        //     setIsRegistering(false)
+        // }
 
     }
 
@@ -96,6 +101,7 @@ export function SignUpDialog({
                             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                             name="fullName"
                             placeholder="Your full name here..."
+                            required
                         />
                     </div>
                     <div className="grid gap-3">
@@ -106,6 +112,7 @@ export function SignUpDialog({
                             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                             name="username"
                             placeholder="Your username here..."
+                            required
                         />
                     </div>
                     <div className="grid gap-3">
@@ -116,6 +123,7 @@ export function SignUpDialog({
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             name="email"
                             placeholder="Your email here..."
+                            required
                         />
                     </div>
 
@@ -128,17 +136,18 @@ export function SignUpDialog({
                             id="password"
                             name="password"
                             placeholder="Your password here..."
+                            required
                         />
                     </div>
 
                     <DialogFooter>
                         <DialogClose asChild >
-                            <Button onClick={onClose} variant="outline" type="button" className="cursor-pointer">
+                            <Button disabled={isPending} onClick={onClose} variant="outline" type="button" className="cursor-pointer">
                                 Cancel
                             </Button>
                         </DialogClose>
                         <Button className="cursor-pointer" type="submit">
-                            {isRegistering ? "Creating Account... " : "Create Account"}
+                            {isPending ? "Creating Account... " : "Create Account"}
                         </Button>
                     </DialogFooter>
                 </form>

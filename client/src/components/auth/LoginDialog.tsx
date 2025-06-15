@@ -1,4 +1,4 @@
-import { login } from "@/api/auth.api"
+
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { loginSuccess } from "@/redux/authSlice"
-import { useAppDispatch } from "@/redux/hooks"
-import { useState } from "react"
-import { toast } from "sonner"
+import { useLogin } from "@/hooks/auth.hooks"
+
+import { useEffect, useState } from "react"
+
 
 export function LoginDialog({
     open,
@@ -27,40 +27,30 @@ export function LoginDialog({
 }) {
     const [identifier, setIdentifier] = useState<string>("")
     const [password, setPassword] = useState<string>("")
-    const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false)
 
-    const dispatch = useAppDispatch()
+    const {
+        mutate: loginUser,
+        isPending,
+        isError
+    } = useLogin(onClose)
 
+    if (isError) console.log(isError);
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         console.log("submitted")
+        const isEmail = identifier.includes("@")
 
-        try {
-            setIsLoggingIn(true)
+        const loginData = isEmail
+            ? { email: identifier, password }
+            : { username: identifier, password }
 
-            const isEmail = identifier.includes("@")
-
-            const loginData = isEmail
-                ? { email: identifier, password }
-                : { username: identifier, password }
-
-            const res = await login(loginData)
-
-            if (res) {
-                console.log(res)
-                toast.success(`Welcome back, ${res.user.username}`)
-                dispatch(loginSuccess({
-                    ...res.user
-                }))
-            }
-            onClose()
-        } catch (error) {
-            
-            console.log(error)
-        } finally {
-            setIsLoggingIn(false)
-        }
+        loginUser(loginData)
     }
+
+
+    useEffect(()=>{
+
+    },[identifier,password])
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -80,6 +70,7 @@ export function LoginDialog({
                         <Label htmlFor="identifier">Email or Username</Label>
                         <Input
                             id="identifier"
+                            required
                             value={identifier}
                             onChange={(e) => setIdentifier(e.target.value)}
                             name="identifier"
@@ -91,6 +82,7 @@ export function LoginDialog({
                         <Label htmlFor="password">Password</Label>
                         <Input
                             type="password"
+                            required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             id="password"
@@ -101,12 +93,14 @@ export function LoginDialog({
 
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button onClick={onClose} variant="outline" type="button" className="cursor-pointer">
+                            <Button onClick={onClose} variant="outline" type="button" className="cursor-pointer"
+                            disabled={isPending}
+                            >
                                 Cancel
                             </Button>
                         </DialogClose>
                         <Button className="cursor-pointer" type="submit">
-                            {isLoggingIn ? "Logging In.." : "Login"}
+                            {isPending ? "Logging In.." : "Login"}
                         </Button>
                     </DialogFooter>
                 </form>

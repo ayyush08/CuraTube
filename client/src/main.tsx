@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { routeTree } from './routeTree.gen'
 import { persistor, store } from './redux/store'
 import { PersistGate } from 'redux-persist/integration/react'
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 // Create a new router instance
 const router = createRouter({ routeTree })
 
@@ -18,6 +18,7 @@ declare module '@tanstack/react-router' {
   }
 }
 
+const queryClient = new QueryClient()
 // Render the app
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
@@ -26,8 +27,9 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-
-          <RouterProvider router={router} />
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
         </PersistGate>
       </Provider>
     </StrictMode>,

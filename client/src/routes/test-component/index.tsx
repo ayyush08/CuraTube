@@ -1,3 +1,4 @@
+
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/test-component/')({
@@ -5,7 +6,11 @@ export const Route = createFileRoute('/test-component/')({
 })
 
 function RouteComponent() {
-  return <div>
-    Testing area
-  </div>  
+  return <div className='flex gap-5 p-5 items-center justify-center '>
+  
+    
+  </div>
 }
+
+
+

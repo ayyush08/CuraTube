@@ -20,8 +20,12 @@ class ApiClient {
     }
 
     async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-        const response = await this.axiosInstance.get<T>(url, config);
-        return response.data;
+        try {
+            const response = await this.axiosInstance.get<T>(url, config);
+            return response.data;
+        } catch (error:any) {
+            throw error.response.data;
+        }
     }
 
     async post<T, B = any>(url: string, body?: B, config?: AxiosRequestConfig): Promise<T> {
@@ -29,7 +33,7 @@ class ApiClient {
             const response = await this.axiosInstance.post<T>(url, body, config);
             return response.data;
         } catch (error: any) {
-            return error.response.data;
+            throw error.response.data;
         }
     }
 
@@ -38,7 +42,7 @@ class ApiClient {
             const response = await this.axiosInstance.put<T>(url, body, config);
             return response.data;
         } catch (error:any) {
-            return error.response.data
+            throw error.response.data
         }
     }
 
@@ -47,7 +51,7 @@ class ApiClient {
             const response = await this.axiosInstance.delete<T>(url, config);
             return response.data;
         } catch (error:any) {
-            return error.response.data
+            throw error.response.data
         }
     }
 

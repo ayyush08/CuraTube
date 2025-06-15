@@ -1,34 +1,15 @@
 
-
-import { logout as LogUserOut } from '@/api/auth.api';
 import { Button } from '../ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog'
-import { useAppDispatch } from '@/redux/hooks';
-import { useState } from 'react';
-import { logout } from '@/redux/authSlice';
-import { persistor } from '@/redux/store';
+
+import { useLogout } from '@/hooks/auth.hooks';
 
 const LogoutDialog = ({ open, onClose }: { open: boolean, onClose: () => void }) => {
 
-    const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false)
-    const dispatch = useAppDispatch()
+    const { mutate: logoutUser ,isPending} = useLogout(onClose)
     const handleLogout = async () => {
         console.log('logout clicked');
-        try {
-            setIsLoggingOut(true)
-            const res = await LogUserOut()
-            if (res) {
-                console.log("Logout successful:", res);
-                dispatch(logout())
-                persistor.purge()
-            }
-            onClose()
-        } catch (error) {
-            console.log(error);
-            
-        }finally{
-            setIsLoggingOut(false)
-        }
+        logoutUser()
     }
 
     return (
@@ -45,10 +26,10 @@ const LogoutDialog = ({ open, onClose }: { open: boolean, onClose: () => void })
                 </DialogHeader>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button className='cursor-pointer' variant="outline">Cancel</Button>
+                        <Button className='cursor-pointer' disabled={isPending} variant="outline">Cancel</Button>
                     </DialogClose>
                     <Button className='bg-red-500 hover:bg-red-700 cursor-pointer text-white' onClick={() => handleLogout()} >{
-                        isLoggingOut ? "Logging out..." : "Logout"
+                        isPending ? "Logging out..." : "Logout"
                         }</Button>
                 </DialogFooter>
             </DialogContent>

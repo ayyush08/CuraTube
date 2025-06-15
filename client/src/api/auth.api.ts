@@ -18,7 +18,7 @@ export const register = async (data: RegisterRequest): Promise<any> => {
         return res.data;
     } catch (error: any) {
         console.error("Error during registration:", error);
-        throw error;
+        throw error.message;
     }
 };
 
@@ -30,7 +30,7 @@ export const login = async (data: LoginRequest): Promise<any> => {
         return res.data;
     } catch (error: any) {
         console.error("Error during login:", error);
-        throw error.response.data;
+        throw error.message;
     }
 }
 
@@ -40,6 +40,6 @@ export const logout = async():Promise<any>=>{
         return res.data
     } catch (error:any) {
         console.error("Error during login:", error);
-        throw error.response.data;
+        throw error.message;
     }
 }

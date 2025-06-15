@@ -1,4 +1,4 @@
-import { useAuthGuard } from '@/hooks/use-auth-guard';
+import { useAuthGuard } from '@/hooks/helpers/use-auth-guard';
 import { createFileRoute } from '@tanstack/react-router'
 
 
