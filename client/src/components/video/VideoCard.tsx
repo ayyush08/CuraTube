@@ -57,8 +57,8 @@ export default function VideoCard({ video }: VideoCardProps) {
 
 
             <div className="flex gap-3 pt-3">
-                <Avatar className="w-9 h-9 flex-shrink-0">
-                    <AvatarImage src={video.ownerDetails.avatar || "/placeholder.svg"} alt={video.ownerDetails.username} />
+                <Avatar className="w-10 h-10 flex-shrink-0">
+                    <AvatarImage className="object-cover" src={video.ownerDetails.avatar || "/placeholder.svg"} alt={video.ownerDetails.username} />
                     <AvatarFallback>{video.ownerDetails.username.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">

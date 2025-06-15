@@ -60,7 +60,7 @@ export function LoginDialog({
                 </Button>
             </DialogTrigger> */}
 
-            <DialogContent showCloseButton={false} className="sm:max-w-[425px] h-84 border-orange-400/60 bg-orange-900/10">
+            <DialogContent showCloseButton={false} className="sm:max-w-[425px] h-84 border-orange-400/60 bg-orange-950/75">
                 <form onSubmit={handleLogin} className="grid gap-4">
                     <DialogHeader>
                         <DialogTitle className="text-center text-2xl font-sans tracking-wide">Login</DialogTitle>

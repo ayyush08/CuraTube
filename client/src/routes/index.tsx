@@ -1,6 +1,6 @@
 
-import { getAllVideosForHome } from '@/api/videos.api';
 import VideoCard, { type Video } from '@/components/video/VideoCard';
+import { useGetVideosForHome } from '@/hooks/video.hook';
 import { useAppSelector } from '@/redux/hooks';
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react';
@@ -11,34 +11,23 @@ export const Route = createFileRoute('/')({
 
 function RouteComponent() {
   const userState = useAppSelector((state)=>state.auth.user)
-  const [videos,setVideos] = useState<Video[]>([])
-  const [loading,setLoading] = useState<boolean>(true)
 
-  useEffect(() => {
-    async function fetchVideos() {
-      try {
-        setLoading(true);
-        const allVideos = await getAllVideosForHome();
-        console.log(allVideos);
-        
-        setVideos(allVideos.videos);
-      } catch (error) {
-        console.log(error);
-        
-      }finally{
-        setLoading(false);
-      }
-    }
-    fetchVideos();
-  }, []);
+  
+  const { data:videos,isLoading} = useGetVideosForHome();
+
+  useEffect(()=>{
+    console.log(videos);
+    
+  },[videos])
 
 
-  if(loading) return <div className='flex justify-center items-center min-h-screen'>Loading...</div>
+
+  if(isLoading) return <div className='flex justify-center items-center min-h-screen'>Loading...</div>
 
   console.log(userState);
   return <div className='p-2 flex sm:flex-row flex-col justify-center items-center gap-5' >
     {
-      videos.length > 0 && videos.map((video)=>{
+      videos.length > 0 && videos.map((video:Video)=>{
         return <VideoCard key={video._id} video={video} />
       })
     }

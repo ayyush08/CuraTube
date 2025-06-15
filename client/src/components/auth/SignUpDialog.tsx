@@ -84,7 +84,7 @@ export function SignUpDialog({
     return (
         <Dialog open={open} onOpenChange={onClose}>
 
-            <DialogContent showCloseButton={false} onInteractOutside={(e) => e.preventDefault()} className="sm:max-w-[425px] max-h-screen border-orange-400/60 bg-orange-900/10">
+            <DialogContent showCloseButton={false} onInteractOutside={(e) => e.preventDefault()} className="sm:max-w-[425px] max-h-screen border-orange-400/60 bg-orange-950/75">
 
                 <DialogHeader>
                     <DialogTitle className="text-center text-2xl font-sans tracking-wide">SignUp</DialogTitle>

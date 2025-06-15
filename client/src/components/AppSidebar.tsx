@@ -1,5 +1,5 @@
 
-import { Home, Library, LucideLayoutDashboard, Play, TestTube, ThumbsUpIcon } from "lucide-react"
+import { HistoryIcon, Home, Library, LucideLayoutDashboard, Play, TestTube, ThumbsUpIcon } from "lucide-react"
 
 import {
     Sidebar,
@@ -38,6 +38,11 @@ const navigationData = [
         title: "Liked Videos",
         url: "/liked-videos",
         icon: ThumbsUpIcon,
+    },
+    {
+        title: "Watch History",
+        url: "/watch-history",
+        icon: HistoryIcon,
     },
     {
         title: "component testing route",

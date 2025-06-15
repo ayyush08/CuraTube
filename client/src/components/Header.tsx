@@ -7,11 +7,13 @@ import { SearchIcon } from "lucide-react"
 import { Button } from "./ui/button"
 import LogoutDialog from "./auth/LogoutDialog"
 import { useAppSelector } from "@/redux/hooks"
+import { ProfileDropdown } from "./auth/ProfileDropdown"
 
 const Header = () => {
-    const [activeDialog, setActiveDialog] = useState<"login" | "signup" | "logout" | null>(null)
-    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);  
-    console.log("isAuthenticated:", isAuthenticated)
+    const [activeDialog, setActiveDialog] = useState<string | null>(null)
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+    const user = useAppSelector((state) => state.auth.user);
+    console.log("isAuthenticated:", isAuthenticated, user)
 
     const onSearchClick = () => {
         console.log('search clicked');
@@ -27,13 +29,14 @@ const Header = () => {
 
             {
                 isAuthenticated ? (
-                    <div className="flex items-center gap-3">
-                        <Button
+                    <div className="flex items-center  gap-3">
+                        {/* <Button
                             onClick={() => setActiveDialog("logout")}
                             className="p-5 text-base border-2 border-orange-400/60 hover:bg-orange-700/20 bg-orange-900/10 text-white cursor-pointer"
                         >
                             Logout
-                        </Button>
+                        </Button> */}
+                        <ProfileDropdown user={user} setActiveDialog={setActiveDialog} />
 
                     </div>
                 ) : (
