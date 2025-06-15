@@ -1,4 +1,4 @@
-import { getAllVideosForHome } from "@/api/videos.api";
+import { getAllVideosForHome, getVideoById } from "@/api/videos.api";
 import type { VideoFetchParams } from "@/types/video.types";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
@@ -40,4 +40,13 @@ export const useInfiniteVideos = ({
         },
         staleTime: 1000 * 60 * 5,
     })
+}
+
+export const useVideoById = ({ videoId }: { videoId: string }) => {
+    return useQuery({
+        queryKey: ['video', videoId],
+        queryFn: () => getVideoById(videoId),
+        staleTime: 1000 * 60 * 5,
+        enabled: !!videoId, // Only run if videoId is provided
+    });
 }

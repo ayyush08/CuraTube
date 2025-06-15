@@ -1,6 +1,7 @@
-import { Link } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import moment from "moment"
+import { formatDuration, formatViews } from "@/lib/utils"
 //TODO:Add skeletons
 export interface Video {
     _id: string
@@ -26,24 +27,16 @@ export interface VideoCardProps {
 }
 
 export default function VideoCard({ video }: VideoCardProps) {
-    function formatDuration(seconds: number): string {
-        const minutes = Math.floor(seconds / 60)
-        const remainingSeconds = seconds % 60
-        return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
-    }
+    
 
-    function formatViews(views: number): string {
-        if (views >= 1000000) {
-            return `${(views / 1000000).toFixed(1)}M views`
-        } else if (views >= 1000) {
-            return `${(views / 1000).toFixed(1)}K views`
-        }
-        return `${views} view${views !== 1 ? "s" : ""}`
+    const navigate = useNavigate()
+    const handleVideoCardClick = (videoId: string) => {
+        navigate({ to: `/videos/${videoId}` })
     }
 
 
     return (
-        <Link to='/playlists' className="w-full max-w-sm cursor-pointer group hover:bg-slate-400/10 p-2 mx-auto rounded-lg transition-all duration-300" >
+        <div onClick={() => handleVideoCardClick(video._id)} className="w-full max-w-sm cursor-pointer group hover:bg-slate-400/10 p-2 mx-auto rounded-lg transition-all duration-300" >
             <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
                 <img
                     src={video.thumbnail || "/placeholder.svg"}
@@ -73,6 +66,6 @@ export default function VideoCard({ video }: VideoCardProps) {
                     </div>
                 </div>
             </div>
-        </Link>
+        </div>
     )
 }

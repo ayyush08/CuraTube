@@ -12,3 +12,13 @@ export const getAllVideosForHome = async (params: VideoFetchParams): Promise<any
         throw error;
     }
 }
+
+export const getVideoById = async (videoId: string): Promise<any> => {
+    try {
+        const res = await apiClient.get<ApiSuccessResponse>(`/videos/${videoId}`)
+        return res.data
+    } catch (error) {
+        console.error("Error during fetching video by ID:", error);
+        throw error;
+    }
+}
