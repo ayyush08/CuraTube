@@ -1,25 +1,43 @@
 import { getAllVideosForHome } from "@/api/videos.api";
-import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
+import type { VideoFetchParams } from "@/types/video.types";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
-
-export const useGetVideosForHome = () => {
+export const usePaginatedVideos = ({
+    query = '',
+    sortBy = 'createdAt',
+    sortType = 'desc',
+    userId = '',
+    page = 1,
+    limit = 10
+}: VideoFetchParams) => {
     return useQuery({
-        queryKey: ['videos', 'home'],
-        queryFn: async () => {
-            try {
-                const res = await getAllVideosForHome();
-                
-                
-                return res.videos;
-            } catch (error) {
-                toast.error("Something went wrong while fetching videos");
-                console.error("Error fetching videos:", error);
-            }
+        queryKey: ['videos', { query, sortBy, sortType, userId, page, limit }],
+        queryFn: () => getAllVideosForHome({ query, sortBy, sortType, userId, page, limit }),
+
+        staleTime: 1000 * 60 * 5,
+    })
+}
+
+export const useInfiniteVideos = ({
+    query = '',
+    sortBy = 'createdAt',
+    sortType = 'desc',
+    userId = '',
+    limit = 10
+}: VideoFetchParams) => {
+    return useInfiniteQuery({
+        queryKey: ['videos-infinite', { query, sortBy, sortType, userId }],
+        queryFn: async ({ pageParam = 1 }) => {
+            const res = await getAllVideosForHome({ query, sortBy, sortType, userId, page: pageParam, limit });
+            console.log(res);
+            
+            return res;
         },
-        staleTime: 1000 * 60 * 5, // 5 minutes
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+            const hasMore = lastPage.videos.length === limit;
+            return hasMore ? allPages.length + 1 : undefined;
+        },
+        staleTime: 1000 * 60 * 5,
     })
 }

@@ -104,6 +104,20 @@ const getAllVideos = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Failed to get all videos");
     }
 
+    const fakeVideo = (i) => ({
+        _id: `${page}-${i}`,
+        title: `Test Video ${page}-${i}`,
+        description: `Fake description`,
+        views: Math.floor(Math.random() * 1000),
+        ownerDetails: {
+            username: `User ${i}`,
+            avatar: null,
+        },
+        isPublished: true,
+        createdAt: new Date(),
+    });
+
+    const fakeVideos = Array.from({ length: options.limit }, (_, i) => fakeVideo(i));
     return res
         .status(200)
         .json(new ApiResponse(200, {
@@ -340,7 +354,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Video not found");
     }
 
-    if(videoExists.owner.toString() !== req.user._id.toString()) throw new ApiError(400,"Not your video")
+    if (videoExists.owner.toString() !== req.user._id.toString()) throw new ApiError(400, "Not your video")
 
     const toggleStatus = await Video.findByIdAndUpdate(
         videoId,
@@ -389,13 +403,13 @@ const updateVideoViews = asyncHandler(async (req, res) => {
         })
     }
     await user.save();
-    
+
     const updatedVideo = await Video.findByIdAndUpdate(videoId, {
         $inc: {
             views: 1
         }
-    },{
-        new:true
+    }, {
+        new: true
     })
 
     if (!updatedVideo) throw new ApiError(400, "Failed to update views");

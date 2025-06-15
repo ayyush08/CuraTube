@@ -8,11 +8,13 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
+import { useNavigate } from "@tanstack/react-router";
+import { LogOutIcon, User } from "lucide-react";
 
 interface DropdownMenuItem {
     name: string;
     onClick: () => void;
-
+    icon: React.ReactNode;
 }
 
 export function ProfileDropdown({
@@ -22,19 +24,26 @@ export function ProfileDropdown({
     user: any,
     setActiveDialog: (dialog: string | null) => void;
 }) {
+
+    const navigate = useNavigate()
+
     const dropdownMenuItems: DropdownMenuItem[] = [
         {
             name: "My Profile",
-            onClick: () => console.log("Profile clicked"),
+            onClick: () => navigate({
+                to: '/profile'
+            }),
+            icon: <User className="text-white" />
         },
         {
             name: "Logout",
             onClick: () => setActiveDialog("logout"),
+            icon: <LogOutIcon className="text-white" />
         },
     ];
     return (
-        <DropdownMenu >
-            <DropdownMenuTrigger asChild>
+        <DropdownMenu  >
+            <DropdownMenuTrigger asChild >
 
                 <Avatar className="w-14 h-14 cursor-pointer border-2 border-orange-400/60 overflow-hidden rounded-full">
                     <AvatarImage
@@ -49,13 +58,14 @@ export function ProfileDropdown({
 
 
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-orange-950/80" align="start" >
+            <DropdownMenuContent className="w-56 bg-orange-950/80" align="start"  >
                 <DropdownMenuGroup>
                     {
                         dropdownMenuItems.map((item, index) => (
                             <DropdownMenuItem className="hover:bg-orange-700" key={index} onClick={item.onClick}>
+                                {item.icon}
                                 {item.name}
-                                
+
                             </DropdownMenuItem>
                         ))
                     }

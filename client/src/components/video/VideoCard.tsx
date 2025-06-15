@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import moment from "moment"
-
+//TODO:Add skeletons
 export interface Video {
     _id: string
     videoFile: string
@@ -43,7 +43,7 @@ export default function VideoCard({ video }: VideoCardProps) {
 
 
     return (
-        <Link to='/playlists' className="w-full max-w-sm cursor-pointer group hover:bg-slate-400/10 p-2 rounded-lg transition-all duration-300" >
+        <Link to='/playlists' className="w-full max-w-sm cursor-pointer group hover:bg-slate-400/10 p-2 mx-auto rounded-lg transition-all duration-300" >
             <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
                 <img
                     src={video.thumbnail || "/placeholder.svg"}

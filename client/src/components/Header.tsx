@@ -21,7 +21,7 @@ const Header = () => {
     }
 
     return (
-        <div className="w-full h-20 px-6 sticky top-0 flex items-center justify-between font-sans ">
+        <div className="w-full h-20 px-6 sticky top-0 flex items-center justify-between font-sans z-10  backdrop-blur-md ">
             <div className=" flex justify-start items-center w-full" >
                 <SidebarTrigger className="cursor-pointer" />
                 <SearchBar onIconClick={onSearchClick} />
@@ -89,7 +89,7 @@ function SearchBar({ type = "text", onIconClick }: InputWithIconProps) {
     console.log(searchValue);
 
     return (
-        <div className="relative w-fit  max-w-xl sm:max-w-2xl sm:w-full xs:max-w-full px-4 py-2">
+        <div className="relative w-fit  max-w-xl sm:max-w-2xl sm:w-full xs:max-w-full px-4 py-2 z-10">
             <Input
                 type={type}
                 placeholder="Search Videos here..."

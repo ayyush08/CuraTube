@@ -70,7 +70,7 @@ export const useLogin = (onClose: () => void) => {
         onSuccess: (data) => {
             dispatch(loginSuccess({ ...data.user }));
             queryClient.invalidateQueries({ queryKey: ['current-user'] });
-            toast.success(`Welcome to CuraTube, ${data.user.username}`);
+            toast.success(`Welcome, ${data.user.username}`);
             onClose();
         },
         onError: (error) => {
