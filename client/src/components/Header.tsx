@@ -8,13 +8,14 @@ import { Button } from "./ui/button"
 import LogoutDialog from "./auth/LogoutDialog"
 import { useAppSelector } from "@/redux/hooks"
 import { ProfileDropdown } from "./auth/ProfileDropdown"
+import { useIsMobile } from "@/hooks/helpers/use-mobile"
 
 const Header = () => {
     const [activeDialog, setActiveDialog] = useState<string | null>(null)
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const user = useAppSelector((state) => state.auth.user);
     console.log("isAuthenticated:", isAuthenticated, user)
-
+    const isMobile = useIsMobile()
     const onSearchClick = () => {
         console.log('search clicked');
 
@@ -23,7 +24,7 @@ const Header = () => {
     return (
         <div className="w-full h-20 px-6 sticky top-0 flex items-center justify-between font-sans z-10  backdrop-blur-md ">
             <div className=" flex justify-start items-center w-full" >
-                <SidebarTrigger className="cursor-pointer" />
+                {isMobile && <SidebarTrigger className="cursor-pointer" />}
                 <SearchBar onIconClick={onSearchClick} />
             </div>
 
