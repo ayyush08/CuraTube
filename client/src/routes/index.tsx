@@ -18,7 +18,7 @@ function RouteComponent() {
     hasNextPage,
     isLoading,
     isFetchingNextPage
-  } = useInfiniteVideos({ query: '', sortBy: 'views', limit: 1, page: 1 })
+  } = useInfiniteVideos({ query: '', sortBy: 'views', limit: 10, page: 1 })
   const videos = data?.pages.flatMap(page => page.videos) || []
 
 

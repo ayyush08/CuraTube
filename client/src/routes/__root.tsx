@@ -18,7 +18,7 @@ export function RootLayout() {
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
             <SidebarProvider>
                 <AppSidebar />
-                <div className="flex flex-1 flex-col gap-4">
+                <div className="flex flex-1 flex-col ">
                     <Header />
                     <Toaster closeButton position="top-center" richColors />
                     <Outlet />
