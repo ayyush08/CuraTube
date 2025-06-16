@@ -1,4 +1,4 @@
-import { getAllVideosForHome, getVideoById } from "@/api/videos.api";
+import { getAllVideos, getVideoById } from "@/api/videos.api";
 import type { VideoFetchParams } from "@/types/video.types";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
@@ -12,7 +12,7 @@ export const usePaginatedVideos = ({
 }: VideoFetchParams) => {
     return useQuery({
         queryKey: ['videos', { query, sortBy, sortType, userId, page, limit }],
-        queryFn: () => getAllVideosForHome({ query, sortBy, sortType, userId, page, limit }),
+        queryFn: () => getAllVideos({ query, sortBy, sortType, userId, page, limit }),
 
         staleTime: 1000 * 60 * 5,
     })
@@ -28,7 +28,7 @@ export const useInfiniteVideos = ({
     return useInfiniteQuery({
         queryKey: ['videos-infinite', { query, sortBy, sortType, userId }],
         queryFn: async ({ pageParam = 1 }) => {
-            const res = await getAllVideosForHome({ query, sortBy, sortType, userId, page: pageParam, limit });
+            const res = await getAllVideos({ query, sortBy, sortType, userId, page: pageParam, limit });
             console.log(res);
             
             return res;

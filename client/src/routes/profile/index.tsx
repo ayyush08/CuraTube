@@ -14,11 +14,12 @@ function RouteComponent() {
   return (
     <main className='p-5 flex flex-col gap-5 '>
       {/* //pfp and cover image div */}
-      <div className='w-full h-80 relative mb-10'>
+      <div className='w-full h-96 relative mb-10'>
+        {/* add edit cover image and pfp buttons */}
         <img
         src={user?.coverImage}
         alt={user?.username}
-        className='object-fit h-full w-full rounded-lg border-x-4 border-t-4 border-orange-500 shadow-lg shadow-orange-400/20'
+        className='object-fit h-full w-full rounded-lg border-x-4 border-t-4 border-orange-500 shadow-lg shadow-orange-400/20 aspect-video'
         />
         <img
         src={user?.avatar}

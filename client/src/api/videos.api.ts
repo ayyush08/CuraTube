@@ -3,7 +3,7 @@ import { apiClient } from "./api-client";
 import type { VideoFetchParams } from "@/types/video.types";
 
 
-export const getAllVideosForHome = async (params: VideoFetchParams): Promise<any> => {
+export const getAllVideos = async (params: VideoFetchParams): Promise<any> => {
     try {
         const res = await apiClient.get<ApiSuccessResponse>('/videos', { params })
         return res.data
