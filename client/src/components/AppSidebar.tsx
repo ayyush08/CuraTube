@@ -83,9 +83,9 @@ export function AppSidebar() {
                             {navigationData.map((item) => {
                                 const isActive = location.pathname === item.url
                                 return <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton  className={`${isActive ? "bg-sidebar-accent" : ''}  `} asChild>
+                                    <SidebarMenuButton  className={`${isActive ? "bg-sidebar-accent" : ''} p-5 text-lg font-semibold `} asChild>
                                         <a href={item.url}  >
-                                            <item.icon />
+                                            <item.icon className="text-lg font-semibold"/>
                                             <span>{item.title}</span>
                                         </a>
                                     </SidebarMenuButton>

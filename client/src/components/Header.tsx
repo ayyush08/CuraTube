@@ -3,18 +3,20 @@ import { LoginDialog } from "./auth/LoginDialog"
 import { SignUpDialog } from "./auth/SignUpDialog"
 import { Input } from "./ui/input"
 import { SidebarTrigger } from "./ui/sidebar"
-import { SearchIcon } from "lucide-react"
+import { SearchIcon, Upload } from "lucide-react"
 import { Button } from "./ui/button"
 import LogoutDialog from "./auth/LogoutDialog"
 import { useAppSelector } from "@/redux/hooks"
 import { ProfileDropdown } from "./auth/ProfileDropdown"
 import { useIsMobile } from "@/hooks/helpers/use-mobile"
+import { useNavigate } from "@tanstack/react-router"
 
 const Header = () => {
     const [activeDialog, setActiveDialog] = useState<string | null>(null)
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const user = useAppSelector((state) => state.auth.user);
     console.log("isAuthenticated:", isAuthenticated, user)
+    const navigate = useNavigate()
     const isMobile = useIsMobile()
     const onSearchClick = () => {
         console.log('search clicked');
@@ -31,12 +33,13 @@ const Header = () => {
             {
                 isAuthenticated ? (
                     <div className="flex items-center  gap-3">
-                        {/* <Button
-                            onClick={() => setActiveDialog("logout")}
-                            className="p-5 text-base border-2 border-orange-400/60 hover:bg-orange-700/20 bg-orange-900/10 text-white cursor-pointer"
+                        <Button
+                            variant='secondary'
+                            onClick={() => navigate({to:'/videos/publish'})}
+                            className="p-5 text-base bg-gradient-to-r from-orange-600/50 to-amber-600/40 hover:bg-gradient-to-r hover:from-orange-700 hover:to-amber-700 transition-colors duration-500 text-white cursor-pointer"
                         >
-                            Logout
-                        </Button> */}
+                            <Upload/> Upload Video
+                        </Button>
                         <ProfileDropdown user={user} setActiveDialog={setActiveDialog} />
 
                     </div>

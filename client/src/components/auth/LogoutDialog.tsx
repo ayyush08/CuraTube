@@ -15,7 +15,7 @@ const LogoutDialog = ({ open, onClose }: { open: boolean, onClose: () => void })
     return (
         <Dialog open={open} onOpenChange={onClose}>
 
-            <DialogContent onInteractOutside={(e) => e.preventDefault()} showCloseButton={false} className="sm:max-w-[450px]   border-orange-400/60 bg-orange-900/10 font-sans">
+            <DialogContent onInteractOutside={(e) => e.preventDefault()} showCloseButton={false} className="sm:max-w-[450px]   border-orange-400/60 bg-orange-950/75 font-sans">
                 <DialogHeader>
                     <DialogTitle>Are you sure you want to logout?</DialogTitle>
                     <DialogDescription>

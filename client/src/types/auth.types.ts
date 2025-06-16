@@ -21,3 +21,21 @@ export interface ApiSuccessResponse {
     message: string;
     success: boolean;
 }
+
+interface watchHistoryItem {
+    _id:string
+    video:string
+    watchedAt: string
+}
+
+export interface AuthStateUser{
+    _id:string
+    username:string
+    email:string
+    fullName:string
+    avatar:string
+    coverImage:string
+    createdAt:string
+    updatedAt:string
+    watchHistory: watchHistoryItem[]
+}

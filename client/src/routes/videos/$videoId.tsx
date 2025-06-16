@@ -23,7 +23,6 @@ function RouteComponent() {
     async function checkVideoReady() {
       try {
         const res = await axios.get(videoSrc);
-
         if (res.status === 200) {
           setHlsVideoSrc(videoSrc);
           setIsProcessing(false);
