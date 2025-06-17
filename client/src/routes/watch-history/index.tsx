@@ -18,6 +18,7 @@ function RouteComponent() {
   console.log(watchHistory);
   if (isLoading) return <div>Loading...</div>;
   return <div>
+    <h1 className='text-3xl p-5 font-bold text-center text-orange-600 '>Your Watch History</h1>
     {
     watchHistory.map((history: VideoTileProps,) => (
       <VideoTile key={history.video._id} video={history.video} watchedAt={history.watchedAt} />

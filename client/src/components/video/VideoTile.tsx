@@ -6,13 +6,14 @@ import moment from 'moment'
 export interface VideoTileProps {
     video: Video
     watchedAt?: string
-
+    likedOn?: string
 }
 
 const VideoTile = (
     {
         video,
-        watchedAt = ''
+        watchedAt = '',
+        likedOn = ''
     }: VideoTileProps
 ) => {
 
@@ -74,6 +75,11 @@ const VideoTile = (
                     {watchedAt && <span className='italic text-orange-400 font-semibold text-sm'>
                         Watched {moment(watchedAt).fromNow()}
                     </span>}
+                    {
+                        likedOn && <span className='italic text-orange-400 font-semibold text-sm'>
+                            You liked it {moment(likedOn).fromNow()}
+                        </span>
+                    }
                 </div>
             </div>
         </div>
