@@ -3,7 +3,7 @@ import type { Video } from '@/types/video.types'
 import { useNavigate } from '@tanstack/react-router'
 import moment from 'moment'
 
-export interface WatchHistoryVideo {
+export interface VideoTileProps {
     video: Video
     watchedAt?: string
 
@@ -13,7 +13,7 @@ const VideoTile = (
     {
         video,
         watchedAt = ''
-    }: WatchHistoryVideo
+    }: VideoTileProps
 ) => {
 
     const navigate = useNavigate()
@@ -24,10 +24,17 @@ const VideoTile = (
         })
     }
 
+    const handleOwnerClick = (userId: string, e: React.MouseEvent) => {
+        e.stopPropagation()
+        navigate({
+            to: `/public-profile/${userId}`
+        })
+    }
+
     return (
-        <div onClick={() => handleHistoryClick(video._id)} className='flex flex-col max-w-screen sm:flex-row gap-5 p-3 sm:items-center hover:bg-orange-950/60 transition-all duration-300 rounded-lg hover:cursor-pointer w-full'>
+        <div onClick={() => handleHistoryClick(video._id)} className='flex group  flex-col max-w-screen sm:flex-row gap-5 p-3 sm:items-center hover:bg-orange-950/60 transition-all duration-300 rounded-lg hover:cursor-pointer w-full'>
             {/* TODO: Improve Responsiveness */}
-            <div className="relative w-full sm:w-72 h-56 rounded-lg overflow-hidden shrink-0">
+            <div className="relative w-full sm:w-96 h-56 rounded-lg overflow-hidden shrink-0 group-hover:scale-95 transition-all duration-150">
                 <img
                     src={video.thumbnail || "/placeholder.svg"}
                     alt={video.title}
@@ -53,7 +60,7 @@ const VideoTile = (
                 </div>
 
                 <div className="flex   flex-row justify-between items-center sm:items-center gap-3">
-                    <div className='flex gap-2 hover:bg-amber-500/10 transition-colors duration-300 hover:cursor-pointer rounded-2xl p-2'>
+                    <div onClick={(e) => handleOwnerClick(video.owner._id, e)} className='flex gap-2 hover:bg-amber-500/10 transition-colors duration-300 hover:cursor-pointer rounded-2xl p-2'>
                         <img
                             src={video.owner.avatar}
                             alt={video.owner.username}

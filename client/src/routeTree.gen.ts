@@ -19,6 +19,7 @@ import { Route as MyProfileIndexImport } from './routes/my-profile/index'
 import { Route as LikedVideosIndexImport } from './routes/liked-videos/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as VideosVideoIdImport } from './routes/videos/$videoId'
+import { Route as PublicProfileUserIdImport } from './routes/public-profile/$userId'
 import { Route as VideosPublishIndexImport } from './routes/videos/publish/index'
 
 // Create/Update Routes
@@ -71,6 +72,12 @@ const VideosVideoIdRoute = VideosVideoIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const PublicProfileUserIdRoute = PublicProfileUserIdImport.update({
+  id: '/public-profile/$userId',
+  path: '/public-profile/$userId',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const VideosPublishIndexRoute = VideosPublishIndexImport.update({
   id: '/videos/publish/',
   path: '/videos/publish/',
@@ -86,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/public-profile/$userId': {
+      id: '/public-profile/$userId'
+      path: '/public-profile/$userId'
+      fullPath: '/public-profile/$userId'
+      preLoaderRoute: typeof PublicProfileUserIdImport
       parentRoute: typeof rootRoute
     }
     '/videos/$videoId': {
@@ -151,6 +165,7 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/public-profile/$userId': typeof PublicProfileUserIdRoute
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/liked-videos': typeof LikedVideosIndexRoute
@@ -163,6 +178,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/public-profile/$userId': typeof PublicProfileUserIdRoute
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/liked-videos': typeof LikedVideosIndexRoute
@@ -176,6 +192,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/public-profile/$userId': typeof PublicProfileUserIdRoute
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/liked-videos/': typeof LikedVideosIndexRoute
@@ -190,6 +207,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/public-profile/$userId'
     | '/videos/$videoId'
     | '/dashboard'
     | '/liked-videos'
@@ -201,6 +219,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/public-profile/$userId'
     | '/videos/$videoId'
     | '/dashboard'
     | '/liked-videos'
@@ -212,6 +231,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/public-profile/$userId'
     | '/videos/$videoId'
     | '/dashboard/'
     | '/liked-videos/'
@@ -225,6 +245,7 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PublicProfileUserIdRoute: typeof PublicProfileUserIdRoute
   VideosVideoIdRoute: typeof VideosVideoIdRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   LikedVideosIndexRoute: typeof LikedVideosIndexRoute
@@ -237,6 +258,7 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PublicProfileUserIdRoute: PublicProfileUserIdRoute,
   VideosVideoIdRoute: VideosVideoIdRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   LikedVideosIndexRoute: LikedVideosIndexRoute,
@@ -258,6 +280,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/public-profile/$userId",
         "/videos/$videoId",
         "/dashboard/",
         "/liked-videos/",
@@ -270,6 +293,9 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/public-profile/$userId": {
+      "filePath": "public-profile/$userId.tsx"
     },
     "/videos/$videoId": {
       "filePath": "videos/$videoId.tsx"
