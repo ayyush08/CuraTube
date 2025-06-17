@@ -23,3 +23,13 @@ export const getVideoById = async (videoId: string): Promise<any> => {
     }
 }
 
+export const updateVideoViews = async(videoId:string) : Promise<any> =>{
+    try {
+        const res = await apiClient.patch<ApiSuccessResponse>(`/videos/views/${videoId}`);
+        return res.data;
+    } catch (error) {
+        console.error("Error during updating video views:", error);
+        throw error;
+        
+    }
+}

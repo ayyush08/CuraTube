@@ -1,6 +1,6 @@
-import { getAllVideos, getVideoById } from "@/api/videos.api";
+import { getAllVideos, getVideoById, updateVideoViews } from "@/api/videos.api";
 import type { VideoFetchParams } from "@/types/video.types";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 
 export const usePaginatedVideos = ({
     query = '',
@@ -30,7 +30,7 @@ export const useInfiniteVideos = ({
         queryFn: async ({ pageParam = 1 }) => {
             const res = await getAllVideos({ query, sortBy, sortType, userId, page: pageParam, limit });
             console.log(res);
-            
+
             return res;
         },
         initialPageParam: 1,
@@ -51,3 +51,15 @@ export const useVideoById = ({ videoId }: { videoId: string }) => {
     });
 }
 
+export const useUpdateViews = ({ videoId }: { videoId: string }) => {
+    return useMutation({
+        mutationFn: () => updateVideoViews(videoId),
+        onSuccess: () => {
+            console.log("Views updated");
+        },
+        onError: (error) => {
+            console.error("Error updating views", error);
+        },
+        
+    })
+}

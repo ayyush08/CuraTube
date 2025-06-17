@@ -41,12 +41,12 @@ function RouteComponent() {
         <img
           src={user?.coverImage}
           alt={user?.username}
-          className='object-cover h-full w-full rounded-lg border-x-4 border-t-4 border-orange-500 shadow-lg shadow-orange-400/20 aspect-video'
+          className='object-cover h-full w-full rounded-md border-x-2 border-t-4 border-orange-500 shadow-lg shadow-amber-500/30 aspect-video'
         />
         <img
           src={user?.avatar}
           alt={user?.fullName}
-          className='object-cover h-40 w-40 left-3 -bottom-10  border-4 border-orange-400 rounded-full absolute shadow-lg shadow-orange-400/20'
+          className='object-cover h-40 w-40 left-3 -bottom-10  border-2 border-orange-400 rounded-full absolute shadow-lg shadow-cyan-500/30'
         />
 
       </div>

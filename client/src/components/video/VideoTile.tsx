@@ -18,7 +18,7 @@ const VideoTile = (
 
     const navigate = useNavigate()
 
-    const handleHistoryClick = (videoId: string) => {
+    const handleTileClick = (videoId: string) => {
         navigate({
             to: `/videos/${videoId}`
         })
@@ -32,13 +32,13 @@ const VideoTile = (
     }
 
     return (
-        <div onClick={() => handleHistoryClick(video._id)} className='flex group  flex-col max-w-screen sm:flex-row gap-5 p-3 sm:items-center hover:bg-orange-950/60 transition-all duration-300 rounded-lg hover:cursor-pointer w-full'>
+        <div onClick={() => handleTileClick(video._id)} className='flex group  flex-col max-w-screen sm:flex-row gap-5 p-3 sm:items-center hover:bg-orange-950/60 transition-all duration-300 rounded-lg hover:cursor-pointer w-full'>
             {/* TODO: Improve Responsiveness */}
             <div className="relative w-full sm:w-96 h-56 rounded-lg overflow-hidden shrink-0 group-hover:scale-95 transition-all duration-150">
                 <img
                     src={video.thumbnail || "/placeholder.svg"}
                     alt={video.title}
-                    className="object-cover w-full h-full transition-transform group-hover:scale-105"
+                    className="object-cover w-full h-full transition-transform "
                 />
                 <div className="absolute bottom-2 right-2 bg-black/60 font-bold text-white text-sm px-1.5 py-0.5 rounded-full">
                     {formatDuration(video.duration)}
@@ -46,14 +46,14 @@ const VideoTile = (
             </div>
 
             <div className="flex flex-col justify-between flex-1 px-1 sm:px-5 py-2 gap-6 w-full">
-                <div>
+                <div className='flex flex-col gap-5'>
                     <h1 className='sm:text-2xl text-xl font-extrabold text-white'>{video.title}</h1>
-                    <p className=" text-sm sm:text-base text-gray-400 ">
-                        {video.description.length > 100
-                            ? video.description.slice(0, 100) + '...'
+                    <p className=" text-sm sm:text-base text-gray-400 h-10">
+                        {video.description.length > 200
+                            ? video.description.slice(0, 200) + '...'
                             : video.description}
                     </p>
-                    <p className=' text-xs sm:text-sm mt-2 text-neutral-500 font-mono'>
+                    <p className=' text-xs sm:text-sm mt-2 text-neutral-500 font-semibold italic font-mono'>
                         {formatViews(video.views)} | Uploaded {moment(video.createdAt).fromNow()}
                     </p>
 

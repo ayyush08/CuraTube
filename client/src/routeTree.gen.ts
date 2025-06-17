@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as WatchHistoryIndexImport } from './routes/watch-history/index'
+import { Route as TweetsIndexImport } from './routes/tweets/index'
 import { Route as TestComponentIndexImport } from './routes/test-component/index'
 import { Route as PlaylistsIndexImport } from './routes/playlists/index'
 import { Route as MyProfileIndexImport } from './routes/my-profile/index'
@@ -33,6 +34,12 @@ const IndexRoute = IndexImport.update({
 const WatchHistoryIndexRoute = WatchHistoryIndexImport.update({
   id: '/watch-history/',
   path: '/watch-history/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TweetsIndexRoute = TweetsIndexImport.update({
+  id: '/tweets/',
+  path: '/tweets/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -144,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestComponentIndexImport
       parentRoute: typeof rootRoute
     }
+    '/tweets/': {
+      id: '/tweets/'
+      path: '/tweets'
+      fullPath: '/tweets'
+      preLoaderRoute: typeof TweetsIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/watch-history/': {
       id: '/watch-history/'
       path: '/watch-history'
@@ -172,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/my-profile': typeof MyProfileIndexRoute
   '/playlists': typeof PlaylistsIndexRoute
   '/test-component': typeof TestComponentIndexRoute
+  '/tweets': typeof TweetsIndexRoute
   '/watch-history': typeof WatchHistoryIndexRoute
   '/videos/publish': typeof VideosPublishIndexRoute
 }
@@ -185,6 +200,7 @@ export interface FileRoutesByTo {
   '/my-profile': typeof MyProfileIndexRoute
   '/playlists': typeof PlaylistsIndexRoute
   '/test-component': typeof TestComponentIndexRoute
+  '/tweets': typeof TweetsIndexRoute
   '/watch-history': typeof WatchHistoryIndexRoute
   '/videos/publish': typeof VideosPublishIndexRoute
 }
@@ -199,6 +215,7 @@ export interface FileRoutesById {
   '/my-profile/': typeof MyProfileIndexRoute
   '/playlists/': typeof PlaylistsIndexRoute
   '/test-component/': typeof TestComponentIndexRoute
+  '/tweets/': typeof TweetsIndexRoute
   '/watch-history/': typeof WatchHistoryIndexRoute
   '/videos/publish/': typeof VideosPublishIndexRoute
 }
@@ -214,6 +231,7 @@ export interface FileRouteTypes {
     | '/my-profile'
     | '/playlists'
     | '/test-component'
+    | '/tweets'
     | '/watch-history'
     | '/videos/publish'
   fileRoutesByTo: FileRoutesByTo
@@ -226,6 +244,7 @@ export interface FileRouteTypes {
     | '/my-profile'
     | '/playlists'
     | '/test-component'
+    | '/tweets'
     | '/watch-history'
     | '/videos/publish'
   id:
@@ -238,6 +257,7 @@ export interface FileRouteTypes {
     | '/my-profile/'
     | '/playlists/'
     | '/test-component/'
+    | '/tweets/'
     | '/watch-history/'
     | '/videos/publish/'
   fileRoutesById: FileRoutesById
@@ -252,6 +272,7 @@ export interface RootRouteChildren {
   MyProfileIndexRoute: typeof MyProfileIndexRoute
   PlaylistsIndexRoute: typeof PlaylistsIndexRoute
   TestComponentIndexRoute: typeof TestComponentIndexRoute
+  TweetsIndexRoute: typeof TweetsIndexRoute
   WatchHistoryIndexRoute: typeof WatchHistoryIndexRoute
   VideosPublishIndexRoute: typeof VideosPublishIndexRoute
 }
@@ -265,6 +286,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyProfileIndexRoute: MyProfileIndexRoute,
   PlaylistsIndexRoute: PlaylistsIndexRoute,
   TestComponentIndexRoute: TestComponentIndexRoute,
+  TweetsIndexRoute: TweetsIndexRoute,
   WatchHistoryIndexRoute: WatchHistoryIndexRoute,
   VideosPublishIndexRoute: VideosPublishIndexRoute,
 }
@@ -287,6 +309,7 @@ export const routeTree = rootRoute
         "/my-profile/",
         "/playlists/",
         "/test-component/",
+        "/tweets/",
         "/watch-history/",
         "/videos/publish/"
       ]
@@ -314,6 +337,9 @@ export const routeTree = rootRoute
     },
     "/test-component/": {
       "filePath": "test-component/index.tsx"
+    },
+    "/tweets/": {
+      "filePath": "tweets/index.tsx"
     },
     "/watch-history/": {
       "filePath": "watch-history/index.tsx"

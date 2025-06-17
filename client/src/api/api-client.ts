@@ -45,6 +45,14 @@ class ApiClient {
             throw error.response.data
         }
     }
+    async patch<T, B = any>(url: string, body?: B, config?: AxiosRequestConfig): Promise<T> {
+        try {
+            const response = await this.axiosInstance.patch<T>(url, body, config);
+            return response.data;
+        } catch (error:any) {
+            throw error.response.data
+        }
+    }
 
     async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
         try {

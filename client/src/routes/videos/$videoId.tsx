@@ -1,5 +1,5 @@
 import VideoPlayer from '@/components/video/VideoPlayer'
-import { useVideoById } from '@/hooks/video.hook'
+import { useUpdateViews, useVideoById } from '@/hooks/video.hook'
 import type { Video } from '@/types/video.types'
 import { createFileRoute } from '@tanstack/react-router'
 import axios from 'axios'
@@ -12,6 +12,9 @@ export const Route = createFileRoute('/videos/$videoId')({
 function RouteComponent() {
   const { videoId } = Route.useParams()
   const { data, isLoading, isError } = useVideoById({ videoId })
+
+  const { mutate: updateViews } = useUpdateViews({ videoId })
+
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
   const [hlsVideoSrc, setHlsVideoSrc] = useState<string>('')
 
@@ -27,6 +30,7 @@ function RouteComponent() {
           setHlsVideoSrc(videoSrc);
           setIsProcessing(false);
           clearInterval(interval);
+          updateViews();
         } else if (res.status === 202) {
           console.log("Video still processing...");
         } else {
@@ -47,7 +51,7 @@ function RouteComponent() {
     }
 
     return () => clearInterval(interval);
-  }, [video?.videoFile, videoSrc]);
+  }, [video?.videoFile, videoSrc,updateViews]);
 
   if (isError) return <div className='flex justify-center items-center min-h-screen'>Error loading video</div>
   //TODO: make a skeleton that shows loading only for video area

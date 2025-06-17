@@ -18,7 +18,7 @@ export default function VideoCard({ video }: VideoCardProps) {
 
 
     return (
-        <div onClick={() => handleVideoCardClick(video._id)} className="w-full max-w-sm cursor-pointer group hover:bg-slate-400/10 p-2 mx-auto rounded-lg transition-all duration-300" >
+        <div onClick={() => handleVideoCardClick(video._id)} className="w-full max-w-sm cursor-pointer group hover:bg-orange-500/20 p-2 mx-auto rounded-lg transition-all duration-300" >
             <div className="relative aspect-video rounded-lg overflow-hidden ">
                 <img
                     src={video.thumbnail || "/placeholder.svg"}
