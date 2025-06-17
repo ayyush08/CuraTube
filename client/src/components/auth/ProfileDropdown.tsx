@@ -31,7 +31,7 @@ export function ProfileDropdown({
         {
             name: "My Profile",
             onClick: () => navigate({
-                to: '/profile'
+                to: '/my-profile'
             }),
             icon: <User className="text-white" />
         },

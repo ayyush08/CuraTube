@@ -1,6 +1,6 @@
 import VideoPlayer from '@/components/video/VideoPlayer'
 import { useVideoById } from '@/hooks/video.hook'
-import type { VideoByIdType } from '@/types/video.types'
+import type { Video } from '@/types/video.types'
 import { createFileRoute } from '@tanstack/react-router'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
@@ -15,7 +15,7 @@ function RouteComponent() {
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
   const [hlsVideoSrc, setHlsVideoSrc] = useState<string>('')
 
-  const video: VideoByIdType = data?.video;
+  const video: Video = data?.video;
   const videoSrc = `${video?.videoFile}/ik-master.m3u8?tr=sr-240_360_480_720`;
   useEffect(() => {
     let interval: NodeJS.Timeout;

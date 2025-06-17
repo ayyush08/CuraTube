@@ -8,7 +8,7 @@ export interface VideoFetchParams {
 }
 
 
-export interface VideoByIdType {
+export interface Video {
     _id: string,
     videoFile: string,
     thumbnail: string,
@@ -16,16 +16,19 @@ export interface VideoByIdType {
     description: string,
     duration: number,
     views: number,
+    isPublished?:string
     owner: {
         _id: string,
         username: string,
         fullName: string,
         avatar: string,
-        subscribersCount: number,
-        isSubscribed: boolean
+        subscribersCount?: number,
+        isSubscribed?: boolean
     },
     createdAt: string,
-    likesCount: number,
-    isLiked: boolean
+    updatedAt?:string
+    likesCount?: number,
+    isLiked?: boolean
 
 }
+

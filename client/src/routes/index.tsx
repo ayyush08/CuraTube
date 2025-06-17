@@ -1,6 +1,7 @@
 
-import VideoCard, { type Video } from '@/components/video/VideoCard';
+import VideoCard from '@/components/video/VideoCard';
 import { useInfiniteVideos } from '@/hooks/video.hook';
+import type { Video } from '@/types/video.types';
 
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react';

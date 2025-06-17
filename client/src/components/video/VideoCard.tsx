@@ -2,32 +2,14 @@ import { useNavigate } from "@tanstack/react-router"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import moment from "moment"
 import { formatDuration, formatViews } from "@/lib/utils"
+import type { Video } from "@/types/video.types"
 //TODO:Add skeletons
-export interface Video {
-    _id: string
-    videoFile: string
-    thumbnail: string
-    title: string
-    description: string
-    duration: number
-    views: number
-    isPublished: boolean
-    owner: string
-    createdAt: string
-    updatedAt: string
-    ownerDetails: {
-        _id: string
-        username: string
-        avatar: string
-    }
-}
 
 export interface VideoCardProps {
     video: Video
 }
-
 export default function VideoCard({ video }: VideoCardProps) {
-    
+
 
     const navigate = useNavigate()
     const handleVideoCardClick = (videoId: string) => {
@@ -51,14 +33,14 @@ export default function VideoCard({ video }: VideoCardProps) {
 
             <div className="flex gap-3 pt-3">
                 <Avatar className="w-10 h-10 flex-shrink-0">
-                    <AvatarImage className="object-cover" src={video.ownerDetails.avatar || "/placeholder.svg"} alt={video.ownerDetails.username} />
-                    <AvatarFallback>{video.ownerDetails.username.charAt(0).toUpperCase()}</AvatarFallback>
+                    <AvatarImage className="object-cover" src={video.owner.avatar || "/placeholder.svg"} alt={video.owner.username} />
+                    <AvatarFallback>{video.owner.username.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-sm line-clamp-2 text-foreground group-hover:text-primary transition-colors">
                         {video.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground mt-1">{video.ownerDetails.username}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{video.owner.username}</p>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <span>{formatViews(video.views)}</span>
                         <span>•</span>

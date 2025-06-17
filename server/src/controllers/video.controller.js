@@ -75,7 +75,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
                 from: "users",
                 localField: "owner",
                 foreignField: "_id",
-                as: "ownerDetails",
+                as: "owner",
                 pipeline: [
                     {
                         $project: {
@@ -87,7 +87,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
             },
         },
         {
-            $unwind: "$ownerDetails",
+            $unwind: "$owner",
         }
     );
 
@@ -109,7 +109,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         title: `Test Video ${page}-${i}`,
         description: `Fake description`,
         views: Math.floor(Math.random() * 1000),
-        ownerDetails: {
+        owner: {
             username: `User ${i}`,
             avatar: null,
         },

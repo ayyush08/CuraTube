@@ -14,8 +14,8 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as WatchHistoryIndexImport } from './routes/watch-history/index'
 import { Route as TestComponentIndexImport } from './routes/test-component/index'
-import { Route as ProfileIndexImport } from './routes/profile/index'
 import { Route as PlaylistsIndexImport } from './routes/playlists/index'
+import { Route as MyProfileIndexImport } from './routes/my-profile/index'
 import { Route as LikedVideosIndexImport } from './routes/liked-videos/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as VideosVideoIdImport } from './routes/videos/$videoId'
@@ -41,15 +41,15 @@ const TestComponentIndexRoute = TestComponentIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ProfileIndexRoute = ProfileIndexImport.update({
-  id: '/profile/',
-  path: '/profile/',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const PlaylistsIndexRoute = PlaylistsIndexImport.update({
   id: '/playlists/',
   path: '/playlists/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const MyProfileIndexRoute = MyProfileIndexImport.update({
+  id: '/my-profile/',
+  path: '/my-profile/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -109,18 +109,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LikedVideosIndexImport
       parentRoute: typeof rootRoute
     }
+    '/my-profile/': {
+      id: '/my-profile/'
+      path: '/my-profile'
+      fullPath: '/my-profile'
+      preLoaderRoute: typeof MyProfileIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/playlists/': {
       id: '/playlists/'
       path: '/playlists'
       fullPath: '/playlists'
       preLoaderRoute: typeof PlaylistsIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/profile/': {
-      id: '/profile/'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileIndexImport
       parentRoute: typeof rootRoute
     }
     '/test-component/': {
@@ -154,8 +154,8 @@ export interface FileRoutesByFullPath {
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/liked-videos': typeof LikedVideosIndexRoute
+  '/my-profile': typeof MyProfileIndexRoute
   '/playlists': typeof PlaylistsIndexRoute
-  '/profile': typeof ProfileIndexRoute
   '/test-component': typeof TestComponentIndexRoute
   '/watch-history': typeof WatchHistoryIndexRoute
   '/videos/publish': typeof VideosPublishIndexRoute
@@ -166,8 +166,8 @@ export interface FileRoutesByTo {
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/liked-videos': typeof LikedVideosIndexRoute
+  '/my-profile': typeof MyProfileIndexRoute
   '/playlists': typeof PlaylistsIndexRoute
-  '/profile': typeof ProfileIndexRoute
   '/test-component': typeof TestComponentIndexRoute
   '/watch-history': typeof WatchHistoryIndexRoute
   '/videos/publish': typeof VideosPublishIndexRoute
@@ -179,8 +179,8 @@ export interface FileRoutesById {
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/liked-videos/': typeof LikedVideosIndexRoute
+  '/my-profile/': typeof MyProfileIndexRoute
   '/playlists/': typeof PlaylistsIndexRoute
-  '/profile/': typeof ProfileIndexRoute
   '/test-component/': typeof TestComponentIndexRoute
   '/watch-history/': typeof WatchHistoryIndexRoute
   '/videos/publish/': typeof VideosPublishIndexRoute
@@ -193,8 +193,8 @@ export interface FileRouteTypes {
     | '/videos/$videoId'
     | '/dashboard'
     | '/liked-videos'
+    | '/my-profile'
     | '/playlists'
-    | '/profile'
     | '/test-component'
     | '/watch-history'
     | '/videos/publish'
@@ -204,8 +204,8 @@ export interface FileRouteTypes {
     | '/videos/$videoId'
     | '/dashboard'
     | '/liked-videos'
+    | '/my-profile'
     | '/playlists'
-    | '/profile'
     | '/test-component'
     | '/watch-history'
     | '/videos/publish'
@@ -215,8 +215,8 @@ export interface FileRouteTypes {
     | '/videos/$videoId'
     | '/dashboard/'
     | '/liked-videos/'
+    | '/my-profile/'
     | '/playlists/'
-    | '/profile/'
     | '/test-component/'
     | '/watch-history/'
     | '/videos/publish/'
@@ -228,8 +228,8 @@ export interface RootRouteChildren {
   VideosVideoIdRoute: typeof VideosVideoIdRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   LikedVideosIndexRoute: typeof LikedVideosIndexRoute
+  MyProfileIndexRoute: typeof MyProfileIndexRoute
   PlaylistsIndexRoute: typeof PlaylistsIndexRoute
-  ProfileIndexRoute: typeof ProfileIndexRoute
   TestComponentIndexRoute: typeof TestComponentIndexRoute
   WatchHistoryIndexRoute: typeof WatchHistoryIndexRoute
   VideosPublishIndexRoute: typeof VideosPublishIndexRoute
@@ -240,8 +240,8 @@ const rootRouteChildren: RootRouteChildren = {
   VideosVideoIdRoute: VideosVideoIdRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   LikedVideosIndexRoute: LikedVideosIndexRoute,
+  MyProfileIndexRoute: MyProfileIndexRoute,
   PlaylistsIndexRoute: PlaylistsIndexRoute,
-  ProfileIndexRoute: ProfileIndexRoute,
   TestComponentIndexRoute: TestComponentIndexRoute,
   WatchHistoryIndexRoute: WatchHistoryIndexRoute,
   VideosPublishIndexRoute: VideosPublishIndexRoute,
@@ -261,8 +261,8 @@ export const routeTree = rootRoute
         "/videos/$videoId",
         "/dashboard/",
         "/liked-videos/",
+        "/my-profile/",
         "/playlists/",
-        "/profile/",
         "/test-component/",
         "/watch-history/",
         "/videos/publish/"
@@ -280,11 +280,11 @@ export const routeTree = rootRoute
     "/liked-videos/": {
       "filePath": "liked-videos/index.tsx"
     },
+    "/my-profile/": {
+      "filePath": "my-profile/index.tsx"
+    },
     "/playlists/": {
       "filePath": "playlists/index.tsx"
-    },
-    "/profile/": {
-      "filePath": "profile/index.tsx"
     },
     "/test-component/": {
       "filePath": "test-component/index.tsx"

@@ -1,4 +1,6 @@
+import VideoTile, { type WatchHistoryVideo } from '@/components/video/VideoTile'
 import { useAuthGuard } from '@/hooks/helpers/use-auth-guard'
+import { useWatchHistory } from '@/hooks/user.hook'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/watch-history/')({
@@ -7,5 +9,19 @@ export const Route = createFileRoute('/watch-history/')({
 
 function RouteComponent() {
   useAuthGuard()
-  return <div>Hello "/watch-history/"!</div>
+  const { data: watchHistory, isLoading, isError } = useWatchHistory()
+  if (isError) {
+    console.log(isError);
+    return
+
+  }
+  console.log(watchHistory);
+  if (isLoading) return <div>Loading...</div>;
+  return <div>
+    {
+    watchHistory.map((history: WatchHistoryVideo,) => (
+      <VideoTile key={history.video._id} video={history.video} watchedAt={history.watchedAt} />
+    ))
+  }
+  </div>
 }
