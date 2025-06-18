@@ -7,6 +7,7 @@ import {
 
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useAppSelector } from "@/redux/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 import { useNavigate } from "@tanstack/react-router";
 import { LogOutIcon, User } from "lucide-react";
@@ -26,12 +27,12 @@ export function ProfileDropdown({
 }) {
 
     const navigate = useNavigate()
-
+    const username = useAppSelector(state => state.auth.user?.username)
     const dropdownMenuItems: DropdownMenuItem[] = [
         {
             name: "My Profile",
             onClick: () => navigate({
-                to: '/my-profile'
+                to: `/channel/${username}`
             }),
             icon: <User className="text-white" />
         },

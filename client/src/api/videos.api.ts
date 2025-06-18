@@ -1,5 +1,5 @@
-import { type ApiSuccessResponse } from "@/types/auth.types";
-import { apiClient } from "./api-client";
+
+import { apiClient, type ApiSuccessResponse } from "./api-client";
 import type { VideoFetchParams } from "@/types/video.types";
 
 
@@ -8,7 +8,7 @@ export const getAllVideos = async (params: VideoFetchParams): Promise<any> => {
         const res = await apiClient.get<ApiSuccessResponse>('/videos', { params })
         return res.data
     } catch (error) {
-        console.error("Error during registration:", error);
+        console.error("Error during fetching all videos:", error);
         throw error;
     }
 }

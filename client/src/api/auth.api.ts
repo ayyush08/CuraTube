@@ -1,5 +1,5 @@
-import { apiClient } from "./api-client";
-import { type ApiSuccessResponse, type LoginRequest, type RegisterRequest } from "@/types/auth.types";
+import { apiClient, type ApiSuccessResponse } from "./api-client";
+import {  type LoginRequest, type RegisterRequest } from "@/types/auth.types";
 
 export const register = async (data: RegisterRequest): Promise<any> => {
     try {

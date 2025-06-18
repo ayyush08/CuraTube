@@ -25,10 +25,10 @@ const VideoTile = (
         })
     }
 
-    const handleOwnerClick = (userId: string, e: React.MouseEvent) => {
+    const handleOwnerClick = (username: string, e: React.MouseEvent) => {
         e.stopPropagation()
         navigate({
-            to: `/public-profile/${userId}`
+            to: `/channel/${username}`
         })
     }
 
@@ -61,7 +61,7 @@ const VideoTile = (
                 </div>
 
                 <div className="flex   flex-row justify-between items-center sm:items-center gap-3">
-                    <div onClick={(e) => handleOwnerClick(video.owner._id, e)} className='flex gap-2 hover:bg-amber-500/10 transition-colors duration-300 hover:cursor-pointer rounded-2xl p-2'>
+                    <div onClick={(e) => handleOwnerClick(video.owner.username, e)} className='flex gap-2 hover:bg-amber-500/10 transition-colors duration-300 hover:cursor-pointer rounded-2xl p-2'>
                         <img
                             src={video.owner.avatar}
                             alt={video.owner.username}

@@ -29,7 +29,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         return res
             .status(200)
             .json(new ApiResponse(200, {
-                liked: !isLiked,
+                liked: false,
                 likeCount: totalLikes - 1 < 0 ? 0 : totalLikes - 1
             }, "Video unliked successfully"));
     }
@@ -38,7 +38,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         return res
             .status(200)
             .json(new ApiResponse(200, {
-                liked: !isLiked,
+                liked: true,
                 likeCount: totalLikes + 1 < 0 ? 0 : totalLikes + 1
             }, "Video liked successfully"));
 

@@ -15,12 +15,7 @@ export interface LoginRequest {
     password: string;
 }
 
-export interface ApiSuccessResponse {
-    statusCode: string;
-    data: number;
-    message: string;
-    success: boolean;
-}
+
 
 interface watchHistoryItem {
     _id:string

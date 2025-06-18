@@ -26,7 +26,7 @@ export const useToggleVideoLike = (setIsVideoLiked: React.Dispatch<React.SetStat
             setIsVideoLiked(data?.liked)
             setLikeCount(data?.likeCount)
             if (data?.liked) toast.success("Video Liked successfully")
-            else toast.warning("Video unliked successfully")
+            else toast.success("Video Unliked successfully")
         },
         onError: (error) => {
             console.error("Mutation error:", error);

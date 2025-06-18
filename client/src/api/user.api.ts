@@ -1,5 +1,5 @@
-import type { ApiSuccessResponse } from "@/types/auth.types";
-import { apiClient } from "./api-client";
+
+import { apiClient, type ApiSuccessResponse } from "./api-client";
 
 export const getUserWatchHistory = async (): Promise<any> => {
     try {
@@ -7,6 +7,21 @@ export const getUserWatchHistory = async (): Promise<any> => {
         return res.data
     } catch (error) {
         console.error("Error during fetching user watch history:", error);
+        throw error;
+    }
+}
+
+
+export const getUserChannelProfile = async (username: string, subscriberId: string): Promise<any> => {
+    try {
+        const res = await apiClient.get<ApiSuccessResponse>(`/users/channel/${username}`,{
+            params:{
+                subscriberId: subscriberId
+            }
+        })
+        return res.data
+    } catch (error) {
+        console.error("Error during fetching user channel profile:", error);
         throw error;
     }
 }

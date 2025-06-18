@@ -16,11 +16,10 @@ import { Route as WatchHistoryIndexImport } from './routes/watch-history/index'
 import { Route as TweetsIndexImport } from './routes/tweets/index'
 import { Route as TestComponentIndexImport } from './routes/test-component/index'
 import { Route as PlaylistsIndexImport } from './routes/playlists/index'
-import { Route as MyProfileIndexImport } from './routes/my-profile/index'
 import { Route as LikedVideosIndexImport } from './routes/liked-videos/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as VideosVideoIdImport } from './routes/videos/$videoId'
-import { Route as PublicProfileUserIdImport } from './routes/public-profile/$userId'
+import { Route as ChannelUsernameImport } from './routes/channel/$username'
 import { Route as VideosPublishIndexImport } from './routes/videos/publish/index'
 
 // Create/Update Routes
@@ -55,12 +54,6 @@ const PlaylistsIndexRoute = PlaylistsIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const MyProfileIndexRoute = MyProfileIndexImport.update({
-  id: '/my-profile/',
-  path: '/my-profile/',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const LikedVideosIndexRoute = LikedVideosIndexImport.update({
   id: '/liked-videos/',
   path: '/liked-videos/',
@@ -79,9 +72,9 @@ const VideosVideoIdRoute = VideosVideoIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const PublicProfileUserIdRoute = PublicProfileUserIdImport.update({
-  id: '/public-profile/$userId',
-  path: '/public-profile/$userId',
+const ChannelUsernameRoute = ChannelUsernameImport.update({
+  id: '/channel/$username',
+  path: '/channel/$username',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -102,11 +95,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/public-profile/$userId': {
-      id: '/public-profile/$userId'
-      path: '/public-profile/$userId'
-      fullPath: '/public-profile/$userId'
-      preLoaderRoute: typeof PublicProfileUserIdImport
+    '/channel/$username': {
+      id: '/channel/$username'
+      path: '/channel/$username'
+      fullPath: '/channel/$username'
+      preLoaderRoute: typeof ChannelUsernameImport
       parentRoute: typeof rootRoute
     }
     '/videos/$videoId': {
@@ -128,13 +121,6 @@ declare module '@tanstack/react-router' {
       path: '/liked-videos'
       fullPath: '/liked-videos'
       preLoaderRoute: typeof LikedVideosIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/my-profile/': {
-      id: '/my-profile/'
-      path: '/my-profile'
-      fullPath: '/my-profile'
-      preLoaderRoute: typeof MyProfileIndexImport
       parentRoute: typeof rootRoute
     }
     '/playlists/': {
@@ -179,11 +165,10 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/public-profile/$userId': typeof PublicProfileUserIdRoute
+  '/channel/$username': typeof ChannelUsernameRoute
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/liked-videos': typeof LikedVideosIndexRoute
-  '/my-profile': typeof MyProfileIndexRoute
   '/playlists': typeof PlaylistsIndexRoute
   '/test-component': typeof TestComponentIndexRoute
   '/tweets': typeof TweetsIndexRoute
@@ -193,11 +178,10 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/public-profile/$userId': typeof PublicProfileUserIdRoute
+  '/channel/$username': typeof ChannelUsernameRoute
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/liked-videos': typeof LikedVideosIndexRoute
-  '/my-profile': typeof MyProfileIndexRoute
   '/playlists': typeof PlaylistsIndexRoute
   '/test-component': typeof TestComponentIndexRoute
   '/tweets': typeof TweetsIndexRoute
@@ -208,11 +192,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/public-profile/$userId': typeof PublicProfileUserIdRoute
+  '/channel/$username': typeof ChannelUsernameRoute
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/liked-videos/': typeof LikedVideosIndexRoute
-  '/my-profile/': typeof MyProfileIndexRoute
   '/playlists/': typeof PlaylistsIndexRoute
   '/test-component/': typeof TestComponentIndexRoute
   '/tweets/': typeof TweetsIndexRoute
@@ -224,11 +207,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/public-profile/$userId'
+    | '/channel/$username'
     | '/videos/$videoId'
     | '/dashboard'
     | '/liked-videos'
-    | '/my-profile'
     | '/playlists'
     | '/test-component'
     | '/tweets'
@@ -237,11 +219,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/public-profile/$userId'
+    | '/channel/$username'
     | '/videos/$videoId'
     | '/dashboard'
     | '/liked-videos'
-    | '/my-profile'
     | '/playlists'
     | '/test-component'
     | '/tweets'
@@ -250,11 +231,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/public-profile/$userId'
+    | '/channel/$username'
     | '/videos/$videoId'
     | '/dashboard/'
     | '/liked-videos/'
-    | '/my-profile/'
     | '/playlists/'
     | '/test-component/'
     | '/tweets/'
@@ -265,11 +245,10 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  PublicProfileUserIdRoute: typeof PublicProfileUserIdRoute
+  ChannelUsernameRoute: typeof ChannelUsernameRoute
   VideosVideoIdRoute: typeof VideosVideoIdRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   LikedVideosIndexRoute: typeof LikedVideosIndexRoute
-  MyProfileIndexRoute: typeof MyProfileIndexRoute
   PlaylistsIndexRoute: typeof PlaylistsIndexRoute
   TestComponentIndexRoute: typeof TestComponentIndexRoute
   TweetsIndexRoute: typeof TweetsIndexRoute
@@ -279,11 +258,10 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  PublicProfileUserIdRoute: PublicProfileUserIdRoute,
+  ChannelUsernameRoute: ChannelUsernameRoute,
   VideosVideoIdRoute: VideosVideoIdRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   LikedVideosIndexRoute: LikedVideosIndexRoute,
-  MyProfileIndexRoute: MyProfileIndexRoute,
   PlaylistsIndexRoute: PlaylistsIndexRoute,
   TestComponentIndexRoute: TestComponentIndexRoute,
   TweetsIndexRoute: TweetsIndexRoute,
@@ -302,11 +280,10 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/public-profile/$userId",
+        "/channel/$username",
         "/videos/$videoId",
         "/dashboard/",
         "/liked-videos/",
-        "/my-profile/",
         "/playlists/",
         "/test-component/",
         "/tweets/",
@@ -317,8 +294,8 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.tsx"
     },
-    "/public-profile/$userId": {
-      "filePath": "public-profile/$userId.tsx"
+    "/channel/$username": {
+      "filePath": "channel/$username.tsx"
     },
     "/videos/$videoId": {
       "filePath": "videos/$videoId.tsx"
@@ -328,9 +305,6 @@ export const routeTree = rootRoute
     },
     "/liked-videos/": {
       "filePath": "liked-videos/index.tsx"
-    },
-    "/my-profile/": {
-      "filePath": "my-profile/index.tsx"
     },
     "/playlists/": {
       "filePath": "playlists/index.tsx"

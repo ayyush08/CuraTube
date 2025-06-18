@@ -4,9 +4,15 @@ type HealthCheckResponse = {
     statusCode: string;
     data: number;
     message: string;
-    success:boolean;
+    success: boolean;
 };
 
+export interface ApiSuccessResponse {
+    statusCode: string;
+    data: number;
+    message: string;
+    success: boolean;
+}
 const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
 
 class ApiClient {
@@ -23,7 +29,7 @@ class ApiClient {
         try {
             const response = await this.axiosInstance.get<T>(url, config);
             return response.data;
-        } catch (error:any) {
+        } catch (error: any) {
             throw error.response.data;
         }
     }
@@ -41,7 +47,7 @@ class ApiClient {
         try {
             const response = await this.axiosInstance.put<T>(url, body, config);
             return response.data;
-        } catch (error:any) {
+        } catch (error: any) {
             throw error.response.data
         }
     }
@@ -49,7 +55,7 @@ class ApiClient {
         try {
             const response = await this.axiosInstance.patch<T>(url, body, config);
             return response.data;
-        } catch (error:any) {
+        } catch (error: any) {
             throw error.response.data
         }
     }
@@ -58,7 +64,7 @@ class ApiClient {
         try {
             const response = await this.axiosInstance.delete<T>(url, config);
             return response.data;
-        } catch (error:any) {
+        } catch (error: any) {
             throw error.response.data
         }
     }

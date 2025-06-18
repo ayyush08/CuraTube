@@ -27,9 +27,9 @@ function VideoPlayer({ src, thumbnail, title, duration, autoPlay = true,classNam
             poster={thumbnail}
             crossOrigin
             autoPlay={autoPlay}
-            storage={`video-player-settings-${title}`}
             duration={duration}
             className={` h-full w-full ${className}`}
+            load="eager"
         >
             <MediaProvider/>
             <PlyrLayout  icons={plyrLayoutIcons} />

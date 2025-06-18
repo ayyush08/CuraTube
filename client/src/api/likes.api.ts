@@ -1,5 +1,5 @@
-import type { ApiSuccessResponse } from "@/types/auth.types";
-import { apiClient } from "./api-client";
+
+import { apiClient, type ApiSuccessResponse } from "./api-client";
 
 
 
