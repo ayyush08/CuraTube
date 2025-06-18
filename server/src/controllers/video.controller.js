@@ -241,37 +241,37 @@ const getVideoById = asyncHandler(async (req, res) => {
                 owner: {
                     $first: "$owner",
                 },
-                isLiked: {
-                    $in: [req.user?._id, "$likes.likedBy"]
-                },
-            },
+                likedBy: {
+                $first: '$likes.likedBy'
+                }
         },
-        {
-            $project: {
-                videoFile: 1,
-                thumbnail: 1,
-                title: 1,
-                description: 1,
-                views: 1,
-                createdAt: 1,
-                duration: 1,
-                comments: 1,
-                owner: 1,
-                likesCount: 1,
-                isLiked: 1,
-                isSubscribed: 1,
-                subscribersCount: 1,
-            },
         },
+    {
+        $project: {
+            videoFile: 1,
+            thumbnail: 1,
+            title: 1,
+            description: 1,
+            views: 1,
+            createdAt: 1,
+            duration: 1,
+            comments: 1,
+            owner: 1,
+            likesCount: 1,
+            likedBy: 1,
+            isSubscribed: 1,
+            subscribersCount: 1,
+        },
+    },
     ]);
 
-    if (!video.length) throw new ApiError(404, "Failed to get video");
+if (!video.length) throw new ApiError(404, "Failed to get video");
 
 
-    return res.status(200)
-        .json(new ApiResponse(200, {
-            video: video[0]
-        }, "Video fetched successfully"))
+return res.status(200)
+    .json(new ApiResponse(200, {
+        video: video[0]
+    }, "Video fetched successfully"))
 })
 
 

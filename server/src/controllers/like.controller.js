@@ -17,6 +17,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 
     if (!videoExists) throw new ApiError(400, "Video not found");
 
+    const totalLikes = await Like.countDocuments({ likedBy: req.user._id, video: videoId })
 
     const isLiked = await Like.findOne(
         {
@@ -27,13 +28,19 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         await Like.findByIdAndDelete(isLiked._id);
         return res
             .status(200)
-            .json(new ApiResponse(200, null, "Video unliked successfully"));
+            .json(new ApiResponse(200, {
+                liked: !isLiked,
+                likeCount: totalLikes - 1 < 0 ? 0 : totalLikes - 1
+            }, "Video unliked successfully"));
     }
     else {
         await Like.create({ video: videoId, likedBy: req.user?._id });
         return res
             .status(200)
-            .json(new ApiResponse(200, null, "Video liked successfully"));
+            .json(new ApiResponse(200, {
+                liked: !isLiked,
+                likeCount: totalLikes + 1 < 0 ? 0 : totalLikes + 1
+            }, "Video liked successfully"));
 
     }
 

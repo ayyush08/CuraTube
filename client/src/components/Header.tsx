@@ -15,7 +15,7 @@ const Header = () => {
     const [activeDialog, setActiveDialog] = useState<string | null>(null)
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const user = useAppSelector((state) => state.auth.user);
-    console.log("isAuthenticated:", isAuthenticated, user)
+    console.log("isAuthenticated:", isAuthenticated)
     const navigate = useNavigate()
     const isMobile = useIsMobile()
     const onSearchClick = () => {
