@@ -19,8 +19,9 @@ function RouteComponent() {
     hasNextPage,
     isLoading,
     isFetchingNextPage
-  } = useInfiniteVideos({ query: '', sortBy: 'views', limit: 10, page: 1 })
-  const videos = data?.pages.flatMap(page => page.videos) || []
+  } = useInfiniteVideos({ query: '', sortBy: 'createdAt', sortType: 'desc', limit: 10, page: 1 })
+  
+  const videos = data?.pages[0].videos || []
 
 
   const loaderRef = useRef<HTMLDivElement | null>(null);
@@ -52,8 +53,8 @@ function RouteComponent() {
   return <div className="p-4 grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-5" >
     {
       videos.length > 0 &&
-      videos.map((video: Video, idx) => (
-        <VideoCard key={idx} video={video}  />
+      videos.map((video: Video) => (
+        <VideoCard key={video._id} video={video}  />
       ))
     }
 

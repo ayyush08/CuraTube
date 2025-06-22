@@ -20,7 +20,7 @@ function RouteComponent() {
   const { data, isLoading, isError } = useVideoById({ videoId })
   const [likeCount, setLikeCount] = useState<number | undefined>(0);
   const [isVideoLiked, setIsVideoLiked] = useState<boolean>(false)
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
+  const [isSubscribed, setIsSubscribed] = useState<boolean | undefined>(false);
   const [subscribersCount, setSubscribersCount] = useState<number>(0);
   const storedUser = useAppSelector(state => state.auth.user)
   const { mutate: updateViews } = useUpdateViews({ videoId })
@@ -46,6 +46,7 @@ function RouteComponent() {
           updateViews();
           if (storedUser) setIsVideoLiked(video.likedBy === storedUser._id);
           setLikeCount(video.likesCount)
+          setIsSubscribed(video.owner.isSubscribed)
         } else if (res.status === 202) {
           console.log("Video still processing...");
         } else {
@@ -66,7 +67,7 @@ function RouteComponent() {
     }
 
     return () => clearInterval(interval);
-  }, [video?.videoFile, videoSrc, updateViews, video?.likedBy, storedUser, video?.likesCount]);
+  }, [video?.videoFile, videoSrc, updateViews, video?.likedBy, storedUser, video?.likesCount, video?.owner.isSubscribed]);
 
 
   const handleOwnerClick = (channelId: string, e: React.MouseEvent) => {
@@ -78,18 +79,26 @@ function RouteComponent() {
 
   const handleLikeClick = () => {
     if (liking) return;
+    if(!storedUser){
+      toast.error("Please login to like the video")
+      return
+    }
     if (likeError) console.log("like error", likeError);
 
     toggleLike(videoId)
   }
 
   const handleSubscribeToggle = () => {
-    if (!storedUser) toast.error("Please login to subscribe")
+    if (!storedUser) {
+      toast.error("Please login to subscribe")
+      return
+
+    }
     toggleSubscriber(video.owner._id as string)
     console.log('sub buton clicked');
 
   }
-
+  console.log(video?.likesCount, video?.likedBy, storedUser?._id);
 
   if (subscribeError) console.log(subscribeError);
   if (isError) return <div className='flex justify-center items-center min-h-screen'>Error loading video</div>
@@ -127,8 +136,10 @@ function RouteComponent() {
 
             <div className="flex gap-5 items-center flex-wrap justify-between  sm:flex-nowrap">
               <div className="flex items-center gap-2 text-xl">
+                
                 <ThumbsUpIcon
                   onClick={handleLikeClick}
+                  
                   className={`w-6 h-6 cursor-pointer ${isVideoLiked ? 'fill-orange-500 text-orange-500' : 'text-orange-500'
                     }`}
                 />
@@ -155,7 +166,7 @@ function RouteComponent() {
                   </div>
                 </div>
                 <p className='text-lg text-orange-500 italic font-semibold font-mono'>Subscribers: {subscribersCount}</p>
-                
+
                 {storedUser?.username !== video.owner.username && (
                   <Button
                     onClick={handleSubscribeToggle}

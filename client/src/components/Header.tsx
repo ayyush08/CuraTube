@@ -3,7 +3,7 @@ import { LoginDialog } from "./auth/LoginDialog"
 import { SignUpDialog } from "./auth/SignUpDialog"
 import { Input } from "./ui/input"
 import { SidebarTrigger } from "./ui/sidebar"
-import { SearchIcon, Upload } from "lucide-react"
+import {  SearchIcon, Upload } from "lucide-react"
 import { Button } from "./ui/button"
 import LogoutDialog from "./auth/LogoutDialog"
 import { useAppSelector } from "@/redux/hooks"
@@ -33,6 +33,13 @@ const Header = () => {
             {
                 isAuthenticated ? (
                     <div className="flex items-center  gap-3">
+                        {/* <Button
+                            variant='secondary'
+                            onClick={() => navigate({to:'/tweets'})}
+                            className="p-5 text-base bg-gradient-to-r from-orange-600/50 to-amber-600/40 hover:bg-gradient-to-r hover:from-orange-700 hover:to-amber-700 transition-colors duration-500 text-white cursor-pointer"
+                        >
+                            <Pen/> Tweets
+                        </Button> */}
                         <Button
                             variant='secondary'
                             onClick={() => navigate({to:'/videos/publish'})}

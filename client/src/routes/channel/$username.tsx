@@ -56,7 +56,10 @@ function RouteComponent() {
 
 
   const handleSubscribeToggle = () => {
-    if (!storedUser) toast.error("Please login to subscribe")
+    if (!storedUser) {
+      toast.error("Please login to subscribe")
+      return
+    }
     toggleSubscriber(user?._id as string)
     console.log('sub buton clicked');
 
@@ -69,7 +72,7 @@ function RouteComponent() {
         <img
           src={user?.coverImage}
           alt={user?.username}
-          className='object-cover h-full w-full rounded-md border-x-2 border-t-4 border-orange-500 shadow-lg shadow-amber-500/30 aspect-video'
+          className='object-cover h-full w-full rounded-md border-x-2 border-t-4 border-orange-500 shadow-lg shadow-teal-500/50 aspect-video'
         />
         <img
           src={user?.avatar}

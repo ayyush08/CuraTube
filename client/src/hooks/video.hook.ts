@@ -1,4 +1,5 @@
 import { getAllVideos, getVideoById, updateVideoViews } from "@/api/videos.api";
+import { useAppSelector } from "@/redux/hooks";
 import type { VideoFetchParams } from "@/types/video.types";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 
@@ -43,9 +44,10 @@ export const useInfiniteVideos = ({
 }
 
 export const useVideoById = ({ videoId }: { videoId: string }) => {
+    const user = useAppSelector(state => state.auth.user?.username);
     return useQuery({
         queryKey: ['video', videoId],
-        queryFn: () => getVideoById(videoId),
+        queryFn: () => getVideoById(videoId, user ? user : ''),
         staleTime: 1000 * 60 * 5,
         enabled: !!videoId, // Only run if videoId is provided
     });

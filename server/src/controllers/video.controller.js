@@ -174,12 +174,13 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
+    const { username } =  req.query
     //TODO: get video by id
     if (!isValidObjectId(videoId)) {
         throw new ApiError(400, "Invalid video id");
     }
     const videoExists = await Video.findById(videoId);
-
+    const userExists = await User.findOne({ username });
 
     if (!videoExists) throw new ApiError(400, "Video not found");
     const video = await Video.aggregate([
@@ -217,7 +218,7 @@ const getVideoById = asyncHandler(async (req, res) => {
                                 $size: "$subscribers",
                             },
                             isSubscribed: {
-                                $in: [req.user?._id, "$subscribers.subscriber"],
+                                $in: [userExists?._id, "$subscribers.subscriber"],
                             },
                         },
                     },
@@ -242,36 +243,36 @@ const getVideoById = asyncHandler(async (req, res) => {
                     $first: "$owner",
                 },
                 likedBy: {
-                $first: '$likes.likedBy'
+                    $first: '$likes.likedBy'
                 }
+            },
         },
+        {
+            $project: {
+                videoFile: 1,
+                thumbnail: 1,
+                title: 1,
+                description: 1,
+                views: 1,
+                createdAt: 1,
+                duration: 1,
+                comments: 1,
+                owner: 1,
+                likesCount: 1,
+                likedBy: 1,
+                isSubscribed: 1,
+                subscribersCount: 1,
+            },
         },
-    {
-        $project: {
-            videoFile: 1,
-            thumbnail: 1,
-            title: 1,
-            description: 1,
-            views: 1,
-            createdAt: 1,
-            duration: 1,
-            comments: 1,
-            owner: 1,
-            likesCount: 1,
-            likedBy: 1,
-            isSubscribed: 1,
-            subscribersCount: 1,
-        },
-    },
     ]);
 
-if (!video.length) throw new ApiError(404, "Failed to get video");
+    if (!video.length) throw new ApiError(404, "Failed to get video");
 
 
-return res.status(200)
-    .json(new ApiResponse(200, {
-        video: video[0]
-    }, "Video fetched successfully"))
+    return res.status(200)
+        .json(new ApiResponse(200, {
+            video: video[0]
+        }, "Video fetched successfully"))
 })
 
 
