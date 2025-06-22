@@ -21,6 +21,7 @@ import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as VideosVideoIdImport } from './routes/videos/$videoId'
 import { Route as ChannelUsernameImport } from './routes/channel/$username'
 import { Route as VideosPublishIndexImport } from './routes/videos/publish/index'
+import { Route as VideosSearchVideosQueryImport } from './routes/videos/search-videos/$query'
 
 // Create/Update Routes
 
@@ -81,6 +82,12 @@ const ChannelUsernameRoute = ChannelUsernameImport.update({
 const VideosPublishIndexRoute = VideosPublishIndexImport.update({
   id: '/videos/publish/',
   path: '/videos/publish/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const VideosSearchVideosQueryRoute = VideosSearchVideosQueryImport.update({
+  id: '/videos/search-videos/$query',
+  path: '/videos/search-videos/$query',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -151,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WatchHistoryIndexImport
       parentRoute: typeof rootRoute
     }
+    '/videos/search-videos/$query': {
+      id: '/videos/search-videos/$query'
+      path: '/videos/search-videos/$query'
+      fullPath: '/videos/search-videos/$query'
+      preLoaderRoute: typeof VideosSearchVideosQueryImport
+      parentRoute: typeof rootRoute
+    }
     '/videos/publish/': {
       id: '/videos/publish/'
       path: '/videos/publish'
@@ -173,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/test-component': typeof TestComponentIndexRoute
   '/tweets': typeof TweetsIndexRoute
   '/watch-history': typeof WatchHistoryIndexRoute
+  '/videos/search-videos/$query': typeof VideosSearchVideosQueryRoute
   '/videos/publish': typeof VideosPublishIndexRoute
 }
 
@@ -186,6 +201,7 @@ export interface FileRoutesByTo {
   '/test-component': typeof TestComponentIndexRoute
   '/tweets': typeof TweetsIndexRoute
   '/watch-history': typeof WatchHistoryIndexRoute
+  '/videos/search-videos/$query': typeof VideosSearchVideosQueryRoute
   '/videos/publish': typeof VideosPublishIndexRoute
 }
 
@@ -200,6 +216,7 @@ export interface FileRoutesById {
   '/test-component/': typeof TestComponentIndexRoute
   '/tweets/': typeof TweetsIndexRoute
   '/watch-history/': typeof WatchHistoryIndexRoute
+  '/videos/search-videos/$query': typeof VideosSearchVideosQueryRoute
   '/videos/publish/': typeof VideosPublishIndexRoute
 }
 
@@ -215,6 +232,7 @@ export interface FileRouteTypes {
     | '/test-component'
     | '/tweets'
     | '/watch-history'
+    | '/videos/search-videos/$query'
     | '/videos/publish'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -227,6 +245,7 @@ export interface FileRouteTypes {
     | '/test-component'
     | '/tweets'
     | '/watch-history'
+    | '/videos/search-videos/$query'
     | '/videos/publish'
   id:
     | '__root__'
@@ -239,6 +258,7 @@ export interface FileRouteTypes {
     | '/test-component/'
     | '/tweets/'
     | '/watch-history/'
+    | '/videos/search-videos/$query'
     | '/videos/publish/'
   fileRoutesById: FileRoutesById
 }
@@ -253,6 +273,7 @@ export interface RootRouteChildren {
   TestComponentIndexRoute: typeof TestComponentIndexRoute
   TweetsIndexRoute: typeof TweetsIndexRoute
   WatchHistoryIndexRoute: typeof WatchHistoryIndexRoute
+  VideosSearchVideosQueryRoute: typeof VideosSearchVideosQueryRoute
   VideosPublishIndexRoute: typeof VideosPublishIndexRoute
 }
 
@@ -266,6 +287,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestComponentIndexRoute: TestComponentIndexRoute,
   TweetsIndexRoute: TweetsIndexRoute,
   WatchHistoryIndexRoute: WatchHistoryIndexRoute,
+  VideosSearchVideosQueryRoute: VideosSearchVideosQueryRoute,
   VideosPublishIndexRoute: VideosPublishIndexRoute,
 }
 
@@ -288,6 +310,7 @@ export const routeTree = rootRoute
         "/test-component/",
         "/tweets/",
         "/watch-history/",
+        "/videos/search-videos/$query",
         "/videos/publish/"
       ]
     },
@@ -317,6 +340,9 @@ export const routeTree = rootRoute
     },
     "/watch-history/": {
       "filePath": "watch-history/index.tsx"
+    },
+    "/videos/search-videos/$query": {
+      "filePath": "videos/search-videos/$query.tsx"
     },
     "/videos/publish/": {
       "filePath": "videos/publish/index.tsx"

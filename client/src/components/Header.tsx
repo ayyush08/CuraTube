@@ -3,7 +3,7 @@ import { LoginDialog } from "./auth/LoginDialog"
 import { SignUpDialog } from "./auth/SignUpDialog"
 import { Input } from "./ui/input"
 import { SidebarTrigger } from "./ui/sidebar"
-import {  SearchIcon, Upload } from "lucide-react"
+import { SearchIcon, Upload } from "lucide-react"
 import { Button } from "./ui/button"
 import LogoutDialog from "./auth/LogoutDialog"
 import { useAppSelector } from "@/redux/hooks"
@@ -18,8 +18,17 @@ const Header = () => {
     console.log("isAuthenticated:", isAuthenticated)
     const navigate = useNavigate()
     const isMobile = useIsMobile()
-    const onSearchClick = () => {
-        console.log('search clicked');
+
+  
+
+
+
+    const onSearchSubmit = (value:string) => {
+        console.log('search clicked', value);
+        if( value.trim() === "") {
+            return;
+        }
+        navigate({ to: `/videos/search-videos/${value.trim()}` });
 
     }
 
@@ -27,7 +36,8 @@ const Header = () => {
         <div className="w-full h-20 px-6 sticky top-0 flex items-center justify-between font-sans z-10  backdrop-blur-md ">
             <div className=" flex justify-start items-center w-full" >
                 {isMobile && <SidebarTrigger className="cursor-pointer" />}
-                <SearchBar onIconClick={onSearchClick} />
+                <SearchBar onSubmit={onSearchSubmit} />
+
             </div>
 
             {
@@ -42,10 +52,10 @@ const Header = () => {
                         </Button> */}
                         <Button
                             variant='secondary'
-                            onClick={() => navigate({to:'/videos/publish'})}
+                            onClick={() => navigate({ to: '/videos/publish' })}
                             className="p-5 text-base bg-gradient-to-r from-orange-600/50 to-amber-600/40 hover:bg-gradient-to-r hover:from-orange-700 hover:to-amber-700 transition-colors duration-500 text-white cursor-pointer"
                         >
-                            <Upload/> Upload Video
+                            <Upload /> Upload Video
                         </Button>
                         <ProfileDropdown user={user} setActiveDialog={setActiveDialog} />
 
@@ -91,30 +101,38 @@ export default Header
 
 
 
-interface InputWithIconProps extends React.ComponentProps<"input"> {
-    onIconClick?: () => void
+interface InputWithIconProps {
+    onSubmit: (value: string) => void;
 }
 
-function SearchBar({ type = "text", onIconClick }: InputWithIconProps) {
-    const [searchValue, setSearchValue] = useState('')
-    console.log(searchValue);
+function SearchBar({ onSubmit }: InputWithIconProps) {
+    const [value, setValue] = useState("");
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        onSubmit(value.trim());
+    };
 
     return (
-        <div className="relative w-fit  max-w-xl sm:max-w-2xl sm:w-full xs:max-w-full px-4 py-2 z-10">
-            <Input
-                type={type}
-                placeholder="Search Videos here..."
-                className="rounded-3xl pr-10 text-sm sm:text-base"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-            />
-            <SearchIcon
-
-                className="absolute right-7 top-1/2 -translate-y-1/2 h-5 w-6 text-white cursor-pointer"
-                onClick={onIconClick}
-            />
+        <div className="relative w-fit max-w-xl sm:max-w-2xl sm:w-full xs:max-w-full px-4 py-2 z-10">
+            <form onSubmit={handleSubmit}>
+                <Input
+                    type="text"
+                    placeholder="Search Videos here..."
+                    className="rounded-3xl pr-10 text-sm sm:text-base"
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                />
+                <SearchIcon
+                    className="absolute right-7 top-1/2 -translate-y-1/2 h-5 w-6 text-white cursor-pointer"
+                    type="submit"
+                    onClick={() => onSubmit(value.trim())}
+                />
+            </form>
         </div>
-    )
+    );
 }
 
-export { Input }
+
+
+
