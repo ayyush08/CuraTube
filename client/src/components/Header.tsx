@@ -19,13 +19,13 @@ const Header = () => {
     const navigate = useNavigate()
     const isMobile = useIsMobile()
 
-  
 
 
 
-    const onSearchSubmit = (value:string) => {
+
+    const onSearchSubmit = (value: string) => {
         console.log('search clicked', value);
-        if( value.trim() === "") {
+        if (value.trim() === "") {
             return;
         }
         navigate({ to: `/videos/search-videos/${value.trim()}` });

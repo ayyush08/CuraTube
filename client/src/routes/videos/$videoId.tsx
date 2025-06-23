@@ -46,6 +46,7 @@ function RouteComponent() {
           updateViews();
           if (storedUser) setIsVideoLiked(video.likedBy === storedUser._id);
           setLikeCount(video.likesCount)
+          setSubscribersCount(video.owner.subscribersCount || 0);
           setIsSubscribed(video.owner.isSubscribed)
         } else if (res.status === 202) {
           console.log("Video still processing...");
@@ -67,7 +68,7 @@ function RouteComponent() {
     }
 
     return () => clearInterval(interval);
-  }, [video?.videoFile, videoSrc, updateViews, video?.likedBy, storedUser, video?.likesCount, video?.owner.isSubscribed]);
+  }, [video?.videoFile, videoSrc, updateViews, video?.likedBy, storedUser, video?.likesCount, video?.owner.isSubscribed, video?.owner.subscribersCount]);
 
 
   const handleOwnerClick = (channelId: string, e: React.MouseEvent) => {

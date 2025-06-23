@@ -16,6 +16,11 @@ export default function VideoCard({ video }: VideoCardProps) {
         navigate({ to: `/videos/${videoId}` })
     }
 
+    const handleUsernameClick = (e: React.MouseEvent<HTMLParagraphElement>) => {
+        e.stopPropagation();
+        navigate({ to: `/channel/${video.owner.username}` });
+    }
+
 
     return (
         <div onClick={() => handleVideoCardClick(video._id)} className="w-full max-w-sm cursor-pointer group hover:bg-orange-500/20 p-2 mx-auto rounded-lg transition-all duration-300" >
@@ -40,7 +45,7 @@ export default function VideoCard({ video }: VideoCardProps) {
                     <h3 className="font-semibold text-sm line-clamp-2 text-foreground group-hover:text-primary transition-colors">
                         {video.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground mt-1">{video.owner.username}</p>
+                    <p onClick={handleUsernameClick} className="text-sm text-muted-foreground mt-1 hover:text-orange-600 transition-colors duration-200">{video.owner.username}</p>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <span>{formatViews(video.views)}</span>
                         <span>•</span>

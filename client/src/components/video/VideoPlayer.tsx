@@ -32,7 +32,7 @@ function VideoPlayer({ src, thumbnail, title, duration, autoPlay = true,classNam
             load="eager"
         >
             <MediaProvider/>
-            <PlyrLayout  icons={plyrLayoutIcons} />
+            <PlyrLayout clickToFullscreen clickToPlay  icons={plyrLayoutIcons} />
         </MediaPlayer>
     );
 }
