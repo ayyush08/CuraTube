@@ -19,13 +19,20 @@ function RouteComponent() {
   const { videoId } = Route.useParams()
   const { data, isLoading, isError } = useVideoById({ videoId })
   const [likeCount, setLikeCount] = useState<number | undefined>(0);
-  const [isVideoLiked, setIsVideoLiked] = useState<boolean>(false)
+  const [hasInitialized, setHasInitialized] = useState<boolean>(false);
+  const [isVideoLiked, setIsVideoLiked] = useState<boolean | undefined>(false)
   const [isSubscribed, setIsSubscribed] = useState<boolean | undefined>(false);
   const [subscribersCount, setSubscribersCount] = useState<number>(0);
   const storedUser = useAppSelector(state => state.auth.user)
   const { mutate: updateViews } = useUpdateViews({ videoId })
-  const { mutate: toggleLike, isPending: liking, isError: likeError } = useToggleVideoLike(setIsVideoLiked, setLikeCount)
-  const { mutate: toggleSubscriber, isPending: isSubscribing, isError: subscribeError } = useToggleSubscription(setIsSubscribed, setSubscribersCount)
+  const { mutate: toggleLike, isPending: liking, isError: likeError } = useToggleVideoLike(
+    (liked) => setIsVideoLiked(liked),
+    (count) => setLikeCount(count)
+  );
+  const { mutate: toggleSubscriber, isPending: isSubscribing, isError: subscribeError } = useToggleSubscription(
+    (subscribed) => setIsSubscribed(subscribed),
+    (count) => setSubscribersCount(count)
+  );
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
   const [hlsVideoSrc, setHlsVideoSrc] = useState<string>('')
 
@@ -33,6 +40,7 @@ function RouteComponent() {
 
   const video: Video = data?.video;
   const videoSrc = `${video?.videoFile}/ik-master.m3u8?tr=sr-240_360_480_720`;
+
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -43,11 +51,6 @@ function RouteComponent() {
           setHlsVideoSrc(videoSrc);
           setIsProcessing(false);
           clearInterval(interval);
-          updateViews();
-          if (storedUser) setIsVideoLiked(video.likedBy === storedUser._id);
-          setLikeCount(video.likesCount)
-          setSubscribersCount(video.owner.subscribersCount || 0);
-          setIsSubscribed(video.owner.isSubscribed)
         } else if (res.status === 202) {
           console.log("Video still processing...");
         } else {
@@ -59,17 +62,28 @@ function RouteComponent() {
         clearInterval(interval);
       }
     }
-
+    
     if (video?.videoFile) {
       setIsProcessing(true);
       // Start polling every 3s
       interval = setInterval(checkVideoReady, 3000);
       checkVideoReady();
     }
-
+    
     return () => clearInterval(interval);
-  }, [video?.videoFile, videoSrc, updateViews, video?.likedBy, storedUser, video?.likesCount, video?.owner.isSubscribed, video?.owner.subscribersCount]);
-
+  }, [video?.videoFile, videoSrc]);
+  
+  
+  useEffect(() => {
+    if (video && !hasInitialized) {
+      updateViews();
+      setIsVideoLiked(video.isLiked);
+      setLikeCount(video.likesCount);
+      setSubscribersCount(video.owner.subscribersCount || 0);
+      setIsSubscribed(video.owner.isSubscribed);
+      setHasInitialized(true);
+    }
+  }, [video, updateViews, hasInitialized]);
 
   const handleOwnerClick = (channelId: string, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -80,7 +94,7 @@ function RouteComponent() {
 
   const handleLikeClick = () => {
     if (liking) return;
-    if(!storedUser){
+    if (!storedUser) {
       toast.error("Please login to like the video")
       return
     }
@@ -99,7 +113,7 @@ function RouteComponent() {
     console.log('sub buton clicked');
 
   }
-  console.log(video?.likesCount, video?.likedBy, storedUser?._id);
+  console.log(video?.likesCount, video?.isLiked, storedUser?._id);
 
   if (subscribeError) console.log(subscribeError);
   if (isError) return <div className='flex justify-center items-center min-h-screen'>Error loading video</div>
@@ -137,10 +151,10 @@ function RouteComponent() {
 
             <div className="flex gap-5 items-center flex-wrap justify-between  sm:flex-nowrap">
               <div className="flex items-center gap-2 text-xl">
-                
+
                 <ThumbsUpIcon
                   onClick={handleLikeClick}
-                  
+
                   className={`w-6 h-6 cursor-pointer ${isVideoLiked ? 'fill-orange-500 text-orange-500' : 'text-orange-500'
                     }`}
                 />

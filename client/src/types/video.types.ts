@@ -28,7 +28,7 @@ export interface Video {
     createdAt: string,
     updatedAt?:string
     likesCount?: number,
-    likedBy?: string
+    isLiked?: boolean
 
 }
 

@@ -175,7 +175,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
-    const { username } =  req.query
+    const { username } = req.query
     //TODO: get video by id
     if (!isValidObjectId(videoId)) {
         throw new ApiError(400, "Invalid video id");
@@ -243,8 +243,8 @@ const getVideoById = asyncHandler(async (req, res) => {
                 owner: {
                     $first: "$owner",
                 },
-                likedBy: {
-                    $first: '$likes.likedBy'
+                isLiked: {
+                    $in: [userExists?._id, "$likes.likedBy"],
                 }
             },
         },
@@ -260,7 +260,7 @@ const getVideoById = asyncHandler(async (req, res) => {
                 comments: 1,
                 owner: 1,
                 likesCount: 1,
-                likedBy: 1,
+                isLiked: 1,
                 isSubscribed: 1,
                 subscribersCount: 1,
             },
