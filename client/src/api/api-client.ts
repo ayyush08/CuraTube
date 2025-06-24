@@ -23,6 +23,8 @@ class ApiClient {
             baseURL: `${BASE_URL}/api/v1`,
             withCredentials: true,
         });
+        
+        //TODO: add interceptors for refresh token
     }
 
     async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {

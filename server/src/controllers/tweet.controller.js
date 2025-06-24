@@ -23,35 +23,90 @@ const createTweet = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, tweet, "Tweet created successfully"))
 })
 
-const getUserTweets = asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    if (!isValidObjectId(userId)) throw new ApiError(400, "Invalid user id");
+const getTweets = asyncHandler(async (req, res) => {
+    const {
+        page = 1,
+        limit = 10,
+        sortBy = 'createdAt',
+        sortType = 'desc',
+        userId
+    } = req.query;
 
-    const userExists = await User.findById(userId).select('-password -refreshToken -watchHistory -email');
+    const pipeline = [];
 
-    if(!userExists){
-        throw new ApiError(400,"User not found");
+
+
+
+    if (userId) {
+        if (!isValidObjectId(userId)) throw new ApiError(400, "Invalid user ID");
+        pipeline.push({
+            $match: { owner: new mongoose.Types.ObjectId(userId) },
+        });
     }
 
 
-    const userTweets = await Tweet.find({
-        owner:userId
-    })
+    pipeline.push({
+        $sort: {
+            [sortBy]: sortType === 'asc' ? 1 : -1,
+        },
+    });
 
-    if(!userTweets) {
-        return res.status(200).json(new ApiResponse(400,{
-            userDetails:userExists,
-            tweets:[]
-        },"Tweets fetched successfully"));
+
+    pipeline.push(
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                    {
+                        $project: {
+                            username: 1,
+                            avatar: 1,
+                            fullName: 1,
+                        },
+                    },
+                ],
+            },
+        },
+        { $unwind: "$owner" }
+    );
+
+    const tweetsAggregate = Tweet.aggregate(pipeline);
+
+    const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+    };
+
+    const allTweets = await Tweet.aggregatePaginate(tweetsAggregate, options);
+
+    if (!allTweets || allTweets.docs.length === 0) {
+        const fakeTweet = (i) => ({
+            _id: `${page}-${i}`,
+            content: `Fake tweet ${page}-${i}`,
+            likes: Math.floor(Math.random() * 100),
+            owner: {
+                username: `User${i}`,
+                avatar: null,
+                fullName: `User FullName ${i}`
+            },
+            createdAt: new Date(),
+        });
+
+        const fakeTweets = Array.from({ length: options.limit }, (_, i) => fakeTweet(i));
+
+        return res.status(200).json(new ApiResponse(200, {
+            tweets: fakeTweets
+        }, "No real tweets found. Returning dummy tweets."));
     }
-    
-    
-    return res.status(200).json(new ApiResponse(400,{
-        userDetails:userExists,
-        tweets:userTweets
-    },"Tweets fetched successfully"));
 
-})
+    return res.status(200).json(new ApiResponse(200, {
+        tweets: allTweets.docs
+    }, "Tweets fetched successfully"));
+});
+
 
 const updateTweet = asyncHandler(async (req, res) => {
     const { tweetId } = req.params
@@ -93,7 +148,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
 
 export {
     createTweet,
-    getUserTweets,
     updateTweet,
-    deleteTweet
+    deleteTweet,
+    getTweets
 }
