@@ -1,4 +1,4 @@
-// hooks/useRegisterLoginMutation.ts
+
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { register, login, logout } from '@/api/auth.api';
 import { type LoginRequest, type RegisterRequest } from '@/types/auth.types';

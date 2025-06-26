@@ -24,7 +24,7 @@ function RouteComponent() {
     <h1 className='text-3xl p-5 font-bold text-center text-orange-600 '>Your Liked Videos</h1>
     {
       likedVideos.map((video: LikedVideo) => (
-        <VideoTile video={video.videoDetails} likedOn={video.createdAt} />
+        <VideoTile key={video._id} video={video.videoDetails} likedOn={video.createdAt} />
       ))
     }
   </div>
