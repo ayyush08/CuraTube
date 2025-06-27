@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } from 'axios';
 import { logout } from '../redux/authSlice';
-import { store } from '@/redux/store';
+import { persistor, store } from '@/redux/store';
 
 type HealthCheckResponse = {
     statusCode: string;
@@ -85,6 +85,7 @@ class ApiClient {
                         console.log("Refresh token failed", refreshError);
 
                         store.dispatch(logout());
+                        persistor.purge()
 
 
                         return Promise.reject(refreshError);

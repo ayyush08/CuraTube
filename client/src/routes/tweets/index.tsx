@@ -1,4 +1,6 @@
+import TweetCard from '@/components/tweets/TweetCard';
 import { useGetTweets } from '@/hooks/tweets.hooks';
+import type { Tweet } from '@/types/tweets.types';
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/tweets/')({
@@ -18,11 +20,18 @@ function RouteComponent() {
     return <div>Loading...</div>
   }
 
-  if( error) {
+  if (error) {
     console.error("Error fetching tweets:", error);
     return <div>Error loading tweets.</div>
   }
 
   console.log("Tweets Data:", data);
-  return <div>Hello "/tweets/"!</div>
+  return <section className="flex flex-col w-full">
+    {data?.tweets?.map((tweet: Tweet) => (
+      <div className="w-full p-5 mx-auto" key={tweet._id}>
+        <TweetCard  {...tweet} />
+      </div>
+
+    ))}
+  </section>
 }

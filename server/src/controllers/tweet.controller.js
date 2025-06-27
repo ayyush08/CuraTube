@@ -28,21 +28,25 @@ const getTweets = asyncHandler(async (req, res) => {
         page = 1,
         limit = 10,
         sortBy = 'createdAt',
+        userId,
         sortType = 'desc',
-        userId
     } = req.query;
 
     const pipeline = [];
 
 
 
-
     if (userId) {
-        if (!isValidObjectId(userId)) throw new ApiError(400, "Invalid user ID");
+        if (!isValidObjectId(userId)) {
+            throw new ApiError(400, "Invalid user ID");
+        }
         pipeline.push({
-            $match: { owner: new mongoose.Types.ObjectId(userId) },
+            $match: {
+                owner: new mongoose.Types.ObjectId(userId)
+            }
         });
     }
+
 
 
     pipeline.push({
@@ -64,14 +68,43 @@ const getTweets = asyncHandler(async (req, res) => {
                         $project: {
                             username: 1,
                             avatar: 1,
-                            fullName: 1,
-                        },
-                    },
-                ],
+                            fullName: 1
+                        }
+                    }
+                ]
             },
         },
-        { $unwind: "$owner" }
+        { $unwind: "$owner" },
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "tweet",
+                as: "likedBy",
+                pipeline: [
+                    {
+                        $project: {
+                            likedBy: 1,
+                            _id: 0
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $project: {
+                content: 1,
+                isLiked: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                owner: 1,
+                likedBy:1
+            }
+        }
     );
+
+    console.log(pipeline);
+
 
     const tweetsAggregate = Tweet.aggregate(pipeline);
 
