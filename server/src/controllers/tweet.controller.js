@@ -103,8 +103,6 @@ const getTweets = asyncHandler(async (req, res) => {
         }
     );
 
-    console.log(pipeline);
-
 
     const tweetsAggregate = Tweet.aggregate(pipeline);
 

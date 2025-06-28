@@ -1,7 +1,8 @@
 
-import TweetCard from '@/components/tweets/TweetCard'
+
 
 import { createFileRoute } from '@tanstack/react-router'
+
 
 
 export const Route = createFileRoute('/test-component/')({
@@ -11,7 +12,14 @@ export const Route = createFileRoute('/test-component/')({
 
 
 function RouteComponent() {
-  return <TweetCard />;
+
+
+  
+  return (
+    <div>
+      <h1>Test Component</h1>
+    </div>
+  )
 }
 
 

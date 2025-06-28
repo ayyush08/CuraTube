@@ -17,7 +17,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 
     if (!videoExists) throw new ApiError(400, "Video not found");
 
-    const totalLikes = await Like.countDocuments({ likedBy: req.user._id, video: videoId })
+    const totalLikes = await Like.countDocuments({  video: videoId })
 
     const isLiked = await Like.findOne(
         {
@@ -79,19 +79,30 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid tweet id");
     }
     const userId = req.user?._id
-    const likedTweet = await Like.findOne({ tweet: tweetId, likedBy: userId });
+    const totalLikes = await Like.countDocuments({ tweet: tweetId});
+    const isLiked = await Like.findOne(
+        {
+            tweet: tweetId,
+            likedBy: userId
+        })
 
-    if (likedTweet) {
-        await Like.findByIdAndDelete(likedTweet._id);
+    if (isLiked) {
+        await Like.findByIdAndDelete(isLiked._id);
         return res
             .status(200)
-            .json(new ApiResponse(200, null, "Tweet Unliked Successfully"));
+            .json(new ApiResponse(200, {
+                liked: false,
+                likeCount: totalLikes < 0 ? 0 : totalLikes - 1
+            }, "Tweet Unliked Successfully"));
     }
     else {
         await Like.create({ tweet: tweetId, likedBy: userId });
         return res
             .status(200)
-            .json(new ApiResponse(200, null, "Tweet Liked Successfully"))
+            .json(new ApiResponse(200, {
+            liked: true,
+            likeCount:  totalLikes + 1 < 0 ? 0 : totalLikes + 1
+            }, "Tweet Liked Successfully"))
     }
 }
 

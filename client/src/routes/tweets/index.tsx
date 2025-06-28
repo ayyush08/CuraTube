@@ -1,5 +1,7 @@
 import TweetCard from '@/components/tweets/TweetCard';
+import TweetWriter from '@/components/tweets/TweetWriter';
 import { useGetTweets } from '@/hooks/tweets.hooks';
+import { useAppSelector } from '@/redux/hooks';
 import type { Tweet } from '@/types/tweets.types';
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -8,6 +10,7 @@ export const Route = createFileRoute('/tweets/')({
 })
 
 function RouteComponent() {
+  const storedUser = useAppSelector(state => state.auth.user)
   const { data, isLoading, error } = useGetTweets({
     sortBy: 'updatedAt',
     sortType: 'desc',
@@ -27,6 +30,9 @@ function RouteComponent() {
 
   console.log("Tweets Data:", data);
   return <section className="flex flex-col w-full">
+    {
+      storedUser && <TweetWriter/>
+    }
     {data?.tweets?.map((tweet: Tweet) => (
       <div className="w-full p-5 mx-auto" key={tweet._id}>
         <TweetCard  {...tweet} />

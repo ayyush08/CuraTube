@@ -1,6 +1,7 @@
-import { getAllTweets } from "@/api/tweets.api"
+import { createTweet, getAllTweets } from "@/api/tweets.api"
 import type { TweetFetchParams } from "@/types/tweets.types"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 
 export const useGetTweets = ({
@@ -15,5 +16,21 @@ export const useGetTweets = ({
         queryFn: () => getAllTweets({ sortBy, sortType, userId, page, limit }),
 
         staleTime: 1000 * 60 * 5,
+    })
+}
+
+
+export const useCreateTweet = () => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: (content:string) => createTweet(content),
+        onSuccess: (data) => {
+            console.log("Tweet created successfully", data);
+            toast.success("Tweet created successfully");
+            queryClient.invalidateQueries({ queryKey: ['tweets'] })
+        },
+        onError: (error) => {
+            console.error("Error creating tweet:", error);
+        },
     })
 }
