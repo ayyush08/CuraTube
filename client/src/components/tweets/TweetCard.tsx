@@ -39,7 +39,9 @@ const TweetCard = (tweet: Tweet) => {
     }
 
     const handleDelete = () => {
-        deleteTweet();
+        if (confirm('Are you sure you want to delete this tweet? This action cannot be undone.')) {
+            deleteTweet();
+        }
     }
 
     return (
