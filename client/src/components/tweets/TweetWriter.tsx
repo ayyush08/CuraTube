@@ -37,9 +37,9 @@ const TweetWriter = () => {
     return (
         <Card className="bg-transparent rounded-none border-none bor ">
             <CardContent className="p-5">
-                <div className="flex gap-5">
-                    <Avatar className="w-12 h-12">
-                        <AvatarImage src={storedUser.avatar} alt="Your avatar" />
+                <div className="flex gap-6 items-start w-full">
+                    <Avatar className="w-16 h-16 border-1 border-orange-200 ">
+                        <AvatarImage src={storedUser.avatar} alt="Your avatar" className="object-cover" />
                         <AvatarFallback className="bg-orange-600 text-white">{storedUser.username.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 space-y-5 w-full">

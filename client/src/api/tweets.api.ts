@@ -11,15 +11,7 @@ export const createTweet = async (content: string): Promise<any> => {
     }
 }
 
-export const getUserTweets = async (userId: string): Promise<any> => {
-    try {
-        const res = await apiClient.get<ApiSuccessResponse>(`/tweets/user/${userId}`);
-        return res.data
-    } catch (error) {
-        console.error("Error during fetching user tweets:", error);
-        throw error;
-    }
-}
+
 
 export const getAllTweets = async (params: TweetFetchParams): Promise<any> => {
     try {
@@ -33,7 +25,7 @@ export const getAllTweets = async (params: TweetFetchParams): Promise<any> => {
 
 export const updateTweet = async (tweetId: string, content: string): Promise<any> => {
     try {
-        const res = await apiClient.put<ApiSuccessResponse>(`/tweets/${tweetId}`, { content });
+        const res = await apiClient.patch<ApiSuccessResponse>(`/tweets/${tweetId}`, { content });
         return res.data
     } catch (error) {
         console.error("Error during updating tweet:", error);

@@ -12,7 +12,7 @@ export const Route = createFileRoute('/tweets/')({
 function RouteComponent() {
   const storedUser = useAppSelector(state => state.auth.user)
   const { data, isLoading, error } = useGetTweets({
-    sortBy: 'updatedAt',
+    sortBy: 'createdAt',
     sortType: 'desc',
     userId: '',
     page: 1,
