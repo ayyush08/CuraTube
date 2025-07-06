@@ -6,7 +6,6 @@ import { useUpdateViews, useVideoById } from '@/hooks/video.hook'
 import { useAppSelector } from '@/redux/hooks'
 import type { Video } from '@/types/video.types'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import axios from 'axios'
 import { Loader2Icon, ThumbsUpIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -33,45 +32,12 @@ function RouteComponent() {
     (subscribed) => setIsSubscribed(subscribed),
     (count) => setSubscribersCount(count)
   );
-  const [isProcessing, setIsProcessing] = useState<boolean>(false)
-  const [hlsVideoSrc, setHlsVideoSrc] = useState<string>('')
 
   const navigate = useNavigate()
 
   const video: Video = data?.video;
-  const videoSrc = `${video?.videoFile}/ik-master.m3u8?tr=sr-240_360_480_720`;
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
 
-    async function checkVideoReady() {
-      try {
-        const res = await axios.get(videoSrc);
-        if (res.status === 200) {
-          setHlsVideoSrc(videoSrc);
-          setIsProcessing(false);
-          clearInterval(interval);
-        } else if (res.status === 202) {
-          console.log("Video still processing...");
-        } else {
-          throw new Error("Unexpected response status: " + res.status);
-        }
-      } catch (error) {
-        console.error("Error while checking HLS readiness:", error);
-        setIsProcessing(false);
-        clearInterval(interval);
-      }
-    }
-    
-    if (video?.videoFile) {
-      setIsProcessing(true);
-      // Start polling every 3s
-      interval = setInterval(checkVideoReady, 3000);
-      checkVideoReady();
-    }
-    
-    return () => clearInterval(interval);
-  }, [video?.videoFile, videoSrc]);
   
   
   useEffect(() => {
@@ -118,7 +84,7 @@ function RouteComponent() {
   if (subscribeError) console.log(subscribeError);
   if (isError) return <div className='flex justify-center items-center min-h-screen'>Error loading video</div>
   //TODO: make a skeleton that shows loading only for video area
-  if (isLoading || isProcessing || !hlsVideoSrc) return <div className='flex justify-center items-center min-h-screen'>Loading...</div>
+  if (isLoading) return <div className='flex justify-center items-center min-h-screen'>Loading...</div>
   return (
     <>
       <main className="w-full min-h-screen p-4 sm:p-5 flex flex-col lg:flex-row gap-6">
@@ -127,7 +93,7 @@ function RouteComponent() {
           {/* Video Player */}
           <div className="w-full p-2">
             <VideoPlayer
-              src={hlsVideoSrc}
+              src={video.videoFile}
               duration={video.duration}
               thumbnail={video.thumbnail}
               title={video.title}

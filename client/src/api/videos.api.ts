@@ -35,3 +35,14 @@ export const updateVideoViews = async(videoId:string) : Promise<any> =>{
         
     }
 }
+
+
+export const publishVideo = async (formData: FormData): Promise<any> => {
+    try {
+        const res = await apiClient.post<ApiSuccessResponse>('/videos', formData);
+        return res.data;
+    } catch (error) {
+        console.error("Error during publishing video:", error);
+        throw error;
+    }
+}

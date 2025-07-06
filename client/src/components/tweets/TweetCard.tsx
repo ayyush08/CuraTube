@@ -1,7 +1,7 @@
 
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar'
 import { Button } from '../ui/button'
-import {  EditIcon, Heart, Loader2Icon, TrashIcon } from 'lucide-react'
+import { EditIcon, Heart, TrashIcon } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '../ui/card'
 import { useEffect, useState } from 'react'
 import type { Tweet } from '@/types/tweets.types'
@@ -10,6 +10,8 @@ import { useAppSelector } from '@/redux/hooks'
 import { useToggleTweetLike } from '@/hooks/likes.hook'
 import { Textarea } from '../ui/textarea'
 import { useDeleteTweet, useUpdateTweet } from '@/hooks/tweets.hooks'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog'
+import { useNavigate } from '@tanstack/react-router'
 
 
 
@@ -19,10 +21,11 @@ const TweetCard = (tweet: Tweet) => {
     const [likeCount, setLikeCount] = useState(0);
     const [isEditing, setIsEditing] = useState(false);
     const [tweetContent, setTweetContent] = useState(tweet.content);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     const { mutate: toggleTweetLike, isPending: likePending } = useToggleTweetLike(setIsLiked, setLikeCount);
-    const { mutate: updateTweet, isPending: editPending } = useUpdateTweet(setTweetContent,setIsEditing);
-    const { mutate: deleteTweet, isPending: deletePending } = useDeleteTweet(tweet._id);
+    const { mutate: updateTweet, isPending: editPending } = useUpdateTweet(setTweetContent, setIsEditing);
+    const navigate = useNavigate()
     useEffect(() => {
         setIsLiked(tweet.likedBy?.some(like => like.likedBy === storedUser?._id) || false);
         setLikeCount(tweet.likedBy?.length || 0);
@@ -38,11 +41,12 @@ const TweetCard = (tweet: Tweet) => {
         updateTweet({ tweetId: tweet._id, content: tweetContent });
     }
 
-    const handleDelete = () => {
-        if (confirm('Are you sure you want to delete this tweet? This action cannot be undone.')) {
-            deleteTweet();
-        }
+    const handleUsernameClick = () => {
+        navigate({
+            to: `/channel/${tweet.owner.username}`,
+        })
     }
+
 
     return (
         <Card className="w-full border-none p-5 rounded-tl-2xl rounded-br-2xl bg-orange-950/50">
@@ -54,9 +58,9 @@ const TweetCard = (tweet: Tweet) => {
                     </Avatar>
                     <div className="flex-1">
                         <div className="flex items-center justify-between gap-1">
-                            <p className='flex flex-col'>
+                            <p onClick={handleUsernameClick} className='flex flex-col cursor-pointer hover:bg-orange-800/20 p-2 rounded-md transition-colors duration-200'>
                                 <span className="font-semibold text-white text-xl">{tweet.owner.fullName}</span>
-                                <span className="text-gray-500 text-sm">@{tweet.owner.username}</span>
+                                <span  className="text-gray-500 text-sm">@{tweet.owner.username}</span>
                             </p>
                             <span className="text-orange-500 italic font-semibold text-base">
                                 Tweeted {moment(tweet.createdAt).fromNow()}
@@ -115,23 +119,28 @@ const TweetCard = (tweet: Tweet) => {
                                 {/* Edit button visible only to tweet owner */}
                                 {storedUser?._id === tweet.owner._id && (
                                     <div>
-                                    <Button
-                                        
-                                        size="sm"
-                                        className="text-orange-500 scale-125 hover:text-orange-200 bg-transparent hover:bg-transparent"
-                                        onClick={() => setIsEditing(true)}
+                                        <Button
+
+                                            size="sm"
+                                            className="text-orange-500 scale-125 hover:text-orange-200 bg-transparent hover:bg-transparent"
+                                            onClick={() => setIsEditing(true)}
                                         >
-                                        <EditIcon/>
-                                    </Button>
-                                    <Button
-                                        
-                                        size="sm"
-                                        className="text-red-500 scale-125 hover:text-red-200 bg-transparent hover:bg-transparent"
-                                        onClick={handleDelete}
+                                            <EditIcon />
+                                        </Button>
+                                        <Button
+
+                                            size="sm"
+                                            className="text-red-500 scale-125 hover:text-red-200 bg-transparent hover:bg-transparent"
+                                            onClick={() => setShowDeleteDialog(true)}
                                         >
-                                        {deletePending ? <Loader2Icon className="animate-spin" /> : <TrashIcon />}
-                                    </Button>
-                                        </div>
+                                            <TrashIcon />
+                                        </Button>
+                                        <DeleteDialog
+                                            open={showDeleteDialog}
+                                            tweetId={tweet._id}
+                                            onClose={() => setShowDeleteDialog(false)}
+                                        />
+                                    </div>
 
                                 )}
                             </div>
@@ -145,3 +154,38 @@ const TweetCard = (tweet: Tweet) => {
 
 
 export default TweetCard
+
+
+const DeleteDialog = ({ open, tweetId, onClose }: { open: boolean, tweetId: string, onClose: () => void }) => {
+
+    const { mutate: deleteTweet, isPending: deletePending } = useDeleteTweet(tweetId);
+
+    const handleDelete = () => {
+        console.log('Deleting tweet with ID:', tweetId);
+        deleteTweet();
+        onClose();
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={onClose} >
+
+            <DialogContent onInteractOutside={(e) => e.preventDefault()} showCloseButton={false} className="sm:max-w-[450px]   border-orange-400/60 bg-orange-800/20 font-sans z-50 ">
+                <DialogHeader>
+                    <DialogTitle >Are you sure you want to delete this tweet?</DialogTitle>
+                    <DialogDescription>
+                        This action cannot be undone.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button className='cursor-pointer' disabled={deletePending} variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button className='bg-red-500 hover:bg-red-700 cursor-pointer text-white' onClick={handleDelete} >{
+                        deletePending ? "Deleting..." : "Delete"
+                    }</Button>
+                </DialogFooter>
+            </DialogContent>
+
+        </Dialog>
+    )
+}

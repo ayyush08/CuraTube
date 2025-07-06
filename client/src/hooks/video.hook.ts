@@ -1,7 +1,9 @@
-import { getAllVideos, getVideoById, updateVideoViews } from "@/api/videos.api";
+import { getAllVideos, getVideoById, publishVideo, updateVideoViews } from "@/api/videos.api";
 import { useAppSelector } from "@/redux/hooks";
 import type { VideoFetchParams } from "@/types/video.types";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 
 export const usePaginatedVideos = ({
     query = '',
@@ -62,6 +64,27 @@ export const useUpdateViews = ({ videoId }: { videoId: string }) => {
         onError: (error) => {
             console.error("Error updating views", error);
         },
-        
+
+    })
+}
+
+
+export const usePublishVideo = () => {
+    const queryClient = useQueryClient();
+    const navigate = useNavigate()
+    return useMutation({
+        mutationFn: (formData: FormData) => publishVideo(formData),
+        onSuccess: (data) => {
+            toast.success("Video published successfully");
+            console.log("Video published successfully",data);
+            queryClient.invalidateQueries({ queryKey: ['videos'] });
+            queryClient.invalidateQueries({ queryKey: ['videos-infinite'] });
+            navigate({
+                to: `/videos/${data.video._id}`,
+            })
+        },
+        onError: (error) => {
+            console.error("Error publishing video", error);
+        },
     })
 }

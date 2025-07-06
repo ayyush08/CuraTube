@@ -4,7 +4,7 @@ import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from 'jsonwebtoken'
 import mongoose from "mongoose";
-import { deleteFileFromImageKit, uploadOnImageKit } from "../utils/imagekit.js";
+import { deleteFileFromCloudinary, getCloudinaryPublicIdFromUrl, uploadToCloudinary } from "../utils/cloudinary.js";
 
 
 
@@ -56,18 +56,26 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar is required");
     }
+    const avatarFolder = `curatube-avatars/${title}-${Date.now()}`;
+    const avatarFileName = path.basename(avatarLocalPath);
+    const avatarResult = await uploadToCloudinary(avatarLocalPath, avatarFolder, avatarFileName, 'image');
 
-    const avatar = await uploadOnImageKit(avatarLocalPath, "curatube-user-avatars");
-    const coverImage = await uploadOnImageKit(coverImageLocalPath, "curatube-user-cover-images");
+    const coverImageFolder = `curatube-cover-images/${title}-${Date.now()}`;
+    const coverImageFileName = path.basename(coverImageLocalPath);
+    const coverImageResult = await uploadToCloudinary(coverImageLocalPath, coverImageFolder, coverImageFileName, 'image');
 
-    if (!avatar) {
-        throw new ApiError(400, "Avatar is required");
+    if (!avatarResult || !avatarResult.secure_url) {
+        throw new ApiError(400, "Avatar upload failed");
+    }
+
+    if (coverImageLocalPath && (!coverImageResult || !coverImageResult.secure_url)) {
+        throw new ApiError(400, "Cover Image upload failed");
     }
 
     const user = await User.create({
         fullName,
-        avatar: avatar.url,
-        coverImage: coverImage?.url || "",
+        avatar: avatarResult.secure_url,
+        coverImage: coverImageResult?.secure_url || "",
         username: username.toLowerCase(),
         email,
         password,
@@ -161,9 +169,9 @@ const logoutUser = asyncHandler(async (req, res) => {
 const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
-    
+
     console.log('incomingRefreshToken', incomingRefreshToken);
-    
+
     if (!incomingRefreshToken) {
         throw new ApiError(401, 'Unauthorized request');
     }
@@ -271,22 +279,25 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     const existingUser = await User.findById(req.user?._id);
     const oldAvatar = existingUser.avatar;
 
-    const avatar = await uploadOnImageKit(avatarLocalPath, 'user-avatars')
-    if (!avatar.url) {
-        throw new ApiError(400, 'Error while uploading on avatar')
+    const avatarFolder = `curatube-avatars/${title}-${Date.now()}`;
+    const avatarFileName = path.basename(avatarLocalPath);
+    const avatarResult = await uploadToCloudinary(avatarLocalPath, avatarFolder, avatarFileName, 'image');
+
+    if (!avatarResult || !avatarResult.secure_url) {
+        throw new ApiError(400, 'Error while uploading Avatar');
     }
 
     //delete existing file from imagekit
     if (oldAvatar) {
-
-        await deleteFileFromImageKit(oldAvatar, 'curatube-user-avatars');
+        const public_id = getCloudinaryPublicIdFromUrl(oldAvatar);
+        await deleteFileFromCloudinary(public_id, 'image');
     }
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
-                avatar: avatar.url
+                avatar: avatarResult.secure_url
             }
         },
         { new: true }
@@ -304,24 +315,24 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     }
     const existingUser = await User.findById(req.user?._id);
     const oldcoverImage = existingUser.coverImage;
+    const coverImageFolder = `curatube-cover-images/${title}-${Date.now()}`;
+    const coverImageFileName = path.basename(coverImageLocalPath);
+    const coverImageResult = await uploadToCloudinary(coverImageLocalPath, coverImageFolder, coverImageFileName, 'image');
 
-
-    const coverImage = await uploadOnImageKit(coverImageLocalPath, 'user-cover-images')
-
-    if (!coverImage.url) {
+    if (!coverImageResult || !coverImageResult.secure_url) {
         throw new ApiError(400, 'Error while uploading Cover Image')
     }
 
     if (oldcoverImage) {
-
-        await deleteFileFromImageKit(oldcoverImage, 'curatube-user-cover-images');
+        const public_id = getCloudinaryPublicIdFromUrl(oldcoverImage);
+        await deleteFileFromCloudinary(public_id, 'image');
     }
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
-                coverImage: coverImage.url
+                coverImage: coverImageResult.secure_url
             }
         },
         { new: true }
@@ -390,7 +401,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                 avatar: 1,
                 coverImage: 1,
                 email: 1,
-                createdAt:1
+                createdAt: 1
             }
         }
     ])
