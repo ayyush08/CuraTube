@@ -4,8 +4,8 @@ import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from 'jsonwebtoken'
 import mongoose from "mongoose";
-import { deleteFileFromCloudinary, getCloudinaryPublicIdFromUrl, uploadToCloudinary } from "../utils/cloudinary.js";
-
+import { deleteFileFromCloudinary, uploadToCloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -56,11 +56,12 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar is required");
     }
-    const avatarFolder = `curatube-avatars/${title}-${Date.now()}`;
+    const now = Date.now();
+    const avatarFolder = `curatube-avatars/${username}-${now}`;
     const avatarFileName = path.basename(avatarLocalPath);
     const avatarResult = await uploadToCloudinary(avatarLocalPath, avatarFolder, avatarFileName, 'image');
 
-    const coverImageFolder = `curatube-cover-images/${title}-${Date.now()}`;
+    const coverImageFolder = `curatube-cover-images/${username}-${now}`;
     const coverImageFileName = path.basename(coverImageLocalPath);
     const coverImageResult = await uploadToCloudinary(coverImageLocalPath, coverImageFolder, coverImageFileName, 'image');
 

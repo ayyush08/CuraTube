@@ -34,7 +34,13 @@ const videoSchema = new Schema({
     owner:{
         type: Schema.Types.ObjectId,
         ref: "User"
-    }
+    },
+    asset_public_ids:[
+        {
+            public_id: String,
+            resource_type: String
+        }
+    ]
 },
 {
     timestamps:true

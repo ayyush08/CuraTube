@@ -59,34 +59,7 @@ export const uploadToCloudinary = async (localFilePath, folder, fileName, resour
     }
 };
 
-//Incomplete: need to fix some bugs in whole delete logic
-export const deleteCloudinaryAssetByUrl = async (secureUrl) => {
-    if (!secureUrl) {
-        console.error('❌ No URL provided');
-        return;
-    }
 
-    const publicId = getCloudinaryPublicIdFromUrl(secureUrl);
-    if (!publicId) {
-        console.error('❌ Could not parse public_id from URL');
-        return;
-    }
-
-    console.log(`🔍 Parsed public_id: ${publicId}`);
-
-    // Check if this is an HLS playlist (by extension in the URL)
-    if (secureUrl.endsWith('.m3u8')) {
-        console.log(`🎯 Detected .m3u8 video playlist. Deleting entire folder of segments.`);
-
-        // Get the folder containing this .m3u8 file's segments
-        const folderForSegments = publicId + '/';
-        await deleteAllAssetsInCloudinaryFolder(folderForSegments);
-    } else {
-        // Otherwise, single asset
-        console.log(`🎯 Deleting single asset: ${publicId}`);
-        await deleteFileFromCloudinary(publicId, undefined);
-    }
-};
 
 
 export const deleteFileFromCloudinary = async (publicId, resource_type) => {
@@ -110,74 +83,6 @@ export const deleteFileFromCloudinary = async (publicId, resource_type) => {
 };
 
 
-
-export const deleteAllAssetsInCloudinaryFolder = async (folder) => {
-    if (!folder) {
-        console.error('No folder provided to deleteAllAssetsInCloudinaryFolder');
-        return;
-    }
-
-    console.log(`🗑️ Deleting ALL assets in Cloudinary *prefix*: ${folder}`);
-
-    let nextCursor = undefined;
-
-    do {
-        const result = await cloudinary.search
-            .expression(`asset_folder:"${folder}"/*`)
-            .max_results(100)
-            .next_cursor(nextCursor)
-            .execute();
-
-        if (!result.resources || result.resources.length === 0) {
-            console.log(`✅ No more files found under prefix ${folder}`);
-            break;
-        }
-
-        await Promise.all(
-            result.resources.map((resource) =>
-                deleteFileFromCloudinary(resource.public_id, resource.resource_type)
-            )
-        );
-
-        nextCursor = result.next_cursor;
-    } while (nextCursor);
-};
-
-
-export function getCloudinaryFolderFromUrl(secureUrl) {
-    if (!secureUrl) return null;
-    try {
-        const afterUpload = secureUrl.split('/upload/')[1];
-        if (!afterUpload) return null;
-
-        const versionAndPath = afterUpload.replace(/^v\d+\//, '');
-        const dir = path.dirname(versionAndPath).replace(/\\/g, '/');
-        return decodeURIComponent(dir);
-    } catch {
-        return null;
-    }
-}
-
-export function getCloudinaryPublicIdFromUrl(secureUrl) {
-    if (!secureUrl) return null;
-    try {
-        const afterUpload = secureUrl.split('/upload/')[1];
-        if (!afterUpload) return null;
-
-        // remove version prefix
-        const noVersion = afterUpload.replace(/^v\d+\//, '');
-
-        // decode percent encoding
-        const decoded = decodeURIComponent(noVersion);
-
-        // remove extension
-        const publicId = decoded.replace(/\.[^/.]+$/, '');
-
-        return publicId;
-    } catch {
-        return null;
-    }
-}
 
 
 

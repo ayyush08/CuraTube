@@ -9,7 +9,7 @@ import fs from 'fs-extra';
 import { Like } from "../models/like.model.js"
 import { Comment } from "../models/comment.model.js"
 import { transcodeToHLS } from "../utils/transcodeToHls.js"
-import {  deleteAllAssetsInCloudinaryFolder, deleteFileFromCloudinary, getCloudinaryFolderFromUrl, getCloudinaryPublicIdFromUrl, rewriteM3U8Playlist, uploadToCloudinary } from '../utils/cloudinary.js';
+import {   deleteFileFromCloudinary, rewriteM3U8Playlist, uploadToCloudinary } from '../utils/cloudinary.js';
 
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query = '', sortBy = 'createdAt', sortType = 'desc', userId } = req.query
@@ -156,7 +156,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
         }
     }
     const now = Date.now();
-
+    const assetPublicIds = [];
     console.log('✅ Starting local HLS transcoding');
 
     const hlsOutputDir = path.join('./public/temp', `hls-${now}`);
@@ -192,6 +192,10 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
         segmentUrlMap[file] = result.secure_url;
         segmentUploadResults.push(result);
+        assetPublicIds.push({
+            public_id: result.public_id,
+            resource_type: result.resource_type
+        })
     }
 
     console.log('✅ All .ts segments uploaded:', segmentUrlMap);
@@ -212,17 +216,17 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
     if (!playlistResult) {
         // Cleanup segments if playlist upload fails
-        await Promise.all(Object.values(segmentUrlMap).map(url => {
-            const publicId = url
-                .split('/upload/')[1]
-                .replace(/\.[^/.]+$/, '');
-            return deleteFileFromCloudinary(publicId, 'video');
+        await Promise.all(assetPublicIds.map(async (asset) => {
+            await deleteFileFromCloudinary(asset.public_id, asset.resource_type);
         }));
         throw new ApiError(500, 'Playlist upload failed');
     }
 
     console.log('✅ Playlist uploaded:', playlistResult.secure_url);
-
+    assetPublicIds.push({
+        public_id: playlistResult.public_id,
+        resource_type: playlistResult.resource_type
+    });
     // Upload thumbnail
     console.log('🚀 Uploading thumbnail to Cloudinary...');
     const thumbnailFolder = `curatube-thumbnails/${title}-${now}`;
@@ -233,9 +237,9 @@ const publishAVideo = asyncHandler(async (req, res) => {
         console.error('❌ Thumbnail upload failed');
 
         // Clean up all uploaded HLS segments
-        for (const result of segmentUploadResults) {
-            await deleteFileFromCloudinary(result.public_id, 'video');
-        }
+        await Promise.all(assetPublicIds.map(async (asset) => {
+            await deleteFileFromCloudinary(asset.public_id, asset.resource_type);
+        }));
 
         await fs.remove(hlsOutputDir);
         await fs.remove(absoluteVideoPath);
@@ -245,7 +249,10 @@ const publishAVideo = asyncHandler(async (req, res) => {
     }
 
     console.log('✅ Thumbnail uploaded:', thumbnailResult.secure_url);
-
+    assetPublicIds.push({
+        public_id: thumbnailResult.public_id,
+        resource_type: thumbnailResult.resource_type
+    });
     // Clean up local temp
     await fs.remove(hlsOutputDir);
     await fs.remove(absoluteVideoPath);
@@ -265,11 +272,16 @@ const publishAVideo = asyncHandler(async (req, res) => {
         thumbnail: thumbnailResult.secure_url,
         duration: cumulativeDuration,
         isPublished,
+        asset_public_ids: assetPublicIds,
         owner: req?.user._id,
     });
 
     if (!createdVideo) {
+        await Promise.all(assetPublicIds.map(async (asset) => {
+            await deleteFileFromCloudinary(asset.public_id, asset.resource_type);
+        }));
         throw new ApiError(400, "Failed to upload video");
+
     }
 
     return res
@@ -435,20 +447,17 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
     if (!video) throw new ApiError(404, "Video not found");
 
-    const videoUrl = video.videoFile;
-    const thumbnailUrl = video.thumbnail;
 
-    const videoFolder = getCloudinaryFolderFromUrl(videoUrl);
-    const thumbnailPublicId = getCloudinaryPublicIdFromUrl(thumbnailUrl);
-
-    console.log('🚀 Video Folder to delete:', videoFolder);
-    console.log('🖼️ Thumbnail Public ID to delete:', thumbnailPublicId);
-
+    
+    const assetPublicIds = video.asset_public_ids || [];
+    console.log('📂 Assets to delete:', assetPublicIds);
+    
     await Promise.all([
         Like.deleteMany({ video: videoId }),
         Comment.deleteMany({ video: videoId }),
-        videoFolder && deleteAllAssetsInCloudinaryFolder(videoFolder),
-        thumbnailPublicId && deleteFileFromCloudinary(thumbnailPublicId, 'image')
+        ...assetPublicIds.map(async (asset) => {
+            await deleteFileFromCloudinary(asset.public_id, asset.resource_type);
+        })
     ]);
 
     await Video.findByIdAndDelete(videoId);
