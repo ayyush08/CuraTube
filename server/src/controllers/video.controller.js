@@ -8,9 +8,9 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import fs from 'fs-extra';
 import { Like } from "../models/like.model.js"
 import { Comment } from "../models/comment.model.js"
-import { transcodeToHLS } from "../utils/transcodeToHls.js"
-import {   deleteFileFromCloudinary, rewriteM3U8Playlist, uploadToCloudinary } from '../utils/cloudinary.js';
-
+import { transcodeToHLS } from "../utils/videoUtils.js"
+import { deleteFileFromCloudinary, uploadToCloudinary } from '../utils/cloudinary.js';
+import { getVideoDuration, rewriteM3U8Playlist } from '../utils/videoUtils.js';
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query = '', sortBy = 'createdAt', sortType = 'desc', userId } = req.query
 
@@ -107,20 +107,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Failed to get all videos");
     }
 
-    const fakeVideo = (i) => ({
-        _id: `${page}-${i}`,
-        title: `Test Video ${page}-${i}`,
-        description: `Fake description`,
-        views: Math.floor(Math.random() * 1000),
-        owner: {
-            username: `User ${i}`,
-            avatar: null,
-        },
-        isPublished: true,
-        createdAt: new Date(),
-    });
-
-    const fakeVideos = Array.from({ length: options.limit }, (_, i) => fakeVideo(i));
     return res
         .status(200)
         .json(new ApiResponse(200, {
@@ -163,7 +149,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
     await fs.ensureDir(hlsOutputDir);
 
     const absoluteVideoPath = path.resolve(videoLocalPath);
-
+    const videoDuration = await getVideoDuration(absoluteVideoPath);
     if (!await fs.pathExists(absoluteVideoPath)) {
         throw new ApiError(400, `File not found on server: ${absoluteVideoPath}`);
     }
@@ -258,19 +244,13 @@ const publishAVideo = asyncHandler(async (req, res) => {
     await fs.remove(absoluteVideoPath);
     await fs.remove(thumbnailLocalPath);
 
-    const cumulativeDuration = segmentUploadResults.reduce((total, file) => {
-        if (file.resource_type === 'video' && file.format !== 'm3u8') {
-            return total + (file.duration || 0);
-        }
-        return total;
-    }, 0);
 
     const createdVideo = await Video.create({
         title,
         description,
         videoFile: playlistResult.secure_url,
         thumbnail: thumbnailResult.secure_url,
-        duration: cumulativeDuration,
+        duration: Math.round(videoDuration),
         isPublished,
         asset_public_ids: assetPublicIds,
         owner: req?.user._id,
@@ -448,10 +428,10 @@ const deleteVideo = asyncHandler(async (req, res) => {
     if (!video) throw new ApiError(404, "Video not found");
 
 
-    
+
     const assetPublicIds = video.asset_public_ids || [];
     console.log('📂 Assets to delete:', assetPublicIds);
-    
+
     await Promise.all([
         Like.deleteMany({ video: videoId }),
         Comment.deleteMany({ video: videoId }),

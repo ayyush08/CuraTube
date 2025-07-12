@@ -86,10 +86,4 @@ export const deleteFileFromCloudinary = async (publicId, resource_type) => {
 
 
 
-export const rewriteM3U8Playlist = async (playlistPath, segmentMap) => {
-    let content = await fs.promises.readFile(playlistPath, 'utf-8');
-    for (const [name, url] of Object.entries(segmentMap)) {
-        content = content.replace(new RegExp(name, 'g'), url);
-    }
-    await fs.promises.writeFile(playlistPath, content, 'utf-8');
-};
+

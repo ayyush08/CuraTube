@@ -10,7 +10,6 @@ import { toast } from 'sonner'
 import { useToggleSubscription } from '@/hooks/subscription.hook'
 import { Button } from '@/components/ui/button'
 import { Edit3Icon, Loader2Icon } from 'lucide-react'
-
 export const Route = createFileRoute('/channel/$username')({
   component: RouteComponent,
 })

@@ -47,7 +47,7 @@ function RouteComponent() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
 
-
+  if(videos.length === 0 ) return <div className='flex justify-center items-center min-h-screen'>No videos found</div>
   if (isLoading) return <div className='flex justify-center items-center min-h-screen'>Loading...</div>
 
   return <div className="p-4 grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-5" >

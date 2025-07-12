@@ -28,3 +28,20 @@ export async function transcodeToHLS(videoPath, outputDir) {
 
 
 
+export async function getVideoDuration(inputPath) {
+    return new Promise((resolve, reject) => {
+        ffmpeg.ffprobe(inputPath, (err, metadata) => {
+            if (err) return reject(err);
+            resolve(metadata.format.duration);
+        });
+    });
+}
+
+
+export const rewriteM3U8Playlist = async (playlistPath, segmentMap) => {
+    let content = await fs.promises.readFile(playlistPath, 'utf-8');
+    for (const [name, url] of Object.entries(segmentMap)) {
+        content = content.replace(new RegExp(name, 'g'), url);
+    }
+    await fs.promises.writeFile(playlistPath, content, 'utf-8');
+};
