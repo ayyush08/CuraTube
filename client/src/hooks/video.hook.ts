@@ -1,4 +1,4 @@
-import { getAllVideos, getVideoById, publishVideo, updateVideoViews } from "@/api/videos.api";
+import { getAllVideos, getVideoById, publishVideo, togglePublishStatus, updateVideoViews } from "@/api/videos.api";
 import { useAppSelector } from "@/redux/hooks";
 import type { VideoFetchParams } from "@/types/video.types";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -85,6 +85,28 @@ export const usePublishVideo = () => {
         },
         onError: (error) => {
             console.error("Error publishing video", error);
+        },
+    })
+}
+
+
+export const useTogglePublishStatus = (setIsPublished: React.Dispatch<React.SetStateAction<boolean | undefined>>) => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (videoId: string) => {
+            return togglePublishStatus(videoId);
+        },
+        onSuccess: (data) => {
+            setIsPublished(data?.isPublished);
+            if(data?.isPublished) toast.success("Video published successfully");
+            else toast.success("Video unpublished successfully");
+            console.log("Video publish status toggled successfully", data);
+            queryClient.invalidateQueries({ queryKey: ['video', data?.videoId] });
+            queryClient.invalidateQueries({ queryKey: ['videos'] });
+            queryClient.invalidateQueries({ queryKey: ['videos-infinite'] });
+        },
+        onError: (error) => {
+            console.error("Error toggling publish status", error);
         },
     })
 }

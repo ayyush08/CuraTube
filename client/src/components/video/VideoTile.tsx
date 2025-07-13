@@ -1,4 +1,5 @@
 import { formatDuration, formatViews } from '@/lib/utils'
+import { useAppSelector } from '@/redux/hooks'
 import type { Video } from '@/types/video.types'
 import { useNavigate } from '@tanstack/react-router'
 import moment from 'moment'
@@ -18,7 +19,7 @@ const VideoTile = (
 ) => {
 
     const navigate = useNavigate()
-
+    const storedUser = useAppSelector(state => state.auth.user)
     const handleTileClick = (videoId: string) => {
         navigate({
             to: `/videos/${videoId}`
@@ -72,6 +73,13 @@ const VideoTile = (
                             <p className='text-xs sm:text-sm text-neutral-500'>@{video.owner.username}</p>
                         </div>
                     </div>
+                    {
+                        storedUser?._id === video.owner._id && (
+                            <span className={`text-xs sm:text-sm font-semibold ${video.isPublished ? 'text-green-500' : 'text-red-500'} font-mono`}>
+                                {video.isPublished ? 'Published' : 'Unpublished'}
+                            </span>
+                        )
+                    }
                     {watchedAt && <span className='italic text-orange-400 font-semibold text-sm'>
                         Watched {moment(watchedAt).fromNow()}
                     </span>}

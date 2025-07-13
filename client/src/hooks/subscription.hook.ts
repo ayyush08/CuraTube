@@ -8,7 +8,6 @@ export const useToggleSubscription = (setIsSubscribed: React.Dispatch<React.SetS
         mutationFn: async (channelId: string) => {
             try {
                 const res = await toggleSubscription(channelId)
-                console.log(res,"sdad");
                 
                 return res;
             } catch (error: any) {

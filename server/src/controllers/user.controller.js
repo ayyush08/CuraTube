@@ -276,11 +276,13 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     if (!avatarLocalPath) {
         throw new ApiError(400, 'Avatar file is missing');
     }
+    const now = Date.now();
 
     const existingUser = await User.findById(req.user?._id);
+
     const oldAvatar = existingUser.avatar;
 
-    const avatarFolder = `curatube-avatars/${title}-${Date.now()}`;
+    const avatarFolder = `curatube-avatars/${existingUser.username}-${now}`;
     const avatarFileName = path.basename(avatarLocalPath);
     const avatarResult = await uploadToCloudinary(avatarLocalPath, avatarFolder, avatarFileName, 'image');
 
@@ -290,8 +292,8 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
     //delete existing file from imagekit
     if (oldAvatar) {
-        const public_id = getCloudinaryPublicIdFromUrl(oldAvatar);
-        await deleteFileFromCloudinary(public_id, 'image');
+
+        await deleteFileFromCloudinary(oldAvatar, 'image');
     }
 
     const user = await User.findByIdAndUpdate(
@@ -314,9 +316,10 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     if (!coverImageLocalPath) {
         throw new ApiError(400, 'Cover Image file is missing');
     }
+    const now = Date.now();
     const existingUser = await User.findById(req.user?._id);
     const oldcoverImage = existingUser.coverImage;
-    const coverImageFolder = `curatube-cover-images/${title}-${Date.now()}`;
+    const coverImageFolder = `curatube-cover-images/${existingUser.username}-${now}`;
     const coverImageFileName = path.basename(coverImageLocalPath);
     const coverImageResult = await uploadToCloudinary(coverImageLocalPath, coverImageFolder, coverImageFileName, 'image');
 
@@ -325,8 +328,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     }
 
     if (oldcoverImage) {
-        const public_id = getCloudinaryPublicIdFromUrl(oldcoverImage);
-        await deleteFileFromCloudinary(public_id, 'image');
+        await deleteFileFromCloudinary(oldcoverImage, 'image');
     }
 
     const user = await User.findByIdAndUpdate(
@@ -437,6 +439,22 @@ const getWatchHistory = asyncHandler(async (req, res) => {
         },
         {
             $unwind: "$videoDetails"
+        },
+        {
+            $addFields: {
+                isOwner: {
+                    $eq: ["$videoDetails.owner", new mongoose.Types.ObjectId(req.user._id)]
+                }
+            }
+        },
+        // include published videos of others OR all videos of self
+        {
+            $match: {
+                $or: [
+                    { isOwner: true },
+                    { "videoDetails.isPublished": true }
+                ]
+            }
         },
         {
             $lookup: {

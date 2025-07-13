@@ -16,7 +16,7 @@ export interface Video {
     description: string,
     duration: number,
     views: number,
-    isPublished?:string
+    isPublished?: boolean,
     owner: {
         _id: string,
         username: string,

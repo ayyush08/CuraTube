@@ -17,7 +17,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 
     if (!videoExists) throw new ApiError(400, "Video not found");
 
-    const totalLikes = await Like.countDocuments({  video: videoId })
+    const totalLikes = await Like.countDocuments({ video: videoId })
 
     const isLiked = await Like.findOne(
         {
@@ -79,7 +79,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid tweet id");
     }
     const userId = req.user?._id
-    const totalLikes = await Like.countDocuments({ tweet: tweetId});
+    const totalLikes = await Like.countDocuments({ tweet: tweetId });
     const isLiked = await Like.findOne(
         {
             tweet: tweetId,
@@ -100,8 +100,8 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
         return res
             .status(200)
             .json(new ApiResponse(200, {
-            liked: true,
-            likeCount:  totalLikes + 1 < 0 ? 0 : totalLikes + 1
+                liked: true,
+                likeCount: totalLikes + 1 < 0 ? 0 : totalLikes + 1
             }, "Tweet Liked Successfully"))
     }
 }
@@ -129,7 +129,19 @@ const getLikedVideos = asyncHandler(async (req, res) => {
             $unwind: '$videoDetails'
         },
         {
-            $match: { 'videoDetails.isPublished': true }
+            $addFields: {
+                isOwner: {
+                    $eq: ['$videoDetails.owner', req.user._id]
+                }
+            }
+        },
+        {
+            $match: {
+                $or: [
+                    { isOwner: true },
+                    { 'videoDetails.isPublished': true }
+                ]
+            }
         },
         {
             $lookup: {

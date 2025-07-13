@@ -359,6 +359,7 @@ const getVideoById = asyncHandler(async (req, res) => {
                 isLiked: 1,
                 isSubscribed: 1,
                 subscribersCount: 1,
+                isPublished: 1,
             },
         },
     ]);
@@ -478,8 +479,11 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(new ApiResponse(200,
-            { isPublished: toggleStatus.isPublished },
-            "Publish status updated successfully"));
+            {
+                isPublished: toggleStatus.isPublished,
+                videoId: toggleStatus._id
+            },
+            toggleStatus.isPublished ? "Video Published Successfully" : "Video Unpublished Successfully"));
 })
 
 const updateVideoViews = asyncHandler(async (req, res) => {

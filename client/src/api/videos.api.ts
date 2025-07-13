@@ -46,3 +46,13 @@ export const publishVideo = async (formData: FormData): Promise<any> => {
         throw error;
     }
 }
+
+export const togglePublishStatus = async (videoId: string): Promise<any> => {
+    try {
+        const res = await apiClient.patch<ApiSuccessResponse>(`/videos/toggle/publish/${videoId}`);
+        return res.data;
+    } catch (error) {
+        console.error("Error during toggling publish status:", error);
+        throw error;
+    }
+}

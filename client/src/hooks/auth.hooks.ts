@@ -42,6 +42,7 @@ export const useRegisterLogin = (onClose: () => void) => {
 
             dispatch(loginSuccess({ ...data.user }));
             queryClient.invalidateQueries({ queryKey: ['current-user'] });
+            queryClient.invalidateQueries({ queryKey: ['video'] });
             toast.success(`Welcome to CuraTube, ${data.user.username}`);
             onClose();
         },
@@ -70,6 +71,7 @@ export const useLogin = (onClose: () => void) => {
         onSuccess: (data) => {
             dispatch(loginSuccess({ ...data.user }));
             queryClient.invalidateQueries({ queryKey: ['current-user'] });
+            queryClient.invalidateQueries({queryKey:['video']})
             toast.success(`Welcome, ${data.user.username}`);
             onClose();
         },
@@ -97,6 +99,7 @@ export const useLogout = (onClose: () => void) => {
             dispatch(logoutUser())
             persistor.purge()
             queryClient.removeQueries({ queryKey: ['current-user'] })
+            queryClient.invalidateQueries({queryKey:['videos']})
             toast.dismiss("Logged out")
             onClose()
         },
