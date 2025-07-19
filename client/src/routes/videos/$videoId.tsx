@@ -53,7 +53,7 @@ function RouteComponent() {
       setIsSubscribed(video.owner.isSubscribed);
       setIsPublished(video.isPublished);
       setHasInitialized(true);
-      
+
     }
   }, [video, updateViews, hasInitialized]);
 
@@ -162,15 +162,21 @@ function RouteComponent() {
                     )
                   }
                 </div>
-                <Button
-                  variant="outline"
-                  className="border-orange-500 text-orange-500 hover:bg-orange-500  bg-transparent"
-                  onClick={handleAddToPlaylist}
-                >
-                  <VideoIcon className="mr-2 h-4 w-4" />
-                  Add Video to Playlist
-                </Button>
-                <PlaylistDialog open={isPlaylistDialogOpen} videoId={video._id} onClose={() => setIsPlaylistDialogOpen(false)} />
+                {
+                  isPublished && (
+                    <>
+                      <Button
+                        variant="outline"
+                        className="border-orange-500 text-orange-500 hover:bg-orange-500  bg-transparent"
+                        onClick={handleAddToPlaylist}
+                      >
+                        <VideoIcon className="mr-2 h-4 w-4" />
+                        Add Video to Playlist
+                      </Button>
+                      <PlaylistDialog open={isPlaylistDialogOpen} videoId={video._id} onClose={() => setIsPlaylistDialogOpen(false)} />
+                    </>
+                  )
+                }
               </div>
               <div className="flex flex-col gap-1">
                 <span className="font-mono text-lg font-semibold">Description</span>
