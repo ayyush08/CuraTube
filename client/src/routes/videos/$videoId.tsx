@@ -1,3 +1,4 @@
+import PlaylistDialog from '@/components/playlist/PlaylistDialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -10,7 +11,7 @@ import { useAppSelector } from '@/redux/hooks'
 import type { Video } from '@/types/video.types'
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Loader2Icon, ThumbsUpIcon } from 'lucide-react'
+import { Loader2Icon, ThumbsUpIcon, VideoIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -27,16 +28,13 @@ function RouteComponent() {
   const [isSubscribed, setIsSubscribed] = useState<boolean | undefined>(false);
   const [subscribersCount, setSubscribersCount] = useState<number>(0);
   const [isPublished, setIsPublished] = useState<boolean | undefined>(false);
+
+  const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = useState<boolean>(false);
+
   const storedUser = useAppSelector(state => state.auth.user)
   const { mutate: updateViews } = useUpdateViews({ videoId })
-  const { mutate: toggleLike, isPending: liking, isError: likeError } = useToggleVideoLike(
-    (liked) => setIsVideoLiked(liked),
-    (count) => setLikeCount(count)
-  );
-  const { mutate: toggleSubscriber, isPending: isSubscribing, isError: subscribeError } = useToggleSubscription(
-    (subscribed) => setIsSubscribed(subscribed),
-    (count) => setSubscribersCount(count)
-  );
+  const { mutate: toggleLike, isPending: liking, isError: likeError } = useToggleVideoLike(setIsVideoLiked, setLikeCount);
+  const { mutate: toggleSubscriber, isPending: isSubscribing, isError: subscribeError } = useToggleSubscription(setIsSubscribed, setSubscribersCount);
   const { data: suggestedVideosData } = useInfiniteVideos({ query: '', sortBy: 'views', sortType: 'desc', userId: '' })
   const { mutate: togglePublishStatus, isPending: isPublishing } = useTogglePublishStatus(setIsPublished)
 
@@ -55,6 +53,7 @@ function RouteComponent() {
       setIsSubscribed(video.owner.isSubscribed);
       setIsPublished(video.isPublished);
       setHasInitialized(true);
+      
     }
   }, [video, updateViews, hasInitialized]);
 
@@ -94,6 +93,14 @@ function RouteComponent() {
     console.log("Publish toggle clicked", video.isPublished);
     // Call API to update video publish status
     togglePublishStatus(videoId);
+  }
+
+  const handleAddToPlaylist = () => {
+    if (!storedUser) {
+      toast.error("Please login to add video to playlist")
+      return
+    }
+    setIsPlaylistDialogOpen(true);
   }
 
   console.log(video, "Video data in video route");
@@ -143,19 +150,27 @@ function RouteComponent() {
                         ) : (
 
                           <Switch
-                          id="isPublished"
-                          checked={isPublished}
-                          name='Toggle Publish Status'
-                          onCheckedChange={handlePublishToggle}
-                          className="data-[state=checked]:bg-orange-500 cursor-pointer ml-5"
+                            id="isPublished"
+                            checked={isPublished}
+                            name='Toggle Publish Status'
+                            onCheckedChange={handlePublishToggle}
+                            className="data-[state=checked]:bg-orange-500 cursor-pointer ml-5"
                           />
                         )}
-                        <Label htmlFor="isPublished">{ isPublished ? "Unpublish" : "Publish"}</Label>
+                        <Label htmlFor="isPublished">{isPublished ? "Unpublish" : "Publish"}</Label>
                       </div>
                     )
                   }
                 </div>
-                <Button variant='outline'> +  Add to Playlist</Button>
+                <Button
+                  variant="outline"
+                  className="border-orange-500 text-orange-500 hover:bg-orange-500  bg-transparent"
+                  onClick={handleAddToPlaylist}
+                >
+                  <VideoIcon className="mr-2 h-4 w-4" />
+                  Add Video to Playlist
+                </Button>
+                <PlaylistDialog open={isPlaylistDialogOpen} videoId={video._id} onClose={() => setIsPlaylistDialogOpen(false)} />
               </div>
               <div className="flex flex-col gap-1">
                 <span className="font-mono text-lg font-semibold">Description</span>

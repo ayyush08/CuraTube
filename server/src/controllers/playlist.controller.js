@@ -13,6 +13,11 @@ const createPlaylist = asyncHandler(async (req, res) => {
     if (!description) {
         throw new ApiError(400, "Description is required")
     }
+    const existingPlaylists = await Playlist.countDocuments({ owner: req.user._id })
+
+    if (existingPlaylists === 10) {
+        throw new ApiError(400, "We only allow a maximum of 10 playlists per user")
+    }
     const playlist = await Playlist.create({
         name,
         description,
@@ -29,6 +34,9 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     if (!isValidObjectId(userId)) {
         throw new ApiError(400, "Invalid user id")
     }
+
+
+
     const playlist = await Playlist.aggregate([
         {
             $match: {
@@ -36,7 +44,10 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
             }
         },
         {
-            $unwind: "$videos"
+            $unwind: {
+                path:"$videos",
+                preserveNullAndEmptyArrays: true
+            }
         },
         {
             $lookup: {
@@ -45,12 +56,24 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
                 foreignField: "_id",
                 as: "videoDetails",
                 pipeline: [
-
+                    {
+                        $project: {
+                            title: 1,
+                            thumbnail: 1,
+                            owner: 1,
+                            duration: 1,
+                            views: 1,
+                        }
+                    }
                 ]
             }
         },
         {
-            $unwind: "$videoDetails"
+            $unwind: {
+                path: "$videoDetails",
+                preserveNullAndEmptyArrays: true
+
+            }
         },
         {
             $lookup: {
@@ -71,7 +94,10 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
             }
         },
         {
-            $unwind: "$videoDetails.owner"
+            $unwind: {
+                path: "$videoDetails.owner",
+                preserveNullAndEmptyArrays: true
+            }
         },
         {
             $sort: {
@@ -97,10 +123,19 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
                 description: { $first: "$description" },
                 createdAt: { $first: "$createdAt" },
                 updatedAt: { $first: "$updatedAt" },
+                videos: { $push: "$videos" },
                 latestVideoThumbnail: { $first: "$videos.video.thumbnail" }
             }
-        }]
+        },
+        {
+            $sort:{
+                createdAt: -1
+            }
+        }
+    ]
     )
+
+
 
 
     return res

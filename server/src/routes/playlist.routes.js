@@ -12,6 +12,7 @@ import {verifyJWT} from "../middlewares/auth.middleware.js"
 
 const router = Router();
 
+router.route("/user/:userId").get(getUserPlaylists);//done
 router.use(verifyJWT); 
 
 router.route("/").post(createPlaylist)//done
@@ -25,6 +26,5 @@ router
 router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);//done
 router.route("/remove/:videoId/:playlistId").patch(removeVideoFromPlaylist);//done
 
-router.route("/user/:userId").get(getUserPlaylists);//done
 
 export default router
