@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import moment from "moment"
 import { formatDuration, formatViews } from "@/lib/utils"
 import type { Video } from "@/types/video.types"
+import { Play } from "lucide-react"
 //TODO:Add skeletons
 
 export interface VideoCardProps {
@@ -30,6 +31,11 @@ export default function VideoCard({ video }: VideoCardProps) {
                     alt={video.title}
                     className=" object-cover w-full h-full transition-transform group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center  rounded-lg">
+                    <div className="bg-orange-500 rounded-full p-2 shadow-lg">
+                        <Play className="w-6 h-6 text-white fill-white" />
+                    </div>
+                </div>
                 <div className="absolute bottom-2 right-2 bg-black/60 font-bold text-white text-sm px-1.5 py-0.5 rounded-full">
                     {formatDuration(video.duration)}
                 </div>

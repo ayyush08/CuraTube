@@ -9,7 +9,7 @@ export interface Playlist {
     _id: string;
     name: string;
     description: string;
-    lastVideoThumbnail?: string;
+    latestVideoThumbnail?: string;
     createdAt: string;
     updatedAt: string;
     videos: PlaylistVideo[];

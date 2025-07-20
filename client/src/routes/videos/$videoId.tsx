@@ -131,7 +131,7 @@ function RouteComponent() {
               <h1 className="text-2xl md:text-3xl lg:text-3xl text-white font-bold tracking-wide">
                 {video.title}
               </h1>
-              <div className="flex items-center gap-5 justify-between  text-xl border-2 p-5 w-full rounded-lg bg-neutral-800/20">
+              <div className="flex items-center gap-5 justify-between  text-xl  p-5 w-full rounded-lg ">
                 <div className='flex items-center gap-2'>
 
                   <ThumbsUpIcon
@@ -166,7 +166,7 @@ function RouteComponent() {
                   isPublished && (
                     <>
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         className="border-orange-500 text-orange-500 hover:bg-orange-500  bg-transparent"
                         onClick={handleAddToPlaylist}
                       >

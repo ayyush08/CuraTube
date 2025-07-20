@@ -57,7 +57,7 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
         selectedPlaylistIds.forEach((playlistId) => {
             addVideoToPlaylist({ playlistId, videoId })
         })
-
+        toast.success(`Added to ${selectedPlaylistIds.length} playlist${selectedPlaylistIds.length > 1 ? 's' : ''}.`)
         setSelectedPlaylistIds([])
     }
 
@@ -99,7 +99,7 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
                     </DialogHeader>
 
                     <Tabs defaultValue="existing" className="w-full transition-all duration-150">
-                        <TabsList className="flex mx-auto w-fit gap-4 bg-gray-900 border border-orange-500/20 transition-all duration-300 py-5">
+                        <TabsList className="flex mx-auto w-fit gap-4 bg-black  border-orange-500/50 border-2 transition-all duration-300 py-5">
                             <TabsTrigger
                                 value="existing"
                                 className="data-[state=active]:bg-orange-500 data-[state=active]:text-black p-4"
@@ -126,11 +126,11 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
                                                     setSelectedPlaylistIds(selectedPlaylistIds.filter((id) => id !== playlist._id))
                                                 }
                                             }}
-                                            className="border-orange-500 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                                            className="border-orange-500 hidden data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
                                         />
                                         <Label
                                             htmlFor={playlist._id}
-                                            className="flex-1 cursor-pointer p-3 min-h-[120px] rounded-lg border border-orange-500/30 hover:border-orange-500 hover:bg-orange-500/10 transition-colors"
+                                            className={`flex-1 cursor-pointer  min-h-[120px]  rounded-lg border border-orange-500/30 hover:border-orange-500 hover:bg-orange-500/10 ${selectedPlaylistIds.includes(playlist._id) ? 'bg-orange-500/10' : ''} transition-colors`}
                                         >
                                             <div className="flex justify-between w-full p-5 items-center">
                                                 {
@@ -167,7 +167,7 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
                             <DialogFooter className="gap-2 mt-6">
                                 <DialogClose asChild>
                                     <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800 bg-transparent">
-                                        Cancel
+                                        Close
                                     </Button>
                                 </DialogClose>
                                 <Button

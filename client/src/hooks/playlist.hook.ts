@@ -45,7 +45,7 @@ export const useAddVideoToPlaylist = () => {
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['playlists'] })
             console.log("Video added to playlist successfully", data);
-            toast.success("Video added to playlist successfully");
+            
         },
         onError: (error) => {
             console.error("Error adding video to playlist:", error);

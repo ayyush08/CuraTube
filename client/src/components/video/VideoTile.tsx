@@ -2,6 +2,7 @@ import { formatDuration, formatViews } from '@/lib/utils'
 import { useAppSelector } from '@/redux/hooks'
 import type { Video } from '@/types/video.types'
 import { useNavigate } from '@tanstack/react-router'
+import { Play } from 'lucide-react'
 import moment from 'moment'
 
 export interface VideoTileProps {
@@ -35,13 +36,17 @@ const VideoTile = (
 
     return (
         <div onClick={() => handleTileClick(video._id)} className='flex group  flex-col max-w-screen sm:flex-row gap-5 p-3 sm:items-center hover:bg-orange-950/60 transition-all duration-300 rounded-lg hover:cursor-pointer w-full'>
-            {/* TODO: Improve Responsiveness */}
             <div className="relative w-full sm:w-96 h-56 rounded-lg overflow-hidden shrink-0 group-hover:scale-95 transition-all duration-150">
                 <img
                     src={video.thumbnail || "/placeholder.svg"}
                     alt={video.title}
                     className="object-cover w-full h-full transition-transform "
                 />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-lg">
+                    <div className="bg-orange-500 rounded-full p-2 shadow-lg">
+                        <Play className="w-6 h-6 text-white fill-white" />
+                    </div>
+                </div>
                 <div className="absolute bottom-2 right-2 bg-black/60 font-bold text-white text-sm px-1.5 py-0.5 rounded-full">
                     {formatDuration(video.duration)}
                 </div>

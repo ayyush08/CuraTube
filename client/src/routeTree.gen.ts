@@ -19,6 +19,7 @@ import { Route as PlaylistsIndexImport } from './routes/playlists/index'
 import { Route as LikedVideosIndexImport } from './routes/liked-videos/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as VideosVideoIdImport } from './routes/videos/$videoId'
+import { Route as PlaylistsPlaylistIdImport } from './routes/playlists/$playlistId'
 import { Route as ChannelUsernameImport } from './routes/channel/$username'
 import { Route as VideosPublishIndexImport } from './routes/videos/publish/index'
 import { Route as VideosSearchVideosQueryImport } from './routes/videos/search-videos/$query'
@@ -73,6 +74,12 @@ const VideosVideoIdRoute = VideosVideoIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const PlaylistsPlaylistIdRoute = PlaylistsPlaylistIdImport.update({
+  id: '/playlists/$playlistId',
+  path: '/playlists/$playlistId',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const ChannelUsernameRoute = ChannelUsernameImport.update({
   id: '/channel/$username',
   path: '/channel/$username',
@@ -107,6 +114,13 @@ declare module '@tanstack/react-router' {
       path: '/channel/$username'
       fullPath: '/channel/$username'
       preLoaderRoute: typeof ChannelUsernameImport
+      parentRoute: typeof rootRoute
+    }
+    '/playlists/$playlistId': {
+      id: '/playlists/$playlistId'
+      path: '/playlists/$playlistId'
+      fullPath: '/playlists/$playlistId'
+      preLoaderRoute: typeof PlaylistsPlaylistIdImport
       parentRoute: typeof rootRoute
     }
     '/videos/$videoId': {
@@ -180,6 +194,7 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/channel/$username': typeof ChannelUsernameRoute
+  '/playlists/$playlistId': typeof PlaylistsPlaylistIdRoute
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/liked-videos': typeof LikedVideosIndexRoute
@@ -194,6 +209,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/channel/$username': typeof ChannelUsernameRoute
+  '/playlists/$playlistId': typeof PlaylistsPlaylistIdRoute
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/liked-videos': typeof LikedVideosIndexRoute
@@ -209,6 +225,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/channel/$username': typeof ChannelUsernameRoute
+  '/playlists/$playlistId': typeof PlaylistsPlaylistIdRoute
   '/videos/$videoId': typeof VideosVideoIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/liked-videos/': typeof LikedVideosIndexRoute
@@ -225,6 +242,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/channel/$username'
+    | '/playlists/$playlistId'
     | '/videos/$videoId'
     | '/dashboard'
     | '/liked-videos'
@@ -238,6 +256,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/channel/$username'
+    | '/playlists/$playlistId'
     | '/videos/$videoId'
     | '/dashboard'
     | '/liked-videos'
@@ -251,6 +270,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/channel/$username'
+    | '/playlists/$playlistId'
     | '/videos/$videoId'
     | '/dashboard/'
     | '/liked-videos/'
@@ -266,6 +286,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChannelUsernameRoute: typeof ChannelUsernameRoute
+  PlaylistsPlaylistIdRoute: typeof PlaylistsPlaylistIdRoute
   VideosVideoIdRoute: typeof VideosVideoIdRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   LikedVideosIndexRoute: typeof LikedVideosIndexRoute
@@ -280,6 +301,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChannelUsernameRoute: ChannelUsernameRoute,
+  PlaylistsPlaylistIdRoute: PlaylistsPlaylistIdRoute,
   VideosVideoIdRoute: VideosVideoIdRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   LikedVideosIndexRoute: LikedVideosIndexRoute,
@@ -303,6 +325,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/channel/$username",
+        "/playlists/$playlistId",
         "/videos/$videoId",
         "/dashboard/",
         "/liked-videos/",
@@ -319,6 +342,9 @@ export const routeTree = rootRoute
     },
     "/channel/$username": {
       "filePath": "channel/$username.tsx"
+    },
+    "/playlists/$playlistId": {
+      "filePath": "playlists/$playlistId.tsx"
     },
     "/videos/$videoId": {
       "filePath": "videos/$videoId.tsx"
