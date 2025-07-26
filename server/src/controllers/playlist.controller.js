@@ -194,6 +194,26 @@ const getPlaylistById = asyncHandler(async (req, res) => {
         $unwind: "$videoDetails.owner"
     },
     {
+        $addFields:{
+            isOwner: {
+                $eq: ['$owner', req.user._id]
+            }
+        }
+    },
+    {
+        $match: {
+            $or: [
+                { isOwner: true },
+                { 'videoDetails.isPublished': true }
+            ]
+        }
+    },
+    {
+        $addFields: {
+            'videos.video': '$videoDetails'
+        }
+    },
+    {
         $sort: {
             'videos.addedAt': -1
         }
@@ -207,7 +227,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
             videos: {
                 video: "$videoDetails",
                 addedAt: "$videos.addedAt"
-            }
+            },
         }
     },
     {
@@ -217,7 +237,8 @@ const getPlaylistById = asyncHandler(async (req, res) => {
             description: { $first: "$description" },
             createdAt: { $first: "$createdAt" },
             updatedAt: { $first: "$updatedAt" },
-            videos: { $push: "$videos" }
+            videos: { $push: "$videos" },
+            latestVideoThumbnail: { $first: "$videos.video.thumbnail" },
         }
     }]
     )

@@ -1,6 +1,6 @@
 import type { Video } from "./video.types";
 
-interface PlaylistVideo{
+export interface PlaylistVideo{
     video: Video;
     addedAt: string;
 }

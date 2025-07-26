@@ -4,18 +4,23 @@ import type { Video } from '@/types/video.types'
 import { useNavigate } from '@tanstack/react-router'
 import { Play } from 'lucide-react'
 import moment from 'moment'
+import { Button } from '../ui/button'
 
 export interface VideoTileProps {
     video: Video
     watchedAt?: string
     likedOn?: string
+    addedAt?: string
+    onDelete?: (videoId: string) => void
 }
 
 const VideoTile = (
     {
         video,
         watchedAt = '',
-        likedOn = ''
+        likedOn = '',
+        addedAt = '',
+        onDelete
     }: VideoTileProps
 ) => {
 
@@ -35,7 +40,7 @@ const VideoTile = (
     }
 
     return (
-        <div onClick={() => handleTileClick(video._id)} className='flex group  flex-col max-w-screen sm:flex-row gap-5 p-3 sm:items-center hover:bg-orange-950/60 transition-all duration-300 rounded-lg hover:cursor-pointer w-full'>
+        <div onClick={() => handleTileClick(video._id)} className='relative flex group  flex-col max-w-screen sm:flex-row gap-5 p-3 sm:items-center hover:bg-orange-950/60 transition-all duration-300 rounded-lg hover:cursor-pointer w-full'>
             <div className="relative w-full sm:w-96 h-56 rounded-lg overflow-hidden shrink-0 group-hover:scale-95 transition-all duration-150">
                 <img
                     src={video.thumbnail || "/placeholder.svg"}
@@ -50,6 +55,8 @@ const VideoTile = (
                 <div className="absolute bottom-2 right-2 bg-black/60 font-bold text-white text-sm px-1.5 py-0.5 rounded-full">
                     {formatDuration(video.duration)}
                 </div>
+
+
             </div>
 
             <div className="flex flex-col justify-between flex-1 px-1 sm:px-5 py-2 gap-6 w-full">
@@ -93,8 +100,27 @@ const VideoTile = (
                             You liked it {moment(likedOn).fromNow()}
                         </span>
                     }
+                    {
+                        addedAt && <span className='italic text-orange-400 font-semibold text-sm'>
+                            Added to playlist {moment(addedAt).fromNow()}
+                        </span>
+                    }
                 </div>
             </div>
+            {onDelete && (
+                <Button
+                    variant='default'
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        onDelete(video._id)
+                    }}
+                    title="Remove from playlist"
+                    aria-label="Remove from playlist"
+                    className="absolute top-2 right-2 bg-red-500 text-white text-sm hover:bg-red-700 rounded-md transition"
+                >
+                    Remove
+                </Button>
+            )}
         </div>
     )
 }
