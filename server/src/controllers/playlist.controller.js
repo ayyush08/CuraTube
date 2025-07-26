@@ -45,7 +45,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
         },
         {
             $unwind: {
-                path:"$videos",
+                path: "$videos",
                 preserveNullAndEmptyArrays: true
             }
         },
@@ -128,7 +128,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
             }
         },
         {
-            $sort:{
+            $sort: {
                 createdAt: -1
             }
         }
@@ -144,116 +144,127 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 })
 
 const getPlaylistById = asyncHandler(async (req, res) => {
-    const { playlistId } = req.params
+    const { playlistId } = req.params;
+
     if (!isValidObjectId(playlistId)) {
-        throw new ApiError(400, "Invalid playlist id")
+        throw new ApiError(400, "Invalid playlist id");
     }
-    const playlist = await Playlist.findById(playlistId)
+
+    const playlist = await Playlist.findById(playlistId).lean();
     if (!playlist) {
-        throw new ApiError(400, "Playlist not found")
+        throw new ApiError(404, "Playlist not found");
     }
-    const playlistById = await Playlist.aggregate([{
-        $match: {
-            _id: new mongoose.Types.ObjectId(playlistId)
+
+    // If no videos, return metadata + empty videos
+    if (!playlist.videos || playlist.videos.length === 0) {
+        return res.status(200).json(new ApiResponse(200, {
+            _id: playlist._id,
+            name: playlist.name,
+            description: playlist.description,
+            createdAt: playlist.createdAt,
+            updatedAt: playlist.updatedAt,
+            videos: [],
+            latestVideoThumbnail: 'https://dummyimage.com/640x360/000/fff&text=No+Thumbnail',
+        }, "Empty playlist fetched successfully"));
+    }
+
+    // Else, run aggregation for enriched videos
+    const playlistById = await Playlist.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(playlistId)
+            }
         },
-
-    },
-    {
-        $unwind: "$videos"
-    },
-    {
-        $lookup: {
-            from: "videos",
-            localField: "videos.video",
-            foreignField: "_id",
-            as: "videoDetails"
-        }
-    },
-    {
-        $unwind: "$videoDetails"
-    },
-    {
-        $lookup: {
-            from: "users",
-            localField: "videoDetails.owner",
-            foreignField: "_id",
-            as: "videoDetails.owner",
-            pipeline: [
-                {
-                    $project: {
-                        username: 1,
-                        fullName: 1,
-                        avatar: 1,
-
+        {
+            $unwind: "$videos"
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "videos.video",
+                foreignField: "_id",
+                as: "videoDetails"
+            }
+        },
+        {
+            $unwind: "$videoDetails"
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "videoDetails.owner",
+                foreignField: "_id",
+                as: "videoDetails.owner",
+                pipeline: [
+                    {
+                        $project: {
+                            username: 1,
+                            fullName: 1,
+                            avatar: 1
+                        }
                     }
+                ]
+            }
+        },
+        {
+            $unwind: "$videoDetails.owner"
+        },
+        {
+            $addFields: {
+                isOwner: {
+                    $eq: ['$owner', req.user._id]
                 }
-            ]
-        }
-    },
-    {
-        $unwind: "$videoDetails.owner"
-    },
-    {
-        $addFields:{
-            isOwner: {
-                $eq: ['$owner', req.user._id]
+            }
+        },
+        {
+            $match: {
+                $or: [
+                    { isOwner: true },
+                    { 'videoDetails.isPublished': true }
+                ]
+            }
+        },
+        {
+            $addFields: {
+                'videos.video': '$videoDetails'
+            }
+        },
+        {
+            $sort: {
+                'videos.addedAt': -1
+            }
+        },
+        {
+            $project: {
+                name: 1,
+                description: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                videos: {
+                    video: "$videoDetails",
+                    addedAt: "$videos.addedAt"
+                },
+                latestVideoThumbnail: "$videoDetails.thumbnail"
+            }
+        },
+        {
+            $group: {
+                _id: "$_id",
+                name: { $first: "$name" },
+                description: { $first: "$description" },
+                createdAt: { $first: "$createdAt" },
+                updatedAt: { $first: "$updatedAt" },
+                videos: { $push: "$videos" },
+                latestVideoThumbnail: { $first: "$latestVideoThumbnail" }
             }
         }
-    },
-    {
-        $match: {
-            $or: [
-                { isOwner: true },
-                { 'videoDetails.isPublished': true }
-            ]
-        }
-    },
-    {
-        $addFields: {
-            'videos.video': '$videoDetails'
-        }
-    },
-    {
-        $sort: {
-            'videos.addedAt': -1
-        }
-    },
-    {
-        $project: {
-            name: 1,
-            description: 1,
-            createdAt: 1,
-            updatedAt: 1,
-            videos: {
-                video: "$videoDetails",
-                addedAt: "$videos.addedAt"
-            },
-        }
-    },
-    {
-        $group: {
-            _id: "$_id",
-            name: { $first: "$name" },
-            description: { $first: "$description" },
-            createdAt: { $first: "$createdAt" },
-            updatedAt: { $first: "$updatedAt" },
-            videos: { $push: "$videos" },
-            latestVideoThumbnail: { $first: "$videos.video.thumbnail" },
-        }
-    }]
-    )
+    ]);
 
-    if (playlistById[0] === undefined) {
-        return res.status(200).json(new ApiResponse(200, [], "playlist fetched successfully"))
-    }
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, playlistById[0], "playlist fetched successfully")
-        );
+    return res.status(200).json(
+        new ApiResponse(200, playlistById[0], "Playlist fetched successfully")
+    );
+});
 
-
-})
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
     const { playlistId, videoId } = req.params

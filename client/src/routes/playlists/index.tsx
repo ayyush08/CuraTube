@@ -25,14 +25,27 @@ function RouteComponent() {
   if (playlistsLoading) return <div>Loading...</div>;
   console.log(playlists);
 
+
   return (
     <div className="">
       <h1 className='text-3xl p-5 font-bold text-center text-orange-600'>All your playlists at one place</h1>
-      <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
-        {playlists.map((playlist: Playlist) => (
-          <PlaylistCard playlist={playlist} key={playlist._id} />
-        ))}
+      <div className="p-4 flex flex-wrap gap-6 justify-start">
+        {playlists.length === 0 ? (
+          <div className="text-center text-xl font-semibold font-mono text-orange-200 w-full">
+            Create your first playlist to get started!
+          </div>
+        ) : (
+          playlists.map((playlist: Playlist) => (
+            <div
+              key={playlist._id}
+              className="w-full sm:w-[48%] lg:w-[48%] xl:w-[48%]"
+            >
+              <PlaylistCard playlist={playlist} />
+            </div>
+          ))
+        )}
       </div>
+
 
 
     </div>

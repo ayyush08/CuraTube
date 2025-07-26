@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import VideoTile from '@/components/video/VideoTile'
+import { useAuthGuard } from '@/hooks/helpers/use-auth-guard'
 import { useGetPlaylistById, useUpdatePlaylist } from '@/hooks/playlist.hook'
 import { formatViews } from '@/lib/utils'
-import type { PlaylistVideo } from '@/types/playlist.types'
+import type { Playlist, PlaylistVideo } from '@/types/playlist.types'
 import { createFileRoute } from '@tanstack/react-router'
 import { Calendar, Clock, List, VideoIcon, Eye, Edit, TrashIcon } from 'lucide-react'
 import moment from 'moment'
@@ -20,29 +21,43 @@ export const Route = createFileRoute('/playlists/$playlistId')({
 })
 
 function RouteComponent() {
+  useAuthGuard()
   const { playlistId } = Route.useParams()
-  const { data: playlist, isPending: loadingPlaylist, isError: playlistError } = useGetPlaylistById(playlistId)
+  const { data: playlistVideos, isPending: loadingPlaylist, isError: playlistError } = useGetPlaylistById(playlistId)
   const { mutate: updatePlaylist, isPending: updatingPlaylist } = useUpdatePlaylist()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showDeleteVideoDialog, setShowDeleteVideoDialog] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+  const playlist: Playlist = playlistVideos ?? {
+    _id: playlistId,
+    name: '',
+    description: '',
+    updatedAt: new Date().toISOString(),
+    latestVideoThumbnail: '',
+    videos: []
+  };
+
 
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   useEffect(() => {
-    if (playlist?.name) {
-      setName(playlist.name)
-      setDescription(playlist.description)
+    if (playlistVideos?.name) {
+      setName(playlistVideos.name)
+      setDescription(playlistVideos.description)
     }
-  }, [playlist])
+  }, [playlistVideos])
   if (loadingPlaylist) return <div>Loading...</div>
   if (playlistError) return <div>Error loading playlist</div>
 
 
   console.log("Loaded playlist:", playlist);
-  const totalViews = playlist.videos.reduce((sum: number, item: PlaylistVideo) => sum + item.video.views, 0)
-  const totalDuration = playlist.videos.reduce((sum: number, item: PlaylistVideo) => sum + item.video.duration, 0)
+
+  let totalViews = 0, totalDuration = 0
+  if (playlist?.videos && playlist?.videos.length > 0) {
+    totalViews = playlist.videos.reduce((sum: number, item: PlaylistVideo) => sum + item.video.views, 0) || 0
+    totalDuration = playlist.videos.reduce((sum: number, item: PlaylistVideo) => sum + item.video.duration, 0) || 0
+  }
 
   console.log("Total views:", totalViews);
   console.log("Total duration:", formatTotalDuration(totalDuration));
@@ -197,14 +212,20 @@ function RouteComponent() {
         </div>
 
         <div className="flex flex-col gap-4">
-          {playlist.videos.map((item: PlaylistVideo) => (
-            <VideoTile
-              key={item.video._id}
-              video={item.video}
-              addedAt={item.addedAt}
-              onDelete={() => openDeleteVideoDialog(item.video._id)}
-            />
-          ))}
+          {
+            playlist?.videos.length === 0 ? (
+              <div className="text-center text-gray-500">No videos in this playlist</div>
+            ) : (
+              playlist?.videos.map((item: PlaylistVideo) => (
+                <VideoTile
+                  key={item.video._id}
+                  video={item.video}
+                  addedAt={item.addedAt}
+                  onDelete={() => openDeleteVideoDialog(item.video._id)}
+                />
+              ))
+            )
+          }
           {selectedVideoId && (
             <DeleteVideoFromPlaylistDialog
               open={showDeleteVideoDialog}

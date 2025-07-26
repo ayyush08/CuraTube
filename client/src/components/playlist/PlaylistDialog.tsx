@@ -112,10 +112,16 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
                         </TabsList>
 
                         <TabsContent value="existing" className="space-y-4 mt-6 w-full">
-                            <div className="space-y-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                {userPlaylists.map((playlist: Playlist) => (
-                                    <div key={playlist._id} className="flex items-center space-x-3">
-                                        <Checkbox
+                            <div className="space-y-2 flex flex-wrap justify-start gap-4">
+                                {userPlaylists.length === 0 ? (
+                                    <div className="text-center w-full mx-auto text-sm text-orange-300">
+                                        You don't have any playlists yet.
+                                    </div>
+                                ):
+                                (
+                                    userPlaylists.map((playlist: Playlist) => (
+                                        <div key={playlist._id} className="flex items-center w-full sm:w-[48%] md:w-[31%] space-x-3">
+                                            <Checkbox
                                             id={playlist._id}
                                             checked={selectedPlaylistIds.includes(playlist._id)}
                                             disabled={playlist.videos.some(video => video.video._id === videoId)}
@@ -161,7 +167,7 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
                                             </div>
                                         </Label>
                                     </div>
-                                ))}
+                                )))}
                             </div>
 
                             <DialogFooter className="gap-2 mt-6">

@@ -35,7 +35,7 @@ export function PlaylistCard({ playlist }: PlaylistCardProps) {
                 <div className="absolute  top-2 left-2 w-full h-full bg-orange-600 rounded-lg shadow-md  scale-[0.98]"></div>
                 <div className="absolute  top-1 left-1 w-full h-full bg-neutral-600 rounded-lg shadow-md  scale-[0.98]"></div>
                 <img
-                    src={playlist.latestVideoThumbnail || "/placeholder.svg"}
+                    src={playlist.latestVideoThumbnail || "https://dummyimage.com/640x360/000/fff&text=No+Thumbnail"}
                     alt={playlist.name}
                     className="w-full h-full object-fit rounded-lg relative "
                 />
