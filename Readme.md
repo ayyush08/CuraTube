@@ -2,7 +2,7 @@
 
 **CuraTube** is a full-stack video streaming platform that supports a handful of cool features similar to any other video streaming application out there. These features start from user authentication, video uploads, comments, likes,etc to some additional features like tweets and many more.
 
-Built using the MERN stack, it delivers a smooth video experience with HLS(HTTP Live Streaming) powered by Imagekit and a custom video player built with React.
+Built using the MERN stack, it delivers a smooth video experience with HLS(HTTP Live Streaming) and a custom video player built with React.
 ## 🚀 Features
 
 Here’s what CuraTube offers:
@@ -31,7 +31,7 @@ Here’s what CuraTube offers:
 - **Server:** Node.js, Express.js
 - **Database ORM:** Mongoose
 - **File Handling:** Multer
-- **Media Storage & Streaming:** ImageKit
+- **Media Storage & Streaming:** Cloudinary
 
 ### Database
 - **Primary Database:** MongoDB
@@ -70,9 +70,9 @@ Here’s what CuraTube offers:
 
 
    MONGODB_URI=<your-mongodb-uri>
-   IMAGEKIT_PUBLIC_KEY=<your-imagekit-public-key>
-   IMAGEKIT_PRIVATE_KEY=<your-imagekit-private-key>
-   IMAGEKIT_URL_ENDPOINT=<your-imagekit-url-endpoint>
+   CLOUDINARY_API_KEY=<your-cloudinary-api-key>
+   CLOUDINARY_API_SECRET=<your-cloudinary-api-secret>
+   CLOUDINARY_CLOUD_NAME=<your-cloudinary-cloud-name>
    ```
 
 5. Start the development server for both client and server:
