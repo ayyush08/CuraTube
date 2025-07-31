@@ -124,12 +124,12 @@ function RouteComponent() {
                       <Input
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="text-3xl lg:text-4xl py-6 font-bold text-white"
+                        className="text-3xl lg:text-4xl py-6 font-bold border-0 text-white w-full focus-visible:border-0   focus-visible:border-b-2 border-b-2 transition-all duration-300 focus-visible:border-orange-500 focus-visible:ring-0 dark:bg-transparent outline-none rounded-none placeholder:text-orange-800 placeholder:italic resize-none"
                       />
                       <Textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="text-neutral-300 text-lg"
+                        className="text-neutral-300 text-lg w-full break-words font-semibold min-h-10  focus-visible:border-b-2 border-b-2 transition-all duration-300 focus-visible:border-orange-500 placeholder:text-orange-800 placeholder:italic resize-none"
                       />
                       <div className="flex gap-4 pt-2">
                         <Button variant="default" className='bg-orange-500 border-none hover:bg-orange-700 text-white font-semibold transition-all duration-300' onClick={handleUpdate} disabled={updatingPlaylist}>

@@ -47,7 +47,7 @@ const TweetWriter = () => {
                             placeholder="Share your thoughts..."
                             value={tweetContent}
                             onChange={(e) => setTweetContent(e.target.value)}
-                            className="bg-orange-700/20 break-words border-none w-full md:text-xl p-5 placeholder:text-orange-800 placeholder:italic resize-none focus-visible:ring-2 "
+                            className=" break-words font-semibold focus-visible:border-b-2 border-b-2 transition-all duration-300 focus-visible:border-orange-500 w-full md:text-xl p-5 placeholder:text-orange-800 placeholder:italic resize-none  "
                             rows={3}
                         />
                         <div className="flex items-center justify-end">

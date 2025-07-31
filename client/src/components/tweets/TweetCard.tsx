@@ -75,7 +75,7 @@ const TweetCard = (tweet: Tweet) => {
                     isEditing ? (
                         <div className="space-y-3">
                             <Textarea
-                                className="w-full bg-orange-800/20 text-white"
+                                className="w-full break-words font-semibold min-h-10 text-white focus-visible:border-b-2 border-b-2 transition-all duration-300 focus-visible:border-orange-500 placeholder:text-orange-800 placeholder:italic resize-none"
                                 value={tweetContent}
                                 onChange={(e) => setTweetContent(e.target.value)}
                                 rows={3}
@@ -85,7 +85,7 @@ const TweetCard = (tweet: Tweet) => {
                                     size="sm"
                                     onClick={handleSaveEdit}
                                     disabled={editPending}
-                                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                                    className="bg-orange-600 hover:bg-orange-700 text-white "
                                 >
                                     {editPending ? 'Saving...' : 'Save'}
                                 </Button>

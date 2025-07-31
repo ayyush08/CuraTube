@@ -16,7 +16,7 @@ export const DeleteVideoFromPlaylistDialog = ({ open, playlistId, videoId, onClo
     return (
         <Dialog open={open} onOpenChange={onClose} >
 
-            <DialogContent onInteractOutside={(e) => e.preventDefault()} showCloseButton={false} className="sm:max-w-[450px]   border-orange-400/60 bg-orange-950/80 font-sans z-50 ">
+            <DialogContent onInteractOutside={(e) => e.preventDefault()} showCloseButton={false} className="sm:max-w-[450px]   border-orange-400/60 bg-orange-950/90 font-sans z-50 ">
                 <DialogHeader>
                     <DialogTitle >Are you sure you want to remove this video from the playlist?</DialogTitle>
                     <DialogDescription>
