@@ -7,7 +7,7 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import { isValidObjectId } from "mongoose"
 const getVideoComments = asyncHandler(async (req, res) => {
     const { videoId } = req.params
-    const { page = 1, limit = 10 } = req.query
+    const { page = 1, limit = 10 ,sortBy = 'createdAt'} = req.query
 
     if (!isValidObjectId(videoId)) throw new ApiError(400, "Invalid Video Id");
 
@@ -24,23 +24,50 @@ const getVideoComments = asyncHandler(async (req, res) => {
             from: 'users',
             localField: 'owner',
             foreignField: '_id',
-            as: 'ownerDetails',
+            as: 'owner',
             pipeline: [
                 {
                     $project: {
                         username: 1,
                         avatar: 1,
-
+                        fullName: 1,
                     }
                 }
             ]
         }
     }, {
-        $unwind: '$ownerDetails'
-    }, {
-        $sort: {
-            createdAt: -1
+        $unwind: '$owner'
+    }, 
+    {
+        $lookup: {
+            from: 'likes',
+            localField: '_id',
+            foreignField: 'comment',
+            as: 'likedBy',
+            pipeline: [
+                {
+                    $project: {
+                        _id: 0,
+                        likedBy: 1
+                    }
+                }
+            ]
         }
+    },
+    {
+        $sort: {
+            [sortBy]: -1
+        }
+    },
+    {
+        $project:{
+            _id:1,
+            comment: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            owner:1,
+            likedBy:1
+        }   
     }
     ])
 

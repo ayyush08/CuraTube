@@ -57,20 +57,28 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     if (!commentExist) {
         throw new ApiError(400, "Comment not found");
     }
-    const likedComment = await Like.findOne({ comment: commentId, likedBy: userId });
-    if (likedComment) {
-        await Like.findByIdAndDelete(likedComment._id)
+    const totalLikes = await Like.countDocuments({ comment: commentId });
+    const isLiked = await Like.findOne({ comment: commentId, likedBy: userId });
+    if (isLiked) {
+        await Like.findByIdAndDelete(isLiked._id);
         return res
             .status(200)
-            .json(new ApiResponse(200, null, "Comment Unliked Successfully"));
+            .json(new ApiResponse(200, {
+                commentId,
+                liked: false,
+                likeCount: totalLikes < 0 ? 0 : totalLikes - 1
+            }, "Comment Unliked Successfully"));
     }
     else {
         await Like.create({ comment: commentId, likedBy: userId });
         return res
             .status(200)
-            .json(new ApiResponse(200, null, "Comment Liked Successfully"));
+            .json(new ApiResponse(200, {
+                commentId,
+                liked: true,
+                likeCount: totalLikes + 1 < 0 ? 0 : totalLikes + 1
+            }, "Comment Liked Successfully"))
     }
-
 })
 
 const toggleTweetLike = asyncHandler(async (req, res) => {

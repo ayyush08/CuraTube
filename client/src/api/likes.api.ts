@@ -16,8 +16,6 @@ export const getLikedVideos = async (): Promise<any> => {
 export const toggleVideoLike = async (videoId: string): Promise<any> => {
     try {
         const res = await apiClient.post<ApiSuccessResponse>(`/likes/toggle/v/${videoId}`)
-        console.log("tv",res);
-        
         return res.data
     } catch (error) {
         console.error("Error toggling like", error)

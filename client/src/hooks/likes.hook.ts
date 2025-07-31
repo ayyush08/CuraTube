@@ -1,4 +1,4 @@
-import { getLikedVideos, toggleTweetLike, toggleVideoLike } from "@/api/likes.api"
+import { getLikedVideos, toggleCommentLike, toggleTweetLike, toggleVideoLike } from "@/api/likes.api"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 
@@ -41,6 +41,29 @@ export const useToggleTweetLike = (setIsTweetLiked: React.Dispatch<React.SetStat
         },
         onError: () => {
             toast.error("Failed to toggle like on tweet");
+        },
+    })
+}
+
+export const useToggleCommentLike = (setCommentLikeStates: React.Dispatch<React.SetStateAction<any>>) => {
+    return useMutation({
+        mutationFn: (commentId: string) => toggleCommentLike(commentId),
+        onSuccess: (data) => {
+            console.log("Toggle Comment Like Response:", data);
+            if(data?.isLiked) toast.success("Comment Liked successfully")
+            else toast.success("Comment Unliked successfully")
+            setCommentLikeStates((prevState: any) => ({
+                ...prevState,
+                [data?.commentId]: {
+                    isLiked: data?.liked,
+                    likeCount: data?.likeCount,
+                },
+            }));
+            if (data?.liked) toast.success("Comment Liked successfully")
+            else toast.success("Comment Unliked successfully")
+        },
+        onError: () => {
+            toast.error("Failed to toggle like on comment");
         },
     })
 }

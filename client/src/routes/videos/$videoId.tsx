@@ -1,6 +1,8 @@
+import CommentSection from '@/components/comments/CommentSection'
 import PlaylistDialog from '@/components/playlist/PlaylistDialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import VideoCard from '@/components/video/VideoCard'
 import VideoPlayer from '@/components/video/VideoPlayer'
@@ -114,7 +116,6 @@ function RouteComponent() {
       <main className="w-full min-h-screen p-4 sm:p-5 flex flex-col lg:flex-row gap-6">
         {/* Left section: Video + Details + Comments */}
         <section className="w-full lg:max-w-3xl flex flex-col gap-6">
-          {/* Video Player */}
           <div className="w-full p-2">
             <VideoPlayer
               src={video.videoFile}
@@ -166,8 +167,8 @@ function RouteComponent() {
                   isPublished && (
                     <>
                       <Button
-                        variant="ghost"
-                        className="border-orange-500 text-orange-500 hover:bg-orange-500  bg-transparent"
+                        variant="secondary"
+                        className="border-orange-500 text-orange-500 hover:bg-orange-800/30  bg-transparent"
                         onClick={handleAddToPlaylist}
                       >
                         <VideoIcon className="mr-2 h-4 w-4" />
@@ -181,7 +182,7 @@ function RouteComponent() {
               <div className="flex flex-col gap-1">
                 <span className="font-mono text-lg font-semibold">Description</span>
                 <span className="text-base text-neutral-400">
-                  {video.description}
+                  {video.description} 
                 </span>
               </div>
             </div>
@@ -229,10 +230,10 @@ function RouteComponent() {
             </div>
 
           </div>
-
+          <Separator className='mt-8 bg-orange-400 py-[1px] w-full' />
           {/* Comments */}
-          <div className="min-h-[50vh] sm:min-h-[60vh] lg:min-h-[100vh] p-5 bg-blue-700/30 rounded-xl">
-            Comments section
+          <div className="min-h-[50vh] sm:min-h-[60vh] lg:min-h-[100vh] p-5 rounded-xl">
+            <CommentSection videoId={video._id} />
           </div>
         </section>
 
