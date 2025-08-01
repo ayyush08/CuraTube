@@ -2,16 +2,14 @@
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useDeletePlaylist } from "@/hooks/playlist.hook";
-import { useNavigate } from "@tanstack/react-router";
 
 export const DeletePlaylistDialog = ({ open, playlistId, onClose }: { open: boolean, playlistId: string, onClose: () => void }) => {
 
     const { mutate: deletePlaylist, isPending: deletePending } = useDeletePlaylist();
-    const navigate = useNavigate();
     const handleDelete = () => {
         console.log('Deleting playlist with ID:', playlistId);
         deletePlaylist(playlistId);
-        navigate({ to: '/playlists' }); // Redirect to playlists after deletion
+        window.history.back();
         onClose();
     }
 

@@ -20,9 +20,9 @@ const Playlists = ({ userId }: { userId: string | undefined }) => {
         <div className="">
             <div className="p-4 flex flex-wrap gap-6 justify-start">
                 {playlists.length === 0 ? (
-                     <div className="text-center text-xl font-semibold font-mono text-orange-400 w-full">
-            No Playlists found. <br/> Create your first playlist to get started!
-          </div>
+                    <div className="text-center text-xl font-semibold font-mono text-orange-400 w-full">
+                        No Playlists found. <br /> Create your first playlist to get started!
+                    </div>
                 ) : (
                     playlists.map((playlist: Playlist) => (
                         <div
@@ -39,7 +39,7 @@ const Playlists = ({ userId }: { userId: string | undefined }) => {
 
         </div>
     )
-    
+
 }
 
 export default Playlists
