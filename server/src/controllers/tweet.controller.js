@@ -113,25 +113,6 @@ const getTweets = asyncHandler(async (req, res) => {
 
     const allTweets = await Tweet.aggregatePaginate(tweetsAggregate, options);
 
-    if (!allTweets || allTweets.docs.length === 0) {
-        const fakeTweet = (i) => ({
-            _id: `${page}-${i}`,
-            content: `Fake tweet ${page}-${i}`,
-            likes: Math.floor(Math.random() * 100),
-            owner: {
-                username: `User${i}`,
-                avatar: null,
-                fullName: `User FullName ${i}`
-            },
-            createdAt: new Date(),
-        });
-
-        const fakeTweets = Array.from({ length: options.limit }, (_, i) => fakeTweet(i));
-
-        return res.status(200).json(new ApiResponse(200, {
-            tweets: fakeTweets
-        }, "No real tweets found. Returning dummy tweets."));
-    }
 
     return res.status(200).json(new ApiResponse(200, {
         tweets: allTweets.docs

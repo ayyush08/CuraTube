@@ -12,6 +12,7 @@ import { Textarea } from '../ui/textarea'
 import {  useUpdateTweet } from '@/hooks/tweets.hooks'
 import { useNavigate } from '@tanstack/react-router'
 import { DeleteTweetDialog } from './DeleteTweetDialog'
+import { toast } from 'sonner'
 
 
 
@@ -32,6 +33,10 @@ const TweetCard = (tweet: Tweet) => {
     }, [tweet.likedBy, storedUser?._id]);
 
     const handleLike = (tweetId: string) => {
+        if(!storedUser){
+            toast.error("You need to be logged in to like a tweet");
+            return;
+        }
         toggleTweetLike(tweetId);
     }
 
@@ -49,7 +54,7 @@ const TweetCard = (tweet: Tweet) => {
 
 
     return (
-        <Card className="w-full border-none p-5 rounded-tl-2xl rounded-br-2xl bg-orange-950/50">
+        <Card className="w-full  p-5 rounded-tl-2xl rounded-br-2xl bg-orange-900/25 border-2 border-orange-500">
             <CardHeader className="p-4 pb-2">
                 <div className="flex items-start gap-3">
                     <Avatar className="w-12 h-12">

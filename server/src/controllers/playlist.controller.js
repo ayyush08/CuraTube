@@ -240,6 +240,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                 description: 1,
                 createdAt: 1,
                 updatedAt: 1,
+                owner: 1,
                 videos: {
                     video: "$videoDetails",
                     addedAt: "$videos.addedAt"
@@ -251,6 +252,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
             $group: {
                 _id: "$_id",
                 name: { $first: "$name" },
+                owner: { $first: "$owner" },
                 description: { $first: "$description" },
                 createdAt: { $first: "$createdAt" },
                 updatedAt: { $first: "$updatedAt" },

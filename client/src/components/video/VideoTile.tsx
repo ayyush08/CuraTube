@@ -12,6 +12,7 @@ export interface VideoTileProps {
     likedOn?: string
     addedAt?: string
     onDelete?: (videoId: string) => void
+    playlistOwnerId?: string
 }
 
 const VideoTile = (
@@ -20,7 +21,8 @@ const VideoTile = (
         watchedAt = '',
         likedOn = '',
         addedAt = '',
-        onDelete
+        onDelete,
+        playlistOwnerId = ''
     }: VideoTileProps
 ) => {
 
@@ -107,7 +109,7 @@ const VideoTile = (
                     }
                 </div>
             </div>
-            {onDelete && (
+            {onDelete && storedUser?._id === playlistOwnerId && (
                 <Button
                     variant='default'
                     onClick={(e) => {

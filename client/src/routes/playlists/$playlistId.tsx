@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import VideoTile from '@/components/video/VideoTile'
-import { useAuthGuard } from '@/hooks/helpers/use-auth-guard'
 import { useGetPlaylistById, useUpdatePlaylist } from '@/hooks/playlist.hook'
 import { formatViews } from '@/lib/utils'
 import type { Playlist, PlaylistVideo } from '@/types/playlist.types'
@@ -21,7 +20,6 @@ export const Route = createFileRoute('/playlists/$playlistId')({
 })
 
 function RouteComponent() {
-  useAuthGuard()
   const { playlistId } = Route.useParams()
   const { data: playlistVideos, isPending: loadingPlaylist, isError: playlistError } = useGetPlaylistById(playlistId)
   const { mutate: updatePlaylist, isPending: updatingPlaylist } = useUpdatePlaylist()
@@ -221,6 +219,7 @@ function RouteComponent() {
                   key={item.video._id}
                   video={item.video}
                   addedAt={item.addedAt}
+                  playlistOwnerId={playlist.owner}
                   onDelete={() => openDeleteVideoDialog(item.video._id)}
                 />
               ))

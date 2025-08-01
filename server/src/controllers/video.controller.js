@@ -45,7 +45,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         if (!isValidObjectId(userId)) throw new ApiError(400, "invalid user id");
         aggregationPipeline.push({
             $match: {
-                owner: userId
+                owner: new mongoose.Types.ObjectId(userId)
             }
         })
     }

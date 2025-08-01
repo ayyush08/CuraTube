@@ -10,29 +10,20 @@ import { toast } from 'sonner'
 import { useToggleSubscription } from '@/hooks/subscription.hook'
 import { Button } from '@/components/ui/button'
 import { Edit3Icon, Loader2Icon } from 'lucide-react'
+
+import { Videos } from '@/components/channel/Videos'
+import Playlists from '@/components/channel/Playlists'
+import Tweets from '@/components/channel/Tweets'
 export const Route = createFileRoute('/channel/$username')({
   component: RouteComponent,
 })
 
 interface TabItem {
   value: string
-  content: string
+  component: React.JSX.Element
 }
 
-const TabItems: TabItem[] = [
-  {
-    value: " Videos",
-    content: "This will be all your videos"
-  },
-  {
-    value: 'Playlists',
-    content: "This will be playlists"
-  },
-  {
-    value: "Tweets",
-    content: "These will be all your tweets",
-  }
-]
+
 
 function RouteComponent() {
   const { username } = Route.useParams()
@@ -49,6 +40,8 @@ function RouteComponent() {
   const { mutate: updateAvatar, isPending: updateAvatarPending, isError: updateAvatarError } = useUpdateUserProfileImage(setAvatar)
   const { mutate: updateCoverImage, isPending: updateCoverImagePending, isError: updateCoverImageError } = useUpdateUserCoverImage(setCoverImage)
 
+
+
   useEffect(() => {
     if (user) {
       console.log(user);
@@ -62,6 +55,20 @@ function RouteComponent() {
   if (isError) console.log(isError);
   if (subscribeError) console.log(subscribeError);
 
+  const TabItems: TabItem[] = [
+    {
+      value: "Videos",
+      component: <Videos userId={user?._id} />
+    },
+    {
+      value: 'Playlists',
+      component: <Playlists userId={user?._id} />
+    },
+    {
+      value: "Tweets",
+      component: <Tweets  userId={user?._id} />
+    }
+  ]
 
   const handleSubscribeToggle = () => {
     if (!storedUser) {
@@ -220,7 +227,7 @@ function RouteComponent() {
       </div>
 
       {/* TODO: a shadcn Tabs component to switch between videos,tweets, comments,etc sections */}
-      <div className="flex w-full max-w-sm flex-col gap-6">
+      <div className="flex w-full  flex-col gap-6 ">
 
         <Tabs defaultValue={TabItems[0].value}>
           <TabsList className='p-6 bg-orange-600/50 '>
@@ -232,7 +239,7 @@ function RouteComponent() {
           </TabsList>
           {TabItems.map((tab) => (
             <TabsContent key={tab.value} value={tab.value}>
-              {tab.content}
+              {tab.component}
             </TabsContent>
           ))}
         </Tabs>
@@ -240,3 +247,4 @@ function RouteComponent() {
     </main>
   )
 }
+

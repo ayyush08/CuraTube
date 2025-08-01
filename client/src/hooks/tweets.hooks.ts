@@ -1,6 +1,6 @@
 import { createTweet, deleteTweet, getAllTweets, updateTweet } from "@/api/tweets.api"
 import type { TweetFetchParams } from "@/types/tweets.types"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 
@@ -8,16 +8,21 @@ export const useGetTweets = ({
     sortBy = 'createdAt',
     sortType = 'desc',
     userId = '',
-    page = 1,
-    limit = 10
+    limit = 10,
 }: TweetFetchParams) => {
-    return useQuery({
-        queryKey: ['tweets', { sortBy, sortType, userId, page, limit }],
-        queryFn: () => getAllTweets({ sortBy, sortType, userId, page, limit }),
-
+    return useInfiniteQuery({
+        queryKey: ['tweets', { sortBy, sortType, userId, limit }],
+        queryFn: ({ pageParam = 1 }) =>
+            getAllTweets({ sortBy, sortType, userId, page: pageParam, limit }),
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+            // Check if we received fewer tweets than the limit, if so no more pages
+            return lastPage.tweets.length < limit ? undefined : allPages.length + 1;
+        },
         staleTime: 1000 * 60 * 5,
-    })
-}
+    });
+};
+
 
 
 export const useCreateTweet = () => {

@@ -124,7 +124,7 @@ function RouteComponent() {
                                         value={formData.title}
                                         onChange={handleInputChange}
                                         placeholder="Enter an engaging title for your video"
-                                        className="bg-black border-2 border-orange-500/30 text-white placeholder-orange-300/50 focus:border-orange-400 text-lg py-3"
+                                        className="py-5 text-lg lg:text-xl font-bold border-0 text-white w-full focus-visible:border-0   focus-visible:border-b-2 border-b-2 transition-all duration-300 focus-visible:border-orange-500 focus-visible:ring-0 dark:bg-transparent outline-none rounded-none placeholder-orange-300/40 placeholder:italic resize-none"
                                         required
                                     />
                                 </div>
@@ -140,7 +140,7 @@ function RouteComponent() {
                                         onChange={handleInputChange}
                                         placeholder="Tell viewers what your video is about..."
                                         rows={4}
-                                        className="bg-black border-2 border-orange-500/30 text-white placeholder-orange-300/50 focus:border-orange-400 text-lg"
+                                        className="bg-black  text-white placeholder-orange-300/50 text-md  w-full break-words font-semibold min-h-10  focus-visible:border-b-2 border-b-2 border-b-neutral-700 transition-all duration-300 focus-visible:border-orange-500  placeholder:italic resize-none"
                                         required
                                     />
                                 </div>
