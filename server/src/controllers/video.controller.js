@@ -21,7 +21,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
             aggregationPipeline.push({
                 $search: {
                     index: "search-curatube-videos",//TODO: Create a search index in mongo atlas cloud for production
-                    text: {
+                    autocomplete: {
                         query: query,
                         path: ["title", "description"],
                     },
