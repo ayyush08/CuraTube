@@ -73,6 +73,7 @@ function RouteComponent() {
         <div className="min-h-screen bg-black text-white py-12 px-4">
             <div className="container mx-auto  max-w-6xl">
                 <div className="mb-8 text-center">
+                    <h1 className="text-5xl font-bold text-red-500 mb-4">This feature is still under development</h1>
                     <h1 className="text-5xl font-bold text-orange-500 mb-4">Publish a Video</h1>
                     <p className="text-orange-200 text-lg">Share some content on CuraTube</p>
                 </div>
