@@ -9,8 +9,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useCheckServer } from '@/hooks/helpers/useCheckServer';
 import LoadServer from '@/components/loaders/LoadServer';
 import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { setServerReady } from '@/redux/serverSlice';
 
 export const Route = createRootRoute({
 
@@ -19,21 +17,19 @@ export const Route = createRootRoute({
 
 
 export function RootLayout() {
-    const serverReady = useAppSelector(state => state.server.serverReady);
-    const dispatch = useAppDispatch()
-    const { data, isLoading, isError,isSuccess } = useCheckServer(serverReady);
+    const { data, isLoading, isError,isSuccess } = useCheckServer();
     useEffect(() => {
         if (isSuccess) {
-            dispatch(setServerReady(true));
+            sessionStorage.setItem('serverReady', 'true');
         }
-    }, [isSuccess, dispatch]);
+    }, [isSuccess]);
     if (isLoading) {
         return <div className="flex justify-center items-center min-h-screen bg-black flex-col gap-10">
             <LoadServer />
             <p className="text-orange-500 text-3xl font-bold font-mono">Checking if server is running...</p>
         </div>;
     }
-    if (isError) {
+    if (isError || !sessionStorage.getItem('serverReady')) {
         console.error("Server is down or unreachable:", data);
         return <div className="flex justify-center text-red-500 text-2xl items-center min-h-screen">Server is down or unreachable.</div>;
     }
