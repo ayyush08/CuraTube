@@ -29,9 +29,9 @@ export function RootLayout() {
             <p className="text-orange-500 text-3xl font-bold font-mono">Checking if server is running...</p>
         </div>;
     }
-    if (isError || !sessionStorage.getItem('serverReady')) {
+    if (isError) {
         console.error("Server is down or unreachable:", data);
-        return <div className="flex justify-center text-red-500 text-2xl items-center min-h-screen">Server is down or unreachable.</div>;
+        return <div className="flex justify-center text-red-500 bg-black font-bold font-mono text-2xl items-center min-h-screen">Server is down or unreachable.</div>;
     }
 
     return (
