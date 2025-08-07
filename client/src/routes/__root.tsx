@@ -6,6 +6,9 @@ import { Toaster } from '@/components/ui/sonner';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { useCheckServer } from '@/hooks/helpers/useCheckServer';
+import LoadServer from '@/components/loaders/LoadServer';
+import { useEffect, useState } from 'react';
 
 export const Route = createRootRoute({
 
@@ -14,6 +17,25 @@ export const Route = createRootRoute({
 
 
 export function RootLayout() {
+    const [serverReady, setServerReady] = useState<boolean>(false);
+    const { data, isLoading, isError,isSuccess } = useCheckServer(serverReady);
+
+    useEffect(()=>{
+        if (isSuccess) {
+            setServerReady(true);
+        }
+    }, [isSuccess]);
+    if (isLoading) {
+        return <div className="flex justify-center items-center min-h-screen bg-black flex-col gap-10">
+            <LoadServer/>
+            <p className="text-orange-500 text-3xl font-bold font-mono">Checking if server is running...</p>
+        </div>;
+    }
+    if (isError) {
+        console.error("Server is down or unreachable:", data);
+        return <div className="flex justify-center text-red-500 text-2xl items-center min-h-screen">Server is down or unreachable.</div>;
+    }
+
     return (
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
             <SidebarProvider>

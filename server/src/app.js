@@ -1,8 +1,10 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { inngest } from "./inngest/client.js";
+import { processUploadedVideo } from "./inngest/functions/transcode-cron.js";
 
-
+import { serve } from 'inngest/express';
 const app = express();
 
 app.use(cors({
@@ -19,6 +21,11 @@ app.use(cookieParser())
 app.get("/", (req, res) => {
     res.status(200).json({message: "Welcome to the CuraTube API"})
 })
+
+app.use('/api/inngest', serve({
+    client: inngest,
+    functions: [processUploadedVideo]
+}))
 
 //routes import
 import userRouter from "./routes/user.routes.js";

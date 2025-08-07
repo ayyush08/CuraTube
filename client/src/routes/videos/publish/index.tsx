@@ -27,8 +27,9 @@ function RouteComponent() {
         description: '',
         isPublished: false,
     })
+    const [isUploading, setIsUploading] = useState(false)
 
-    const { mutate: publishVideo, isPending: publishPending, error: publishError } = usePublishVideo();
+    const { mutate: publishVideo, isPending: publishPending, error: publishError } = usePublishVideo(setIsUploading);
 
     if(publishError) console.log(publishError);
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -42,13 +43,14 @@ function RouteComponent() {
             toast.error("Both video file and thumbnail are required")
             return
         }
+        
         const formDataToSend = new FormData()
         formDataToSend.append('title', formData.title)
         formDataToSend.append('description', formData.description)
         formDataToSend.append('isPublished', String(formData.isPublished))
         formDataToSend.append('videoFile', videoFile)
         formDataToSend.append('thumbnail', thumbnailFile)
-
+        console.log("Submitting video data:", formDataToSend);
         publishVideo(formDataToSend)
     }
 
@@ -73,7 +75,7 @@ function RouteComponent() {
         <div className="min-h-screen bg-black text-white py-12 px-4">
             <div className="container mx-auto  max-w-6xl">
                 <div className="mb-8 text-center">
-                    <h1 className="text-5xl font-bold text-red-500 mb-4">This feature is still under development</h1>
+                    {/* <h1 className="text-5xl font-bold text-red-500 mb-4">This feature is still under development</h1> */}
                     <h1 className="text-5xl font-bold text-orange-500 mb-4">Publish a Video</h1>
                     <p className="text-orange-200 text-lg">Share some content on CuraTube</p>
                 </div>
@@ -173,13 +175,13 @@ function RouteComponent() {
                     <div className="text-center">
                         <Button
                             type="submit"
-                            disabled={publishPending || !videoFile || !thumbnailFile}
+                            disabled={publishPending || !videoFile || !thumbnailFile || isUploading}
                             className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-6 px-12 text-xl rounded-xl shadow-lg shadow-orange-500/25 transition-all duration-300 transform hover:scale-105"
                         >
-                            {publishPending ? (
+                            {(publishPending || isUploading) ? (
                                 <>
                                     <Loader2 className="w-6 h-6 mr-3 animate-spin" />
-                                    Uploading Your Video...
+                                    Processing Video, please wait...
                                 </>
                             ) : (
                                 <>

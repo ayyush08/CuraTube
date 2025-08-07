@@ -47,12 +47,32 @@ export const publishVideo = async (formData: FormData): Promise<any> => {
     }
 }
 
+export const getVideoUploadStatus = async (videoId: string): Promise<any> => {
+    try {
+        const res = await apiClient.get<ApiSuccessResponse>(`/videos/status/${videoId}`);
+        return res.data;
+    } catch (error) {
+        console.error("Error during fetching video upload status:", error);
+        throw error;
+    }
+}
+
 export const togglePublishStatus = async (videoId: string): Promise<any> => {
     try {
         const res = await apiClient.patch<ApiSuccessResponse>(`/videos/toggle/publish/${videoId}`);
         return res.data;
     } catch (error) {
         console.error("Error during toggling publish status:", error);
+        throw error;
+    }
+}
+
+export const deleteVideo = async (videoId: string): Promise<any> => {
+    try {
+        const res = await apiClient.delete<ApiSuccessResponse>(`/videos/${videoId}`);
+        return res.data;
+    } catch (error) {
+        console.error("Error during deleting video:", error);
         throw error;
     }
 }

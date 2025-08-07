@@ -1,4 +1,4 @@
-import { getAllVideos, getVideoById, publishVideo, togglePublishStatus, updateVideoViews } from "@/api/videos.api";
+import { deleteVideo, getAllVideos, getVideoById, getVideoUploadStatus, publishVideo, togglePublishStatus, updateVideoViews } from "@/api/videos.api";
 import { useAppSelector } from "@/redux/hooks";
 import type { VideoFetchParams } from "@/types/video.types";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -69,25 +69,52 @@ export const useUpdateViews = ({ videoId }: { videoId: string }) => {
 }
 
 
-export const usePublishVideo = () => {
+export const usePublishVideo = (setIsUploading: React.Dispatch<React.SetStateAction<boolean>>) => {
     const queryClient = useQueryClient();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    
     return useMutation({
         mutationFn: (formData: FormData) => publishVideo(formData),
         onSuccess: (data) => {
-            toast.success("Video published successfully");
-            console.log("Video published successfully",data);
-            queryClient.invalidateQueries({ queryKey: ['videos'] });
-            queryClient.invalidateQueries({ queryKey: ['videos-infinite'] });
-            navigate({
-                to: `/videos/${data.video._id}`,
-            })
+            setIsUploading(true)
+            console.log("Video published successfully", data);
+            
+            const videoId = data?.videoId;
+            console.log("Video uploaded. Starting polling...", videoId);
+
+            const interval = setInterval(async () => {
+                try {
+                    const res = await getVideoUploadStatus(videoId);
+                    console.log("Polling response:", res);
+                    
+                    const status = res.status;
+
+                    // You can also check for specific fields like:
+                    // if (video.streamUrl && video.thumbnail)
+                    if (status === "ready") {
+                        setIsUploading(false);
+                        console.log("Video is ready", res);
+                        clearInterval(interval);
+
+                        toast.success("Video processed!");
+                        queryClient.invalidateQueries({ queryKey: ['videos'] });
+                        queryClient.invalidateQueries({ queryKey: ['videos-infinite'] });
+                        navigate({
+                            to: `/videos/${videoId}`,
+                        });
+                    }
+                } catch (err) {
+                    console.error("Polling error", err);
+                }
+            }, 3000); 
         },
         onError: (error) => {
             console.error("Error publishing video", error);
+            toast.error("Failed to publish video");
         },
-    })
+    });
 }
+
 
 
 export const useTogglePublishStatus = (setIsPublished: React.Dispatch<React.SetStateAction<boolean | undefined>>) => {
@@ -98,7 +125,7 @@ export const useTogglePublishStatus = (setIsPublished: React.Dispatch<React.SetS
         },
         onSuccess: (data) => {
             setIsPublished(data?.isPublished);
-            if(data?.isPublished) toast.success("Video published successfully");
+            if (data?.isPublished) toast.success("Video published successfully");
             else toast.success("Video unpublished successfully");
             console.log("Video publish status toggled successfully", data);
             queryClient.invalidateQueries({ queryKey: ['video', data?.videoId] });
@@ -107,6 +134,22 @@ export const useTogglePublishStatus = (setIsPublished: React.Dispatch<React.SetS
         },
         onError: (error) => {
             console.error("Error toggling publish status", error);
+        },
+    })
+}
+
+export const useDeleteVideo = () => {
+    const queryClient = useQueryClient();
+    
+    return useMutation({
+        mutationFn: (videoId: string) => deleteVideo(videoId),
+        onSuccess: () => {
+            toast.success("Video deleted successfully");
+            queryClient.invalidateQueries({ queryKey: ['videos'] });
+            queryClient.invalidateQueries({ queryKey: ['videos-infinite'] });
+        },
+        onError: (error) => {
+            console.error("Error deleting video", error);
         },
     })
 }

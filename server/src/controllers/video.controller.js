@@ -1,4 +1,4 @@
-import path from 'path';
+
 import mongoose, { isValidObjectId } from "mongoose"
 import { Video } from "../models/video.model.js"
 import { User } from "../models/user.model.js"
@@ -8,9 +8,9 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import fs from 'fs-extra';
 import { Like } from "../models/like.model.js"
 import { Comment } from "../models/comment.model.js"
-import { transcodeToHLS } from "../utils/videoUtils.js"
-import { deleteFileFromCloudinary, uploadToCloudinary } from '../utils/cloudinary.js';
-import { getVideoDuration, rewriteM3U8Playlist } from '../utils/videoUtils.js';
+import { deleteFileFromCloudinary } from '../utils/cloudinary.js';
+
+import { inngest } from '../inngest/client.js';
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query = '', sortBy = 'createdAt', sortType = 'desc', userId } = req.query
 
@@ -52,7 +52,8 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
     aggregationPipeline.push({
         $match: {
-            isPublished: true
+            isPublished: true,
+            status: "ready" 
         }
     })
 
@@ -117,6 +118,158 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
 //I took help from chatgpt to write this function (🫠 )
 // It is a bit complex but it works well for transcoding video to HLS format for bitrate streaming
+// const publishAVideo = asyncHandler(async (req, res) => {
+//     const { title, description, isPublished } = req.body;
+
+//     if (!title || !description) {
+//         throw new ApiError(400, "All fields are required");
+//     }
+
+//     let videoLocalPath;
+//     let thumbnailLocalPath;
+
+//     if (req.files) {
+//         if (Array.isArray(req.files.videoFile) && req.files.videoFile.length > 0) {
+//             videoLocalPath = req.files.videoFile[0]?.path;
+//         } else {
+//             throw new ApiError(400, "Video is required");
+//         }
+
+//         if (Array.isArray(req.files.thumbnail) && req.files.thumbnail.length > 0) {
+//             thumbnailLocalPath = req.files.thumbnail[0]?.path;
+//         } else {
+//             await fs.remove(videoLocalPath);
+//             throw new ApiError(400, "Thumbnail is required");
+//         }
+//     }
+//     const now = Date.now();
+//     const assetPublicIds = [];
+//     console.log('✅ Starting local HLS transcoding');
+
+//     const hlsOutputDir = path.join('./public/temp', `hls-${now}`);
+//     await fs.ensureDir(hlsOutputDir);
+
+//     const absoluteVideoPath = path.resolve(videoLocalPath);
+//     const videoDuration = await getVideoDuration(absoluteVideoPath);
+//     if (!await fs.pathExists(absoluteVideoPath)) {
+//         throw new ApiError(400, `File not found on server: ${absoluteVideoPath}`);
+//     }
+
+//     await transcodeToHLS(absoluteVideoPath, hlsOutputDir);
+
+//     console.log('✅ HLS transcoding completed');
+
+//     const hlsFiles = await fs.readdir(hlsOutputDir);
+//     console.log('📂 HLS output dir contents:', hlsFiles);
+
+
+//     // === Upload segments first ===
+//     const segmentUrlMap = {};
+//     const segmentUploadResults = [];
+//     for (const file of hlsFiles) {
+//         const ext = path.extname(file).toLowerCase();
+//         if (ext === '.m3u8') continue;
+
+//         const localPath = path.join(hlsOutputDir, file);
+//         const result = await uploadToCloudinary(localPath, `curatube-videos/${title}-${now}`, file, 'video');
+
+//         if (!result) {
+//             throw new ApiError(500, `Failed to upload segment: ${file}`);
+//         }
+
+//         segmentUrlMap[file] = result.secure_url;
+//         segmentUploadResults.push(result);
+//         assetPublicIds.push({
+//             public_id: result.public_id,
+//             resource_type: result.resource_type
+//         })
+//     }
+
+//     console.log('✅ All .ts segments uploaded:', segmentUrlMap);
+
+//     // === Rewrite .m3u8 playlist to absolute URLs ===
+//     const playlistFile = hlsFiles.find(f => f.endsWith('.m3u8'));
+//     if (!playlistFile) {
+//         throw new ApiError(500, 'No playlist (.m3u8) file found in HLS output');
+//     }
+
+//     const playlistPath = path.join(hlsOutputDir, playlistFile);
+//     await rewriteM3U8Playlist(playlistPath, segmentUrlMap);
+
+//     console.log('✅ Playlist file rewritten with absolute URLs');
+
+//     // === Upload playlist ===
+//     const playlistResult = await uploadToCloudinary(playlistPath, `curatube-videos/${title}-${now}`, playlistFile, 'raw');
+
+//     if (!playlistResult) {
+//         // Cleanup segments if playlist upload fails
+//         await Promise.all(assetPublicIds.map(async (asset) => {
+//             await deleteFileFromCloudinary(asset.public_id, asset.resource_type);
+//         }));
+//         throw new ApiError(500, 'Playlist upload failed');
+//     }
+
+//     console.log('✅ Playlist uploaded:', playlistResult.secure_url);
+//     assetPublicIds.push({
+//         public_id: playlistResult.public_id,
+//         resource_type: playlistResult.resource_type
+//     });
+//     // Upload thumbnail
+//     console.log('🚀 Uploading thumbnail to Cloudinary...');
+//     const thumbnailFolder = `curatube-thumbnails/${title}-${now}`;
+//     const thumbnailFileName = path.basename(thumbnailLocalPath);
+//     const thumbnailResult = await uploadToCloudinary(thumbnailLocalPath, thumbnailFolder, thumbnailFileName, 'image');
+
+//     if (!thumbnailResult) {
+//         console.error('❌ Thumbnail upload failed');
+
+//         // Clean up all uploaded HLS segments
+//         await Promise.all(assetPublicIds.map(async (asset) => {
+//             await deleteFileFromCloudinary(asset.public_id, asset.resource_type);
+//         }));
+
+//         await fs.remove(hlsOutputDir);
+//         await fs.remove(absoluteVideoPath);
+//         await fs.remove(thumbnailLocalPath);
+
+//         throw new ApiError(500, "Thumbnail upload failed");
+//     }
+
+//     console.log('✅ Thumbnail uploaded:', thumbnailResult.secure_url);
+//     assetPublicIds.push({
+//         public_id: thumbnailResult.public_id,
+//         resource_type: thumbnailResult.resource_type
+//     });
+//     // Clean up local temp
+//     await fs.remove(hlsOutputDir);
+//     await fs.remove(absoluteVideoPath);
+//     await fs.remove(thumbnailLocalPath);
+
+
+//     const createdVideo = await Video.create({
+//         title,
+//         description,
+//         videoFile: playlistResult.secure_url,
+//         thumbnail: thumbnailResult.secure_url,
+//         duration: Math.round(videoDuration),
+//         isPublished,
+//         asset_public_ids: assetPublicIds,
+//         owner: req?.user._id,
+//     });
+
+//     if (!createdVideo) {
+//         await Promise.all(assetPublicIds.map(async (asset) => {
+//             await deleteFileFromCloudinary(asset.public_id, asset.resource_type);
+//         }));
+//         throw new ApiError(400, "Failed to upload video");
+
+//     }
+
+//     return res
+//         .status(200)
+//         .json(new ApiResponse(200, { video: createdVideo }, "Video Published Successfully"));
+// });
+
 const publishAVideo = asyncHandler(async (req, res) => {
     const { title, description, isPublished } = req.body;
 
@@ -124,149 +277,69 @@ const publishAVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All fields are required");
     }
 
-    let videoLocalPath;
-    let thumbnailLocalPath;
+    let videoLocalPath, thumbnailLocalPath;
 
-    if (req.files) {
-        if (Array.isArray(req.files.videoFile) && req.files.videoFile.length > 0) {
-            videoLocalPath = req.files.videoFile[0]?.path;
-        } else {
-            throw new ApiError(400, "Video is required");
-        }
-
-        if (Array.isArray(req.files.thumbnail) && req.files.thumbnail.length > 0) {
-            thumbnailLocalPath = req.files.thumbnail[0]?.path;
-        } else {
-            await fs.remove(videoLocalPath);
-            throw new ApiError(400, "Thumbnail is required");
-        }
+    if (req.files?.videoFile?.[0]) {
+        videoLocalPath = req.files.videoFile[0].path;
+    } else {
+        throw new ApiError(400, "Video file is required");
     }
+
+    if (req.files?.thumbnail?.[0]) {
+        thumbnailLocalPath = req.files.thumbnail[0].path;
+    } else {
+        await fs.remove(videoLocalPath);
+        throw new ApiError(400, "Thumbnail is required");
+    }
+
     const now = Date.now();
-    const assetPublicIds = [];
-    console.log('✅ Starting local HLS transcoding');
-
-    const hlsOutputDir = path.join('./public/temp', `hls-${now}`);
-    await fs.ensureDir(hlsOutputDir);
-
-    const absoluteVideoPath = path.resolve(videoLocalPath);
-    const videoDuration = await getVideoDuration(absoluteVideoPath);
-    if (!await fs.pathExists(absoluteVideoPath)) {
-        throw new ApiError(400, `File not found on server: ${absoluteVideoPath}`);
-    }
-
-    await transcodeToHLS(absoluteVideoPath, hlsOutputDir);
-
-    console.log('✅ HLS transcoding completed');
-
-    const hlsFiles = await fs.readdir(hlsOutputDir);
-    console.log('📂 HLS output dir contents:', hlsFiles);
-
-
-    // === Upload segments first ===
-    const segmentUrlMap = {};
-    const segmentUploadResults = [];
-    for (const file of hlsFiles) {
-        const ext = path.extname(file).toLowerCase();
-        if (ext === '.m3u8') continue;
-
-        const localPath = path.join(hlsOutputDir, file);
-        const result = await uploadToCloudinary(localPath, `curatube-videos/${title}-${now}`, file, 'video');
-
-        if (!result) {
-            throw new ApiError(500, `Failed to upload segment: ${file}`);
-        }
-
-        segmentUrlMap[file] = result.secure_url;
-        segmentUploadResults.push(result);
-        assetPublicIds.push({
-            public_id: result.public_id,
-            resource_type: result.resource_type
-        })
-    }
-
-    console.log('✅ All .ts segments uploaded:', segmentUrlMap);
-
-    // === Rewrite .m3u8 playlist to absolute URLs ===
-    const playlistFile = hlsFiles.find(f => f.endsWith('.m3u8'));
-    if (!playlistFile) {
-        throw new ApiError(500, 'No playlist (.m3u8) file found in HLS output');
-    }
-
-    const playlistPath = path.join(hlsOutputDir, playlistFile);
-    await rewriteM3U8Playlist(playlistPath, segmentUrlMap);
-
-    console.log('✅ Playlist file rewritten with absolute URLs');
-
-    // === Upload playlist ===
-    const playlistResult = await uploadToCloudinary(playlistPath, `curatube-videos/${title}-${now}`, playlistFile, 'raw');
-
-    if (!playlistResult) {
-        // Cleanup segments if playlist upload fails
-        await Promise.all(assetPublicIds.map(async (asset) => {
-            await deleteFileFromCloudinary(asset.public_id, asset.resource_type);
-        }));
-        throw new ApiError(500, 'Playlist upload failed');
-    }
-
-    console.log('✅ Playlist uploaded:', playlistResult.secure_url);
-    assetPublicIds.push({
-        public_id: playlistResult.public_id,
-        resource_type: playlistResult.resource_type
-    });
-    // Upload thumbnail
-    console.log('🚀 Uploading thumbnail to Cloudinary...');
-    const thumbnailFolder = `curatube-thumbnails/${title}-${now}`;
-    const thumbnailFileName = path.basename(thumbnailLocalPath);
-    const thumbnailResult = await uploadToCloudinary(thumbnailLocalPath, thumbnailFolder, thumbnailFileName, 'image');
-
-    if (!thumbnailResult) {
-        console.error('❌ Thumbnail upload failed');
-
-        // Clean up all uploaded HLS segments
-        await Promise.all(assetPublicIds.map(async (asset) => {
-            await deleteFileFromCloudinary(asset.public_id, asset.resource_type);
-        }));
-
-        await fs.remove(hlsOutputDir);
-        await fs.remove(absoluteVideoPath);
-        await fs.remove(thumbnailLocalPath);
-
-        throw new ApiError(500, "Thumbnail upload failed");
-    }
-
-    console.log('✅ Thumbnail uploaded:', thumbnailResult.secure_url);
-    assetPublicIds.push({
-        public_id: thumbnailResult.public_id,
-        resource_type: thumbnailResult.resource_type
-    });
-    // Clean up local temp
-    await fs.remove(hlsOutputDir);
-    await fs.remove(absoluteVideoPath);
-    await fs.remove(thumbnailLocalPath);
-
-
-    const createdVideo = await Video.create({
+    const video = await Video.create({
         title,
         description,
-        videoFile: playlistResult.secure_url,
-        thumbnail: thumbnailResult.secure_url,
-        duration: Math.round(videoDuration),
+        videoFile: "", // Empty for now
+        thumbnail: "",
+        duration: 0,
         isPublished,
-        asset_public_ids: assetPublicIds,
-        owner: req?.user._id,
+        asset_public_ids: [],
+        status: "processing",
+        owner: req.user._id
     });
 
-    if (!createdVideo) {
-        await Promise.all(assetPublicIds.map(async (asset) => {
-            await deleteFileFromCloudinary(asset.public_id, asset.resource_type);
-        }));
-        throw new ApiError(400, "Failed to upload video");
+    // Fire Inngest event
+    await inngest.send({
+        name: "video/publish",
+        data: {
+            videoId: video._id,
+            title,
+            now,
+            videoLocalPath,
+            thumbnailLocalPath,
+        },
+    });
 
+    res.status(202).json(
+        new ApiResponse(202, { videoId: video._id }, "Video upload started")
+    );
+});
+
+const getVideoUploadStatus = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+
+    if (!isValidObjectId(videoId)) {
+        throw new ApiError(400, "Invalid video id");
     }
 
-    return res
-        .status(200)
-        .json(new ApiResponse(200, { video: createdVideo }, "Video Published Successfully"));
+    const video = await Video.findById(videoId);
+    if (!video) {
+        throw new ApiError(404, "Video not found");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, {
+            status: video.status,
+        }, "Video upload status fetched successfully")
+    );
+
 });
 
 const getVideoById = asyncHandler(async (req, res) => {
@@ -279,7 +352,7 @@ const getVideoById = asyncHandler(async (req, res) => {
     const videoExists = await Video.findById(videoId);
     const userExists = await User.findOne({ username });
 
-    if (!videoExists) throw new ApiError(400, "Video not found");
+    if (!videoExists || videoExists.status !== "ready") throw new ApiError(400, "Video not found");
     const video = await Video.aggregate([
         {
             $match: {
@@ -426,7 +499,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const video = await Video.findById(videoId);
 
-    if (!video) throw new ApiError(404, "Video not found");
+    if (!video || video.status !== "ready") throw new ApiError(404, "Video not found");
 
 
 
@@ -454,7 +527,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
     const videoExists = await Video.findById(videoId);
 
-    if (!videoExists) {
+    if (!videoExists || videoExists.status !== "ready") {
         throw new ApiError(400, "Video not found");
     }
 
@@ -493,7 +566,7 @@ const updateVideoViews = asyncHandler(async (req, res) => {
     }
     const videoExists = await Video.findById(videoId);
 
-    if (!videoExists) throw new ApiError(400, "Video not found");
+    if (!videoExists || videoExists.status !== "ready") throw new ApiError(400, "Video not found");
 
     const user = await User.findById(req.user._id);
 
@@ -533,6 +606,7 @@ const updateVideoViews = asyncHandler(async (req, res) => {
 export {
     getAllVideos,
     publishAVideo,
+    getVideoUploadStatus,
     getVideoById,
     updateVideo,
     deleteVideo,

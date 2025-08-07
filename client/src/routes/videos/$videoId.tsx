@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { DeleteVideoDialog } from '@/components/video/DeleteVideoDialog'
 import VideoCard from '@/components/video/VideoCard'
 import VideoPlayer from '@/components/video/VideoPlayer'
 import { useToggleVideoLike } from '@/hooks/likes.hook'
@@ -30,7 +31,7 @@ function RouteComponent() {
   const [isSubscribed, setIsSubscribed] = useState<boolean | undefined>(false);
   const [subscribersCount, setSubscribersCount] = useState<number>(0);
   const [isPublished, setIsPublished] = useState<boolean | undefined>(false);
-
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = useState<boolean>(false);
 
   const storedUser = useAppSelector(state => state.auth.user)
@@ -41,6 +42,7 @@ function RouteComponent() {
   const { mutate: togglePublishStatus, isPending: isPublishing } = useTogglePublishStatus(setIsPublished)
 
   const navigate = useNavigate()
+
 
   const video: Video = data?.video;
   const suggestedVideos: Video[] = suggestedVideosData?.pages[0].videos || [];
@@ -132,6 +134,7 @@ function RouteComponent() {
               <h1 className="text-2xl md:text-3xl lg:text-3xl text-white font-bold tracking-wide">
                 {video.title}
               </h1>
+
               <div className="flex items-center gap-5 justify-between  text-xl  p-5 w-full rounded-lg ">
                 <div className='flex items-center gap-2'>
 
@@ -175,21 +178,36 @@ function RouteComponent() {
                         Add Video to Playlist
                       </Button>
                       <PlaylistDialog open={isPlaylistDialogOpen} videoId={video._id} onClose={() => setIsPlaylistDialogOpen(false)} />
+
                     </>
                   )
                 }
+
               </div>
               <div className="flex flex-col gap-1">
                 <span className="font-mono text-lg font-semibold">Description</span>
                 <span className="text-base text-neutral-400">
-                  {video.description} 
+                  {video.description}
                 </span>
               </div>
             </div>
 
             <div className="fflex flex-col sm:w-[250px] flex-shrink-0 gap-5">
               <div className="flex flex-col gap-2">
+                {
+                  storedUser?._id === video.owner._id && (
+                    <>
+                      <Button
 
+                        className="self-end border-2 border-red-500 bg-red-600/30 text-red-500 hover:bg-red-500 hover:text-neutral-100 transition-colors duration-300"
+                        onClick={() => setShowDeleteDialog(true)}
+                      >
+                        Delete Video
+                      </Button>
+                      <DeleteVideoDialog open={showDeleteDialog} onClose={() => setShowDeleteDialog(false)} videoId={video._id} />
+                    </>
+                  )
+                }
                 <div
                   onClick={(e) => handleOwnerClick(video.owner.username, e)}
                   className="flex gap-2 items-center hover:bg-amber-500/10 transition-colors duration-300 cursor-pointer rounded-2xl p-3 w-full"

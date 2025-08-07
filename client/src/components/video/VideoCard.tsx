@@ -11,7 +11,7 @@ export interface VideoCardProps {
 }
 export default function VideoCard({ video }: VideoCardProps) {
 
-
+    
     const navigate = useNavigate()
     const handleVideoCardClick = (videoId: string) => {
         navigate({ to: `/videos/${videoId}` })
