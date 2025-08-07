@@ -3,6 +3,7 @@ import { apiClient } from '@/api/api-client';
 
 
 export const useCheckServer = (serverReady:boolean) => {
+    
     return useQuery({
         queryKey: ['healthcheck'],
         queryFn: () => apiClient.healthCheck(),
