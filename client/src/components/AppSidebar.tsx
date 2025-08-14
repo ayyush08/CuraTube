@@ -15,7 +15,10 @@ import {
 
 
 import { APP_NAME } from "@/lib/constants"
-import { useLocation } from "@tanstack/react-router"
+import { useLocation, useNavigate } from "@tanstack/react-router"
+import { useAppSelector } from "@/redux/hooks"
+
+import { toast } from "sonner"
 
 
 const navigationData = [
@@ -23,31 +26,37 @@ const navigationData = [
         title: "Home",
         url: "/",
         icon: Home,
+        checkAuth: false
     },
     {
         title: "My Playlists",
         url: "/playlists",
         icon: Library,
+        checkAuth: true
     },
     {
         title: "Dashboard",
         url: "/dashboard",
         icon: LucideLayoutDashboard,
+        checkAuth: true
     },
     {
         title: "Liked Videos",
         url: "/liked-videos",
         icon: ThumbsUpIcon,
+        checkAuth: true
     },
     {
         title: "Watch History",
         url: "/watch-history",
         icon: HistoryIcon,
+        checkAuth: true
     },
     {
         title: "Tweets",
         url: '/tweets',
-        icon: Pen
+        icon: Pen,
+        checkAuth: false
     },
 
 ]
@@ -55,6 +64,19 @@ const navigationData = [
 export function AppSidebar() {
 
     const location = useLocation()
+    const navigate = useNavigate()
+    const storedUser = useAppSelector((state) => state.auth.user);
+
+    const handleTabClick = (url: string,checkAuth:boolean) => {
+        if (checkAuth && !storedUser) {
+            toast.error("You must be logged in to access this page.");
+            return;
+        }
+        navigate({
+            to: url,
+        })
+
+    }
 
     return (
         <Sidebar variant="inset" collapsible="icon" >
@@ -84,11 +106,14 @@ export function AppSidebar() {
                             {navigationData.map((item) => {
                                 const isActive = location.pathname === item.url
                                 return <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton  className={`${isActive ? "bg-sidebar-accent" : ''} p-5 text-lg font-semibold `} asChild>
-                                        <a href={item.url}  >
-                                            <item.icon className="text-lg font-semibold"/>
+                                    <SidebarMenuButton className={`${isActive ? "bg-sidebar-accent" : ''} p-5 text-lg font-semibold `} asChild>
+                                        <p className="cursor-pointer" onClick={(e) => {
+                                            e.preventDefault();
+                                            handleTabClick(item.url,item.checkAuth);
+                                        }}>
+                                            <item.icon className="text-lg font-semibold" />
                                             <span>{item.title}</span>
-                                        </a>
+                                        </p>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             })}
@@ -100,7 +125,7 @@ export function AppSidebar() {
 
             </SidebarContent>
 
-            
+
 
         </Sidebar >
     )
