@@ -102,6 +102,13 @@ export const usePublishVideo = (setIsUploading: React.Dispatch<React.SetStateAct
                         navigate({
                             to: `/videos/${videoId}`,
                         });
+                    }else if(status === "processing") {
+                        console.log("Video is still processing", res);
+                    }
+                    else{
+                        toast.error("Video processing failed");
+                        setIsUploading(false);
+                        
                     }
                 } catch (err) {
                     console.error("Polling error", err);

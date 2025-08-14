@@ -1,6 +1,7 @@
 import { Play, Video } from "lucide-react"
 import { Button } from "../ui/button"
 import { useState } from "react"
+import { toast } from "sonner"
 
 export function VideoUploadZone({
     file,
@@ -31,6 +32,10 @@ export function VideoUploadZone({
         if (files.length > 0) {
             onFileSelect(files[0])
         }
+        if (files[0].size > 50 * 1024 * 1024) {
+            toast.warning("File size exceeds 50MB");
+            return;
+        }
     }
 
     const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,6 +43,7 @@ export function VideoUploadZone({
         if (files && files.length > 0) {
             onFileSelect(files[0])
         }
+        
     }
 
     return (
@@ -91,7 +97,7 @@ export function VideoUploadZone({
                                 browse to upload
                             </button>
                         </p>
-                        <p className="text-orange-300/70">Supports MP4, MOV, AVI • Max 500MB</p>
+                        <p className="text-orange-300/70">Supports MP4, MOV, AVI • Max 50MB</p>
                     </div>
                 </div>
             )}

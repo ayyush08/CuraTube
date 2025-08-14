@@ -51,7 +51,7 @@ export default function VideoCard({ video }: VideoCardProps) {
                     <h3 className="font-semibold text-sm line-clamp-2 text-foreground group-hover:text-primary transition-colors">
                         {video.title}
                     </h3>
-                    <p onClick={handleUsernameClick} className="text-sm text-muted-foreground mt-1 hover:text-orange-600 transition-colors duration-200">{video.owner.username}</p>
+                    <p onClick={handleUsernameClick} className="text-sm text-muted-foreground mt-1 hover:text-orange-600 transition-colors duration-200 w-fit">{video.owner.username}</p>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <span>{formatViews(video.views)}</span>
                         <span>•</span>
