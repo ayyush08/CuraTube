@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { LoginDialog } from "./auth/LoginDialog"
 import { SignUpDialog } from "./auth/SignUpDialog"
 import { Input } from "./ui/input"
@@ -26,6 +26,7 @@ const Header = () => {
     const onSearchSubmit = (value: string) => {
         console.log('search clicked', value);
         if (value.trim() === "") {
+            window.history.back(); // If the search input is empty, go back to the previous page
             return;
         }
         navigate({ to: `/videos/search-videos/${value.trim()}` });
@@ -112,7 +113,14 @@ function SearchBar({ onSubmit }: InputWithIconProps) {
         e.preventDefault();
         onSubmit(value.trim());
     };
-
+    useEffect(() => {
+        if (value.trim() === "") {
+            // This ensures we go back only if we are on a search route
+            if (window.location.pathname.startsWith("/videos/search-videos")) {
+                window.history.back();
+            }
+        }
+    }, [value]);
     return (
         <div className="relative w-fit max-w-xl sm:max-w-2xl sm:w-full xs:max-w-full px-4 py-2 z-10">
             <form onSubmit={handleSubmit}>
