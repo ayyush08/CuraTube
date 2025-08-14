@@ -9,6 +9,8 @@ import {
     plyrLayoutIcons,
 } from "@vidstack/react/player/layouts/plyr";
 
+import '../../index.css';
+
 interface VideoPlayerProps {
     src: string;
     thumbnail: string;

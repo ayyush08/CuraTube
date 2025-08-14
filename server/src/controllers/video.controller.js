@@ -24,6 +24,10 @@ const getAllVideos = asyncHandler(async (req, res) => {
                     autocomplete: {
                         query: query,
                         path: ["title", "description"],
+                        fuzzy: {
+                            maxEdits: 1,
+                            prefixLength: 1,
+                        },
                     },
                 },
             });

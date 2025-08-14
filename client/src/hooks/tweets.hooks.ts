@@ -59,7 +59,7 @@ export const useUpdateTweet = (setTweetContent: React.Dispatch<React.SetStateAct
     })
 }
 
-export const useDeleteTweet = (tweetId: string) => {
+export const useDeleteTweet = (tweetId: string, onClose?: () => void) => {
     const queryClient = useQueryClient()
 
     return useMutation({
@@ -68,9 +68,12 @@ export const useDeleteTweet = (tweetId: string) => {
             console.log("Tweet deleted successfully");
             toast.success("Tweet deleted successfully");
             queryClient.invalidateQueries({ queryKey: ['tweets'] })
+            onClose?.();
         },
         onError: (error) => {
+            toast.error("Failed to delete tweet. Try again later.");
             console.error("Error deleting tweet:", error);
+            onClose?.();
         },
     })
 }

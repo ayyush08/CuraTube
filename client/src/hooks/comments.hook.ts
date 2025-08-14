@@ -10,7 +10,7 @@ export const useGetVideoComments = (videoId: string, {
     sortBy = 'createdAt',
 }: CommentFetchParams) => {
     return useInfiniteQuery({
-        queryKey: ['video-comments', { page, limit, sortBy }],
+        queryKey: ['video-comments', videoId, { page, limit, sortBy }],
         queryFn: async ({ pageParam = 1 }) => {
             const response = await getVideoComments(videoId, {
                 page: pageParam,
@@ -33,26 +33,33 @@ export const useAddComment = () => {
     return useMutation({
         mutationFn: ({ videoId, content }: { videoId: string; content: string }) => addComment(videoId, content),
         onSuccess: (data) => {
-            console.log("Comment added successfully", data);
             toast.success("Comment added successfully");
-            queryClient.invalidateQueries({ queryKey: ['video-comments'] });
+            console.log("Comment added successfully", data);
+            queryClient.invalidateQueries({ queryKey: ['video-comments',data?.video] });
         },
         onError: (error) => {
             console.error("Error adding comment:", error);
+            toast.error(error?.message || "Failed to add comment.");
+
         },
     })
 }
 
 
 
-export const useUpdateComment = () => {
+export const useUpdateComment = (
+    setEditText: React.Dispatch<React.SetStateAction<string>>,
+    setEditingCommentId: React.Dispatch<React.SetStateAction<string | null>>
+) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({ commentId, content }: { commentId: string; content: string }) => updateComment(commentId, content),
         onSuccess: (data) => {
             console.log("Comment updated successfully", data);
             toast.success("Comment updated successfully");
-            queryClient.invalidateQueries({ queryKey: ['video-comments'] });
+            queryClient.invalidateQueries({ queryKey: ['video-comments',data?.video] });
+            setEditingCommentId(null);
+            setEditText("");
         },
         onError: (error) => {
             console.error("Error updating comment:", error);
@@ -60,13 +67,15 @@ export const useUpdateComment = () => {
     })
 }
 
-export const useDeleteComment = () => {
+export const useDeleteComment = (videoId: string,onClose? : () => void) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (commentId: string) => deleteComment(commentId),
         onSuccess: (data) => {
+            toast.success("Comment deleted successfully");
             console.log("Comment deleted successfully", data);
-            queryClient.invalidateQueries({ queryKey: ['video-comments'] });
+            queryClient.invalidateQueries({ queryKey: ['video-comments', videoId] });
+            onClose?.();
         },
         onError: (error) => {
             console.error("Error deleting comment:", error);

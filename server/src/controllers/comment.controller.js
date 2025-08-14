@@ -107,7 +107,7 @@ const addComment = asyncHandler(async (req, res) => {
     if (!comment) throw new ApiError(400, 'Error while adding comment');
     res
         .status(201)
-        .json(new ApiResponse(201, content, "Comment added successfully"))
+        .json(new ApiResponse(201, comment, "Comment added successfully"))
 })
 
 const updateComment = asyncHandler(async (req, res) => {

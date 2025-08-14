@@ -14,7 +14,7 @@ import { useAppSelector } from '@/redux/hooks'
 import type { Video } from '@/types/video.types'
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Loader2Icon, ThumbsUpIcon, VideoIcon } from 'lucide-react'
+import { Heart, Loader2Icon, VideoIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -26,7 +26,6 @@ function RouteComponent() {
   const { videoId } = Route.useParams()
   const { data, isLoading, isError } = useVideoById({ videoId })
   const [likeCount, setLikeCount] = useState<number | undefined>(0);
-  const [hasInitialized, setHasInitialized] = useState<boolean>(false);
   const [isVideoLiked, setIsVideoLiked] = useState<boolean | undefined>(false)
   const [isSubscribed, setIsSubscribed] = useState<boolean | undefined>(false);
   const [subscribersCount, setSubscribersCount] = useState<number>(0);
@@ -47,19 +46,20 @@ function RouteComponent() {
   const video: Video = data?.video;
   const suggestedVideos: Video[] = suggestedVideosData?.pages[0].videos || [];
 
+  useEffect(() => {
+    if (video) updateViews();
+  }, [videoId, video, updateViews]);
 
   useEffect(() => {
-    if (video && !hasInitialized) {
-      updateViews();
+    if (video) {
       setIsVideoLiked(video.isLiked);
       setLikeCount(video.likesCount);
       setSubscribersCount(video.owner.subscribersCount || 0);
       setIsSubscribed(video.owner.isSubscribed);
       setIsPublished(video.isPublished);
-      setHasInitialized(true);
 
     }
-  }, [video, updateViews, hasInitialized]);
+  }, [video]);
 
   const handleOwnerClick = (channelId: string, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -137,15 +137,18 @@ function RouteComponent() {
 
               <div className="flex items-center gap-5 justify-between  text-xl  p-5 w-full rounded-lg ">
                 <div className='flex items-center gap-2'>
+                  <button
+                    aria-label='Like video'
+                    disabled={liking}
+                    onClick={handleLikeClick}
+                    className="flex items-center cursor-pointer gap-2 px-3 py-1 rounded-md transition-all duration-300 h-auto bg-transparent  text-white hover:text-orange-500"
+                  >
+                    <Heart
+                      className={`w-6 h-6 ${isVideoLiked ? "fill-red-500 text-red-500" : "text-neutral-400"} ${liking ? "animate-pulse scale-125" : ""}`}
+                    />
+                    <span className="text-lg text-red-500 font-bold">{likeCount}</span>
+                  </button>
 
-                  <ThumbsUpIcon
-                    onClick={(e) => handleLikeClick(e)}
-                    className={`w-6 h-6 cursor-pointer ${isVideoLiked ? 'fill-orange-500 text-orange-500' : 'text-orange-500'
-                      }`}
-                  />
-                  <span>
-                    {likeCount}
-                  </span>
                   {
                     storedUser?._id === video.owner._id && (
                       <div className="flex items-center space-x-2">
@@ -251,7 +254,7 @@ function RouteComponent() {
           <Separator className='mt-8 bg-orange-400 py-[1px] w-full' />
           {/* Comments */}
           <div className="min-h-[50vh] sm:min-h-[60vh] lg:min-h-[100vh] p-5 rounded-xl">
-            <CommentSection videoId={video._id} />
+            <CommentSection key={video._id} videoId={video._id} />
           </div>
         </section>
 

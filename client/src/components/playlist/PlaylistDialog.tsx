@@ -29,9 +29,9 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
     const [newPlaylistDescription, setNewPlaylistDescription] = useState("")
 
     const { data: playlists, isPending: playlistsLoading } = useGetUserPlaylists(storedUser?._id || '')
-    const { mutate: addVideoToPlaylist, isPending: addingVideo } = useAddVideoToPlaylist()
+    const { mutate: addVideoToPlaylist, isPending: addingVideo } = useAddVideoToPlaylist(onClose)
 
-    const { mutate: createPlaylist, isPending: creatingPlaylist } = useCreatePlaylist()
+    const { mutate: createPlaylist, isPending: creatingPlaylist } = useCreatePlaylist(onClose)
     useEffect(() => {
         if (!open) {
             setSelectedPlaylistIds([])
@@ -80,7 +80,7 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
 
 
     return (
-        <div className="flex  items-center justify-center bg-black ">
+        <div className="flex  items-center justify-center ">
             <Dialog
                 open={open}
                 onOpenChange={onClose}
@@ -88,7 +88,7 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
                 <DialogContent
                     showCloseButton={false}
                     onInteractOutside={(e) => e.preventDefault()}
-                    className="bg-black border-orange-500 mx-auto  text-white w-full max-w-5xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl rounded-lg p-10 sm:p-6 overflow-y-auto max-h-[90vh]"
+                    className="bg-neutral-900 border-orange-500 mx-auto  text-white w-full max-w-5xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl rounded-lg p-10 sm:p-6 overflow-y-auto max-h-[90vh]"
                 >
 
                     <DialogHeader>
@@ -132,11 +132,11 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
                                                     setSelectedPlaylistIds(selectedPlaylistIds.filter((id) => id !== playlist._id))
                                                 }
                                             }}
-                                            className="border-orange-500 hidden data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                                            className="border-orange-500  hidden data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
                                         />
                                         <Label
                                             htmlFor={playlist._id}
-                                            className={`flex-1 cursor-pointer  min-h-[120px]  rounded-lg border border-orange-500/30 hover:border-orange-500 hover:bg-orange-500/10 ${selectedPlaylistIds.includes(playlist._id) ? 'bg-orange-500/10' : ''} transition-colors`}
+                                            className={`flex-1 cursor-pointer   min-h-[120px]  rounded-lg border border-orange-500 bg-orange-200/10 hover:border-orange-500 hover:bg-orange-500/10 ${selectedPlaylistIds.includes(playlist._id) ? 'bg-orange-500/10' : ''} transition-colors`}
                                         >
                                             <div className="flex justify-between w-full p-5 items-center">
                                                 {

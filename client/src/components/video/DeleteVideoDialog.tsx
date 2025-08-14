@@ -10,8 +10,8 @@ export const DeleteVideoDialog = ({ open, videoId, onClose }: { open: boolean, v
     const handleDelete = () => {
         console.log('Deleting video with ID:', videoId);
         deleteVideo(videoId);
-        window.history.back(); // Navigate back after deletion
         onClose();
+        window.history.back(); 
     }
 
     return (

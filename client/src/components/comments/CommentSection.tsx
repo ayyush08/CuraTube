@@ -30,6 +30,12 @@ export default function CommentSection({ videoId }: CommentSectionProps) {
         limit: 10,
         sortBy: 'createdAt',
     });
+    
+        const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+        const [newComment, setNewComment] = useState("")
+        const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
+        const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null)
+        const [editText, setEditText] = useState("")
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
@@ -50,10 +56,10 @@ export default function CommentSection({ videoId }: CommentSectionProps) {
         };
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
     const { mutate: addComment, isPending: addingComment, isError: addingCommentError } = useAddComment()
-    const { mutate: updateComment, isPending: updatingComment } = useUpdateComment()
+    const { mutate: updateComment, isPending: updatingComment } = useUpdateComment(setEditText,setEditingCommentId)
     const [commentLikeStates, setCommentLikeStates] = useState<Record<string, { isLiked: boolean, likeCount: number }>>({});
 
-    const { mutate: likeComment } = useToggleCommentLike(setCommentLikeStates)
+    const { mutate: likeComment,isPending: likingComment } = useToggleCommentLike(setCommentLikeStates)
     const comments = useMemo(() => commentsData?.pages.flat() || [], [commentsData]);
 
     useEffect(() => {
@@ -69,12 +75,6 @@ export default function CommentSection({ videoId }: CommentSectionProps) {
     }, [comments, storedUser?._id]);
 
 
-
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-    const [newComment, setNewComment] = useState("")
-    const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
-    const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null)
-    const [editText, setEditText] = useState("")
     console.log("Comments Data:", commentsData?.pages[0]);
     if (commentError || addingCommentError) console.error("Error fetching or adding comments:", commentError || addingCommentError);
     const handleSubmitComment = async () => {
@@ -115,8 +115,6 @@ export default function CommentSection({ videoId }: CommentSectionProps) {
         console.log("Editing comment:", commentId, "New text:", editText);
 
         updateComment({ commentId, content: editText });
-        setEditingCommentId(null)
-        setEditText("")
     }
 
     const handleCancelEdit = () => {
@@ -271,19 +269,24 @@ export default function CommentSection({ videoId }: CommentSectionProps) {
 
                                         
                                         <div className="flex items-center gap-4 mt-3">
-                                            <button
+                                            <Button
+                                                variant='default'
+                                                disabled={likingComment}
                                                 onClick={() => handleLikeComment(comment._id)}
-                                                className="flex items-center gap-1 text-neutral-400 hover:text-orange-500 transition-colors"
+                                                className="flex items-center  text-neutral-400 hover:text-orange-500 hover:bg-transparent transition-colors bg-transparent"
                                             >
+                                                
                                                 <Heart
+                                                    
                                                     className={`w-4 h-4  cursor-pointer ${isLiked ? "fill-red-500 text-red-500" : "text-neutral-400"
-                                                        }`}
-                                                />
+                                                    }`}
+                                                    />
                                                 <span className="text-xs">
                                                     
                                                     {commentLikeStates[comment._id]?.likeCount || comment.likedBy?.length || 0}
                                                 </span>
-                                            </button>
+                                                
+                                            </Button>
                                         </div>
                                     </>
                                 )}
@@ -299,6 +302,7 @@ export default function CommentSection({ videoId }: CommentSectionProps) {
                     <DeleteCommentDialog
                         open={showDeleteDialog}
                         commentId={deletingCommentId}
+                        videoId={videoId}
                         onClose={() => {
                             setShowDeleteDialog(false);
                             setDeletingCommentId(null);

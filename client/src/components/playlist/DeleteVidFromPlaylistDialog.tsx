@@ -6,11 +6,10 @@ import {  useRemoveVideoFromPlaylist } from "@/hooks/playlist.hook";
 
 export const DeleteVideoFromPlaylistDialog = ({ open, playlistId, videoId, onClose }: { open: boolean, playlistId: string, videoId: string, onClose: () => void }) => {
 
-    const { mutate: deleteVideoFromPlaylist, isPending: deletePending } = useRemoveVideoFromPlaylist();
+    const { mutate: deleteVideoFromPlaylist, isPending: deletePending } = useRemoveVideoFromPlaylist(onClose);
     const handleDelete = () => {
         console.log('Deleting video with ID:', videoId);
         deleteVideoFromPlaylist({ playlistId, videoId });
-        onClose();
     }
 
     return (

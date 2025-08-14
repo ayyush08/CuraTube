@@ -3,14 +3,13 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Button } from "../ui/button";
 import { useDeleteComment } from "@/hooks/comments.hook";
 
-export const DeleteCommentDialog = ({ open, commentId, onClose }: { open: boolean, commentId: string, onClose: () => void }) => {
+export const DeleteCommentDialog = ({ open, commentId, onClose, videoId }: { open: boolean, commentId: string, onClose: () => void, videoId: string }) => {
 
-    const { mutate: deleteComment, isPending: deletePending } = useDeleteComment();
+    const { mutate: deleteComment, isPending: deletePending } = useDeleteComment(videoId,onClose);
 
     const handleDelete = () => {
         console.log('Deleting comment with ID:', commentId);
         deleteComment(commentId);
-        onClose();
     }
 
     return (

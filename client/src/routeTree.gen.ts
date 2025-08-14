@@ -14,7 +14,6 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as WatchHistoryIndexImport } from './routes/watch-history/index'
 import { Route as TweetsIndexImport } from './routes/tweets/index'
-import { Route as TestComponentIndexImport } from './routes/test-component/index'
 import { Route as PlaylistsIndexImport } from './routes/playlists/index'
 import { Route as LikedVideosIndexImport } from './routes/liked-videos/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
@@ -41,12 +40,6 @@ const WatchHistoryIndexRoute = WatchHistoryIndexImport.update({
 const TweetsIndexRoute = TweetsIndexImport.update({
   id: '/tweets/',
   path: '/tweets/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const TestComponentIndexRoute = TestComponentIndexImport.update({
-  id: '/test-component/',
-  path: '/test-component/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -151,13 +144,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlaylistsIndexImport
       parentRoute: typeof rootRoute
     }
-    '/test-component/': {
-      id: '/test-component/'
-      path: '/test-component'
-      fullPath: '/test-component'
-      preLoaderRoute: typeof TestComponentIndexImport
-      parentRoute: typeof rootRoute
-    }
     '/tweets/': {
       id: '/tweets/'
       path: '/tweets'
@@ -199,7 +185,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardIndexRoute
   '/liked-videos': typeof LikedVideosIndexRoute
   '/playlists': typeof PlaylistsIndexRoute
-  '/test-component': typeof TestComponentIndexRoute
   '/tweets': typeof TweetsIndexRoute
   '/watch-history': typeof WatchHistoryIndexRoute
   '/videos/search-videos/$query': typeof VideosSearchVideosQueryRoute
@@ -214,7 +199,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/liked-videos': typeof LikedVideosIndexRoute
   '/playlists': typeof PlaylistsIndexRoute
-  '/test-component': typeof TestComponentIndexRoute
   '/tweets': typeof TweetsIndexRoute
   '/watch-history': typeof WatchHistoryIndexRoute
   '/videos/search-videos/$query': typeof VideosSearchVideosQueryRoute
@@ -230,7 +214,6 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/liked-videos/': typeof LikedVideosIndexRoute
   '/playlists/': typeof PlaylistsIndexRoute
-  '/test-component/': typeof TestComponentIndexRoute
   '/tweets/': typeof TweetsIndexRoute
   '/watch-history/': typeof WatchHistoryIndexRoute
   '/videos/search-videos/$query': typeof VideosSearchVideosQueryRoute
@@ -247,7 +230,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/liked-videos'
     | '/playlists'
-    | '/test-component'
     | '/tweets'
     | '/watch-history'
     | '/videos/search-videos/$query'
@@ -261,7 +243,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/liked-videos'
     | '/playlists'
-    | '/test-component'
     | '/tweets'
     | '/watch-history'
     | '/videos/search-videos/$query'
@@ -275,7 +256,6 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/liked-videos/'
     | '/playlists/'
-    | '/test-component/'
     | '/tweets/'
     | '/watch-history/'
     | '/videos/search-videos/$query'
@@ -291,7 +271,6 @@ export interface RootRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute
   LikedVideosIndexRoute: typeof LikedVideosIndexRoute
   PlaylistsIndexRoute: typeof PlaylistsIndexRoute
-  TestComponentIndexRoute: typeof TestComponentIndexRoute
   TweetsIndexRoute: typeof TweetsIndexRoute
   WatchHistoryIndexRoute: typeof WatchHistoryIndexRoute
   VideosSearchVideosQueryRoute: typeof VideosSearchVideosQueryRoute
@@ -306,7 +285,6 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
   LikedVideosIndexRoute: LikedVideosIndexRoute,
   PlaylistsIndexRoute: PlaylistsIndexRoute,
-  TestComponentIndexRoute: TestComponentIndexRoute,
   TweetsIndexRoute: TweetsIndexRoute,
   WatchHistoryIndexRoute: WatchHistoryIndexRoute,
   VideosSearchVideosQueryRoute: VideosSearchVideosQueryRoute,
@@ -330,7 +308,6 @@ export const routeTree = rootRoute
         "/dashboard/",
         "/liked-videos/",
         "/playlists/",
-        "/test-component/",
         "/tweets/",
         "/watch-history/",
         "/videos/search-videos/$query",
@@ -357,9 +334,6 @@ export const routeTree = rootRoute
     },
     "/playlists/": {
       "filePath": "playlists/index.tsx"
-    },
-    "/test-component/": {
-      "filePath": "test-component/index.tsx"
     },
     "/tweets/": {
       "filePath": "tweets/index.tsx"

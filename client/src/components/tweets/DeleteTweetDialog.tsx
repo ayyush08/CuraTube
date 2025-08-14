@@ -4,12 +4,12 @@ import { Button } from "../ui/button";
 
 export const DeleteTweetDialog = ({ open, tweetId, onClose }: { open: boolean, tweetId: string, onClose: () => void }) => {
 
-    const { mutate: deleteTweet, isPending: deletePending } = useDeleteTweet(tweetId);
+    const { mutate: deleteTweet, isPending: deletePending } = useDeleteTweet(tweetId,onClose);
 
     const handleDelete = () => {
         console.log('Deleting tweet with ID:', tweetId);
         deleteTweet();
-        onClose();
+        
     }
 
     return (

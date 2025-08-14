@@ -1,5 +1,5 @@
 
-import { HistoryIcon, Home, Library, LucideLayoutDashboard, Pen, Play, TestTube, ThumbsUpIcon } from "lucide-react"
+import { HistoryIcon, Home, Library, LucideLayoutDashboard, Pen, Play, ThumbsUpIcon } from "lucide-react"
 
 import {
     Sidebar,
@@ -48,11 +48,6 @@ const navigationData = [
         title: "Tweets",
         url: '/tweets',
         icon: Pen
-    },
-    {
-        title: "component testing route",
-        url: '/test-component',
-        icon: TestTube
     },
 
 ]

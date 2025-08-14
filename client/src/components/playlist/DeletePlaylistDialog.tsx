@@ -5,12 +5,10 @@ import { useDeletePlaylist } from "@/hooks/playlist.hook";
 
 export const DeletePlaylistDialog = ({ open, playlistId, onClose }: { open: boolean, playlistId: string, onClose: () => void }) => {
 
-    const { mutate: deletePlaylist, isPending: deletePending } = useDeletePlaylist();
+    const { mutate: deletePlaylist, isPending: deletePending } = useDeletePlaylist(onClose);
     const handleDelete = () => {
         console.log('Deleting playlist with ID:', playlistId);
         deletePlaylist(playlistId);
-        window.history.back();
-        onClose();
     }
 
     return (

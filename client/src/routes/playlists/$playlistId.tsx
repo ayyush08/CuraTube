@@ -22,7 +22,10 @@ export const Route = createFileRoute('/playlists/$playlistId')({
 function RouteComponent() {
   const { playlistId } = Route.useParams()
   const { data: playlistVideos, isPending: loadingPlaylist, isError: playlistError } = useGetPlaylistById(playlistId)
-  const { mutate: updatePlaylist, isPending: updatingPlaylist } = useUpdatePlaylist()
+  const [isEditing, setIsEditing] = useState(false)
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const { mutate: updatePlaylist, isPending: updatingPlaylist } = useUpdatePlaylist(setIsEditing)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showDeleteVideoDialog, setShowDeleteVideoDialog] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
@@ -36,9 +39,14 @@ function RouteComponent() {
   };
 
 
-  const [isEditing, setIsEditing] = useState(false)
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
+
+  useEffect(() => {
+    if (playlistVideos && !isEditing) {
+      setName(playlistVideos.name)
+      setDescription(playlistVideos.description)
+    }
+  }, [playlistVideos, isEditing])
+
   useEffect(() => {
     if (playlistVideos?.name) {
       setName(playlistVideos.name)
@@ -84,7 +92,6 @@ function RouteComponent() {
       return;
     }
     updatePlaylist({ playlistId, name, description });
-    setIsEditing(false);
   }
   const openDeleteVideoDialog = (videoId: string) => {
     setSelectedVideoId(videoId);
