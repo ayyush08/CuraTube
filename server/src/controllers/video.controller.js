@@ -19,17 +19,36 @@ const getAllVideos = asyncHandler(async (req, res) => {
     if (query) {
         if (process.env.NODE_ENV === "production") {
             aggregationPipeline.push({
+
                 $search: {
-                    index: "search-curatube-videos",//TODO: Create a search index in mongo atlas cloud for production
-                    autocomplete: {
-                        query: query,
-                        path: ["title", "description"],
-                        fuzzy: {
-                            maxEdits: 1,
-                            prefixLength: 1,
-                        },
-                    },
-                },
+                    index: "search-curatube-videos",
+                    compound: {
+                        should: [
+                            {
+                                autocomplete: {
+                                    query: query,
+                                    path: "title",
+                                    fuzzy: {
+                                        maxEdits: 1,
+                                        prefixLength: 1
+                                    }
+                                }
+                            },
+                            {
+                                autocomplete: {
+                                    query: query,
+                                    path: "description",
+                                    fuzzy: {
+                                        maxEdits: 1,
+                                        prefixLength: 1
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+
+
             });
         } else {
             //using regex for lightweight testin in development
@@ -57,7 +76,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     aggregationPipeline.push({
         $match: {
             isPublished: true,
-            status: "ready" 
+            status: "ready"
         }
     })
 
