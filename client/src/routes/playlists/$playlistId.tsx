@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import VideoTile from '@/components/video/VideoTile'
 import { useGetPlaylistById, useUpdatePlaylist } from '@/hooks/playlist.hook'
 import { formatViews } from '@/lib/utils'
+import { useAppSelector } from '@/redux/hooks'
 import type { Playlist, PlaylistVideo } from '@/types/playlist.types'
 import { createFileRoute } from '@tanstack/react-router'
 import { Calendar, Clock, List, VideoIcon, Eye, Edit, TrashIcon } from 'lucide-react'
@@ -21,6 +22,7 @@ export const Route = createFileRoute('/playlists/$playlistId')({
 
 function RouteComponent() {
   const { playlistId } = Route.useParams()
+  const storedUser = useAppSelector((state) => state.auth.user);
   const { data: playlistVideos, isPending: loadingPlaylist, isError: playlistError } = useGetPlaylistById(playlistId)
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState('')
@@ -180,7 +182,8 @@ function RouteComponent() {
                           <span className="text-white font-semibold">Updated {moment(playlist.updatedAt).fromNow()}</span>
                         </div>
                       </div>
-
+                      {
+                        storedUser?._id === playlist.owner && (
                       <div className="flex gap-5 pt-6  items-end justify-end">
                         <Button title='Edit playlist' variant="default" className='bg-transparent scale-125 border-none hover:bg-neutral-800 transition-all duration-300' onClick={() => setIsEditing(true)}>
                           <Edit className="w-5 h-5 text-orange-600 p-0" />
@@ -196,6 +199,8 @@ function RouteComponent() {
                           onClose={() => setShowDeleteDialog(false)}
                         />
                       </div>
+                        )
+                      }
                     </>
                   )}
                 </div>

@@ -7,7 +7,20 @@ import mongoose from "mongoose";
 import { deleteFileFromCloudinary, uploadToCloudinary } from "../utils/cloudinary.js";
 import path from "path";
 
-
+const accessTokenOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+}
+const refreshTokenOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    path: '/',
+    maxAge: 15 * 24 * 60 * 60 * 1000
+}
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -119,15 +132,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
-    const options = {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'None', 
-        path: '/',
-    }
 
-    res.cookie('accessToken', accessToken, options)
-        .cookie('refreshToken', refreshToken, options)
+
+    res.cookie('accessToken', accessToken, accessTokenOptions)
+        .cookie('refreshToken', refreshToken, refreshTokenOptions)
 
     return res
         .status(200)
@@ -154,17 +162,12 @@ const logoutUser = asyncHandler(async (req, res) => {
         }
     )
 
-    const options = {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'None',
-        path: '/',
-    }
+
 
     return res
         .status(200)
-        .clearCookie('accessToken', options)
-        .clearCookie('refreshToken', options)
+        .clearCookie('accessToken', accessTokenOptions)
+        .clearCookie('refreshToken', refreshTokenOptions)
         .json(
             new ApiResponse(200, {}, 'User logged out successfully')
         )
@@ -196,25 +199,19 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             throw new ApiError(401, 'Refresh Token is expired or used up');
         }
 
-        const options = {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'None',
-            path: '/',
-        }
+
 
         const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
 
-        res.cookie('accessToken', accessToken, options)
-            .cookie('refreshToken', refreshToken, options)
+        res.cookie('accessToken', accessToken, accessTokenOptions)
+            .cookie('refreshToken', refreshToken, refreshTokenOptions)
 
         return res
             .status(200)
-
             .json(
                 new ApiResponse(
                     200,
-                    { accessToken, refreshToken },
+                    { },
                     'Access token refreshed :)'
                 )
             )

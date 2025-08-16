@@ -1,3 +1,4 @@
+import VideoTileLoader from '@/components/loaders/VideoTileLoader'
 import VideoTile from '@/components/video/VideoTile'
 import { useAuthGuard } from '@/hooks/helpers/use-auth-guard'
 import { useGetLikedVideos } from '@/hooks/likes.hook'
@@ -16,7 +17,12 @@ function RouteComponent() {
     console.error(isError);
     return <div>Error loading liked videos</div>
   }
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return (
+    <div>
+      <h1 className='text-3xl p-5 font-bold text-center text-orange-600 '>Your Liked Videos</h1>
+      <VideoTileLoader/>
+    </div>
+  );
 
   console.log(likedVideos);
 

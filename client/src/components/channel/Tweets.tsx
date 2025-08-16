@@ -3,10 +3,12 @@ import { useEffect, useRef } from 'react'
 import TweetCard from '../tweets/TweetCard';
 import type { Tweet } from '@/types/tweets.types';
 import { useGetTweets } from '@/hooks/tweets.hooks';
+import { useAppSelector } from '@/redux/hooks';
 
 
 
 const Tweets = ({userId}:{userId:string | undefined}) => {
+    const storedUser = useAppSelector((state) => state.auth.user);
     const { data, isLoading, error, hasNextPage, fetchNextPage, isFetchingNextPage } = useGetTweets({
         sortBy: 'createdAt',
         sortType: 'desc',
@@ -56,7 +58,15 @@ const Tweets = ({userId}:{userId:string | undefined}) => {
     const tweets = data?.pages.flatMap((page) => page.tweets) || [];
 
     if (tweets.length === 0) {
-        return <div className="text-center text-xl p-4 font-semibold font-mono text-orange-400 w-full">No tweets found. <br /> Maybe you should create one?</div>;
+        return <div className="text-center text-xl p-4 font-semibold font-mono text-orange-400 w-full">No tweets found. <br /> 
+        {
+            storedUser?._id === userId ? (
+                <span>Create your first tweet to get started!</span>
+            ) : (
+                <span>This user has no tweets.</span>
+            )
+        }
+        </div>;
     }
     return <section className="flex flex-col w-full">
         {tweets.map((tweet: Tweet) => (

@@ -98,8 +98,9 @@ export const useLogout = (onClose: () => void) => {
         onSuccess: () => {
             dispatch(logoutUser())
             persistor.purge()
-            queryClient.removeQueries({ queryKey: ['current-user'] })
-            queryClient.invalidateQueries({queryKey:['videos']})
+            
+            queryClient.invalidateQueries()
+            
             toast.dismiss("Logged out")
             onClose()
         },

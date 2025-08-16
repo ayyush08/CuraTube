@@ -1,10 +1,11 @@
 import type { Playlist } from '@/types/playlist.types';
 import { PlaylistCard } from '../playlist/PlaylistCard';
 import { useGetUserPlaylists } from '@/hooks/playlist.hook';
+import { useAppSelector } from '@/redux/hooks';
 
 
 const Playlists = ({ userId }: { userId: string | undefined }) => {
-
+    const storedUser = useAppSelector((state) => state.auth.user);
     const { data: playlists, isPending: playlistsLoading, isError: playlistsError } = useGetUserPlaylists(userId || '');
 
     if (playlistsError) {
@@ -21,7 +22,14 @@ const Playlists = ({ userId }: { userId: string | undefined }) => {
             <div className="p-4 flex flex-wrap gap-6 justify-start">
                 {playlists.length === 0 ? (
                     <div className="text-center text-xl font-semibold font-mono text-orange-400 w-full">
-                        No Playlists found. <br /> Create your first playlist to get started!
+                        No Playlists found. <br />
+                        {
+                            storedUser?._id === userId ? (
+                                <span>Create your first playlist to get started!</span>
+                            ) : (
+                                <span>This user has no playlists.</span>
+                            )
+                        }
                     </div>
                 ) : (
                     playlists.map((playlist: Playlist) => (

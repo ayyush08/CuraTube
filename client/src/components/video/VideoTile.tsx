@@ -76,17 +76,20 @@ const VideoTile = (
                 </div>
 
                 <div className="flex   flex-row justify-between items-center sm:items-center gap-3">
-                    <div onClick={(e) => handleOwnerClick(video.owner.username, e)} className='flex gap-2 hover:bg-amber-500/10 transition-colors duration-300 hover:cursor-pointer rounded-2xl p-2'>
-                        <img
-                            src={video.owner.avatar}
-                            alt={video.owner.username}
-                            className='rounded-full object-cover h-10 w-10 aspect-square'
-                        />
-                        <div>
-                            <p className='text-sm sm:text-base font-semibold text-neutral-100'>{video.owner.fullName}</p>
-                            <p className='text-xs sm:text-sm text-neutral-500'>@{video.owner.username}</p>
-                        </div>
-                    </div>
+                    {
+                        video.owner.username && (
+                            <div onClick={(e) => handleOwnerClick(video.owner.username, e)} className='flex gap-2 hover:bg-amber-500/10 transition-colors duration-300 hover:cursor-pointer rounded-2xl p-2'>
+                                <img
+                                    src={video.owner.avatar}
+                                    alt={video.owner.username}
+                                    className='rounded-full object-cover h-10 w-10 aspect-square'
+                                />
+                                <div>
+                                    <p className='text-sm sm:text-base font-semibold text-neutral-100'>{video.owner.fullName}</p>
+                                    <p className='text-xs sm:text-sm text-neutral-500'>@{video.owner.username}</p>
+                                </div>
+                            </div>)
+                    }
                     {
                         storedUser?._id === video.owner._id && (
                             <span className={`text-xs sm:text-sm font-semibold ${video.isPublished ? 'text-green-500' : 'text-red-500'} font-mono`}>

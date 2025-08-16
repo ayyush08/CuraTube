@@ -4,8 +4,10 @@ import VideoCard from "../video/VideoCard";
 import type { Video } from "@/types/video.types";
 import { Loader2Icon } from "lucide-react";
 import { useInfiniteVideos } from "@/hooks/video.hook";
+import { useAppSelector } from "@/redux/hooks";
 
 export const Videos = ({ userId }: { userId: string | undefined }) => {
+    const storedUser = useAppSelector((state) => state.auth.user);
     const { data, fetchNextPage, hasNextPage, isPending: isLoadingVideos, isFetchingNextPage } = useInfiniteVideos({
         userId: userId,
         page: 1,
@@ -23,7 +25,7 @@ export const Videos = ({ userId }: { userId: string | undefined }) => {
         console.log("Videos component mounted");
     }, []);
 
-    
+
 
     useEffect(() => {
         const currentLoader = loaderRef.current;
@@ -54,7 +56,14 @@ export const Videos = ({ userId }: { userId: string | undefined }) => {
     if (isLoadingVideos) return <div>Loading videos...</div>
 
     if (videos.length === 0) {
-        return <div className="text-center text-xl p-4 font-semibold font-mono text-orange-400 w-full">No videos found. <br />  Might wanna click that upload video button?</div>;
+        return <div className="text-center text-xl p-4 font-semibold font-mono text-orange-400 w-full">No videos found. <br />
+            {
+                storedUser?._id === userId ? (
+                    <span> Might wanna click that upload video button?</span>
+                ) : (
+                    <span>This user has no videos.</span>
+                )}
+        </div>;
     }
     return (
         <div className="p-4 grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-5" >

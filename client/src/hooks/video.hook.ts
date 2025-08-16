@@ -56,10 +56,12 @@ export const useVideoById = ({ videoId }: { videoId: string }) => {
 }
 
 export const useUpdateViews = ({ videoId }: { videoId: string }) => {
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: () => updateVideoViews(videoId),
         onSuccess: () => {
             console.log("Views updated");
+            queryClient.invalidateQueries({ queryKey: ['video', videoId] });
         },
         onError: (error) => {
             console.error("Error updating views", error);
@@ -99,6 +101,7 @@ export const usePublishVideo = (setIsUploading: React.Dispatch<React.SetStateAct
                         toast.success("Video processed!");
                         queryClient.invalidateQueries({ queryKey: ['videos'] });
                         queryClient.invalidateQueries({ queryKey: ['videos-infinite'] });
+                        queryClient.invalidateQueries({ queryKey: ['recent-videos'] });
                         navigate({
                             to: `/videos/${videoId}`,
                         });
@@ -138,6 +141,7 @@ export const useTogglePublishStatus = (setIsPublished: React.Dispatch<React.SetS
             queryClient.invalidateQueries({ queryKey: ['video', data?.videoId] });
             queryClient.invalidateQueries({ queryKey: ['videos'] });
             queryClient.invalidateQueries({ queryKey: ['videos-infinite'] });
+            queryClient.invalidateQueries({ queryKey: ['recent-videos'] });
         },
         onError: (error) => {
             console.error("Error toggling publish status", error);
@@ -154,6 +158,7 @@ export const useDeleteVideo = () => {
             toast.success("Video deleted successfully");
             queryClient.invalidateQueries({ queryKey: ['videos'] });
             queryClient.invalidateQueries({ queryKey: ['videos-infinite'] });
+            queryClient.invalidateQueries({ queryKey: ['recent-videos'] });
         },
         onError: (error) => {
             console.error("Error deleting video", error);

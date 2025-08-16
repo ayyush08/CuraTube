@@ -31,6 +31,7 @@ function RouteComponent() {
       <h1 className='text-3xl p-5 font-bold text-center text-orange-600'>All your playlists at one place</h1>
       <div className="p-4 flex flex-wrap gap-6 justify-start">
         {playlists.length === 0 ? (
+          
           <div className="text-center text-xl font-semibold font-mono text-orange-400 w-full">
             No Playlists found. <br/> Create your first playlist to get started!
           </div>
