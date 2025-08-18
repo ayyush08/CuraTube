@@ -1,4 +1,4 @@
-import { deleteVideo, getAllVideos, getVideoById, getVideoUploadStatus, publishVideo, togglePublishStatus, updateVideoViews } from "@/api/videos.api";
+import { deleteVideo, getAllVideos, getVideoById, publishVideo, togglePublishStatus, updateVideoViews } from "@/api/videos.api";
 import { useAppSelector } from "@/redux/hooks";
 import type { VideoFetchParams } from "@/types/video.types";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -74,49 +74,23 @@ export const useUpdateViews = ({ videoId }: { videoId: string }) => {
 export const usePublishVideo = (setIsUploading: React.Dispatch<React.SetStateAction<boolean>>) => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    
+
     return useMutation({
         mutationFn: (formData: FormData) => publishVideo(formData),
         onSuccess: (data) => {
-            setIsUploading(true)
-            console.log("Video published successfully", data);
-            
             const videoId = data?.videoId;
-            console.log("Video uploaded. Starting polling...", videoId);
+            setIsUploading(false);
+            toast.success("Video uploaded successfully");
+            queryClient.invalidateQueries({ queryKey: ['videos'] });
+            queryClient.invalidateQueries({ queryKey: ['videos-infinite'] });
+            queryClient.invalidateQueries({ queryKey: ['recent-videos'] });
+            navigate({
+                to: `/videos/${videoId}`,
+            });
+            console.log("Video published successfully", data);
 
-            const interval = setInterval(async () => {
-                try {
-                    const res = await getVideoUploadStatus(videoId);
-                    console.log("Polling response:", res);
-                    
-                    const status = res.status;
 
-                    // You can also check for specific fields like:
-                    // if (video.streamUrl && video.thumbnail)
-                    if (status === "ready") {
-                        setIsUploading(false);
-                        console.log("Video is ready", res);
-                        clearInterval(interval);
 
-                        toast.success("Video processed!");
-                        queryClient.invalidateQueries({ queryKey: ['videos'] });
-                        queryClient.invalidateQueries({ queryKey: ['videos-infinite'] });
-                        queryClient.invalidateQueries({ queryKey: ['recent-videos'] });
-                        navigate({
-                            to: `/videos/${videoId}`,
-                        });
-                    }else if(status === "processing") {
-                        console.log("Video is still processing", res);
-                    }
-                    else{
-                        toast.error("Video processing failed");
-                        setIsUploading(false);
-                        clearInterval(interval)
-                    }
-                } catch (err) {
-                    console.error("Polling error", err);
-                }
-            }, 3000); 
         },
         onError: (error) => {
             console.error("Error publishing video", error);
@@ -151,7 +125,7 @@ export const useTogglePublishStatus = (setIsPublished: React.Dispatch<React.SetS
 
 export const useDeleteVideo = (onClose: () => void) => {
     const queryClient = useQueryClient();
-    
+
     return useMutation({
         mutationFn: (videoId: string) => deleteVideo(videoId),
         onSuccess: () => {

@@ -3,6 +3,11 @@ import axios from "axios";
 import { apiClient, type ApiSuccessResponse } from "./api-client";
 import type { VideoFetchParams } from "@/types/video.types";
 
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
+if (!CLOUDINARY_CLOUD_NAME) {
+    throw new Error("Missing Cloudinary cloud name");
+}
 
 export const getAllVideos = async (params: VideoFetchParams): Promise<any> => {
     try {
@@ -37,67 +42,81 @@ export const updateVideoViews = async (videoId: string): Promise<any> => {
     }
 }
 
-
-interface SignedRes {
-    folder: string,
-    timestamp: string,
-    signature: string,
-    apiKey: string,
-    cloudName: string,
+export interface SingleSignedRes {
+    folder: string;
+    timestamp: string;
+    signature: string;
+    apiKey: string;
+    cloudName: string;
 }
+
+export interface SignedRes {
+    video: SingleSignedRes;
+    thumbnail: SingleSignedRes;
+}
+
 
 export const publishVideo = async (formData: FormData): Promise<any> => {
     try {
-        const sres = await apiClient.get<ApiSuccessResponse>('/videos/get-signed-url');
-        // console.log("Signed URL response", sres.data);
-
+        const title = formData.get("title") as string;
+        const sres = await apiClient.post<ApiSuccessResponse>(`/videos/get-signed-url`, { title });
         const signedRes: SignedRes = sres.data;
-        if (!signedRes.apiKey || !signedRes.signature) {
-            throw new Error("Failed to get signed URL for video upload");
+
+        if (!signedRes.video.apiKey || !signedRes.video.signature || !signedRes.thumbnail.apiKey || !signedRes.thumbnail.signature) {
+            throw new Error("Failed to get signed URL for upload");
         }
-        const cloudinary_params = {
-            api_key: signedRes.apiKey,
-            signature: signedRes.signature,
-            timestamp: signedRes.timestamp,
-            file: formData.get('videoFile'),
-            folder: signedRes.folder,
-        };
+        const signedVideo = signedRes.video;
+        const signedThumbnail = signedRes.thumbnail;
+        const videoFile = formData.get("videoFile") as File;
+        const thumbnailFile = formData.get("thumbnail") as File;
 
-        const cloudinary_endpoint = `https://api.cloudinary.com/v1_1/${signedRes.cloudName}/auto/upload`;
+        const cloudinary_endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`;
 
-        const uploadRes = await axios.post(cloudinary_endpoint, cloudinary_params, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            }
+        // Upload video
+        const videoFormData = new FormData();
+        videoFormData.append("file", videoFile);
+        videoFormData.append("folder", signedVideo.folder);
+        videoFormData.append("api_key", signedVideo.apiKey);
+        videoFormData.append("signature", signedVideo.signature);
+        videoFormData.append("timestamp", signedVideo.timestamp);
+
+        const videoUploadRes = await axios.post(cloudinary_endpoint, videoFormData, {
+            headers: { "Content-Type": "multipart/form-data" },
         });
 
-        const uploadResult = uploadRes.data;
-        // console.log("Upload result:", uploadResult);
+        // Upload thumbnail
+        const thumbnailFormData = new FormData();
+        thumbnailFormData.append("file", thumbnailFile);
+        thumbnailFormData.append("folder", signedThumbnail.folder);
+        thumbnailFormData.append("api_key", signedThumbnail.apiKey);
+        thumbnailFormData.append("signature", signedThumbnail.signature);
+        thumbnailFormData.append("timestamp", signedThumbnail.timestamp);
 
-        const formDataToSend = new FormData();
-        formDataToSend.append("title", String(formData.get("title") ?? ""));
-        formDataToSend.append("thumbnail", formData.get("thumbnail") as File);
-        formDataToSend.append("isPublished", String(formData.get("isPublished") ?? "false"));
-        formDataToSend.append("description", String(formData.get("description") ?? ""));
-        formDataToSend.append("videoUrl", uploadResult.secure_url);
-        formDataToSend.append("duration", Math.round(uploadResult.duration).toString());
-        const res = await apiClient.post<ApiSuccessResponse>('/videos', formDataToSend);
+        const thumbnailUploadRes = await axios.post(cloudinary_endpoint, thumbnailFormData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+
+
+        const backendFormData = new FormData();
+        backendFormData.append("title", String(formData.get("title") ?? ""));
+        backendFormData.append("description", String(formData.get("description") ?? ""));
+        backendFormData.append("isPublished", String(formData.get("isPublished") ?? "false"));
+        backendFormData.append("videoUrl", videoUploadRes.data.secure_url);
+        backendFormData.append("duration", Math.round(videoUploadRes.data.duration).toString());
+        backendFormData.append("thumbnailUrl", thumbnailUploadRes.data.secure_url);
+        backendFormData.append("signedVideoPublicId", videoUploadRes.data.public_id);
+        backendFormData.append("signedThumbnailPublicId", thumbnailUploadRes.data.public_id);
+        const res = await apiClient.post<ApiSuccessResponse>("/videos", backendFormData);
         return res.data;
+
     } catch (error) {
         console.error("Error during publishing video:", error);
         throw error;
     }
-}
+};
 
-export const getVideoUploadStatus = async (videoId: string): Promise<any> => {
-    try {
-        const res = await apiClient.get<ApiSuccessResponse>(`/videos/status/${videoId}`);
-        return res.data;
-    } catch (error) {
-        console.error("Error during fetching video upload status:", error);
-        throw error;
-    }
-}
+
+
 
 export const togglePublishStatus = async (videoId: string): Promise<any> => {
     try {

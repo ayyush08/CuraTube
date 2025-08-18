@@ -3,7 +3,6 @@ import {
     deleteVideo,
     getAllVideos,
     getVideoById,
-    getVideoUploadStatus,
     publishAVideo,
     togglePublishStatus,
     updateVideo,
@@ -15,7 +14,7 @@ import { getSignedUploadUrl } from '../utils/cloudinary.js';
 
 const router = Router();
 
-router.route('/get-signed-url').get(getSignedUploadUrl);
+router.route('/get-signed-url').post(getSignedUploadUrl);
 
 router
     .route("/")
@@ -40,8 +39,6 @@ router
     .get(getVideoById)//done
     .delete(verifyJWT, deleteVideo)//done
     .patch(verifyJWT, upload.single("thumbnail"), updateVideo);//done
-
-router.route("/status/:videoId").get(verifyJWT, getVideoUploadStatus);//done
 
 router.route("/toggle/publish/:videoId").patch(verifyJWT,togglePublishStatus);//done
 

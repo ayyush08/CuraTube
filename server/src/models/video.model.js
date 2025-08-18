@@ -31,11 +31,6 @@ const videoSchema = new Schema({
         type: Boolean,
         default: true
     },
-    status: {
-        type: String,
-        enum: ["processing", "ready", "failed"],
-        default: "processing"
-    },
 
     owner: {
         type: Schema.Types.ObjectId,

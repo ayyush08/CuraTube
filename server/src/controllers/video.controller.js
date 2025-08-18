@@ -10,7 +10,7 @@ import { Like } from "../models/like.model.js"
 import { Comment } from "../models/comment.model.js"
 import { deleteFileFromCloudinary } from '../utils/cloudinary.js';
 
-import { inngest } from '../inngest/client.js';
+
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query = '', sortBy = 'createdAt', sortType = 'desc', userId } = req.query
 
@@ -51,7 +51,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
             });
         } else {
-            //using regex for lightweight testin in development
+            
             aggregationPipeline.push({
                 $match: {
                     $or: [
@@ -76,7 +76,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
     aggregationPipeline.push({
         $match: {
             isPublished: true,
-            status: "ready"
         }
     })
 
@@ -143,85 +142,46 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
 
 const publishAVideo = asyncHandler(async (req, res) => {
-    const { title, description, isPublished, videoUrl,duration,signedVideoPublicId } = req.body;
+    const { title, description, isPublished, videoUrl, duration, thumbnailUrl, signedVideoPublicId, signedThumbnailPublicId } = req.body;
 
-    if (!title || !description) {
+    if (!title || !description || !videoUrl || !thumbnailUrl || !duration || !signedVideoPublicId || !signedThumbnailPublicId) {
         throw new ApiError(400, "All fields are required");
     }
 
-    // let videoLocalPath;
-    let thumbnailLocalPath;
 
- 
-
-    if (req.files?.thumbnail?.[0]) {
-        thumbnailLocalPath = req.files.thumbnail[0].path;
-    } else {
-        throw new ApiError(400, "Thumbnail is required");
-    }
-
-    const now = Date.now();
     const video = await Video.create({
         title,
         description,
-        videoFile: "", // Empty for now
-        thumbnail: "",
-        duration:Math.round(duration),
+        videoFile: videoUrl,
+        thumbnail: thumbnailUrl,
+        duration: Math.round(duration),
         isPublished,
-        asset_public_ids: [],
-        status: "processing",
+        asset_public_ids: [
+            {signedVideoPublicId, resource_type: 'video'},
+            {signedThumbnailPublicId, resource_type: 'image'}
+        ],
         owner: req.user._id
     });
 
-    // Fire Inngest event
-    await inngest.send({
-        name: "video/publish",
-        data: {
-            videoId: video._id,
-            title,
-            now,
-            thumbnailLocalPath,
-            videoUrl,
-            signedVideoPublicId
-        },
-    });
+
 
     res.status(202).json(
         new ApiResponse(202, { videoId: video._id }, "Video upload started")
     );
 });
 
-const getVideoUploadStatus = asyncHandler(async (req, res) => {
-    const { videoId } = req.params;
 
-    if (!isValidObjectId(videoId)) {
-        throw new ApiError(400, "Invalid video id");
-    }
-
-    const video = await Video.findById(videoId);
-    if (!video) {
-        throw new ApiError(404, "Video not found");
-    }
-
-    return res.status(200).json(
-        new ApiResponse(200, {
-            status: video.status,
-        }, "Video upload status fetched successfully")
-    );
-
-});
 
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     const { username } = req.query
-    //TODO: get video by id
     if (!isValidObjectId(videoId)) {
         throw new ApiError(400, "Invalid video id");
     }
     const videoExists = await Video.findById(videoId);
     const userExists = await User.findOne({ username });
 
-    if (!videoExists || videoExists.status !== "ready") throw new ApiError(400, "Video not found");
+    if (!videoExists) throw new ApiError(400, "Video not found");
     const video = await Video.aggregate([
         {
             $match: {
@@ -368,7 +328,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const video = await Video.findById(videoId);
 
-    if (!video || video.status !== "ready") throw new ApiError(404, "Video not found");
+    if (!video) throw new ApiError(404, "Video not found");
 
 
 
@@ -396,7 +356,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
     const videoExists = await Video.findById(videoId);
 
-    if (!videoExists || videoExists.status !== "ready") {
+    if (!videoExists) {
         throw new ApiError(400, "Video not found");
     }
 
@@ -435,7 +395,7 @@ const updateVideoViews = asyncHandler(async (req, res) => {
     }
     const videoExists = await Video.findById(videoId);
 
-    if (!videoExists || videoExists.status !== "ready") throw new ApiError(400, "Video not found");
+    if (!videoExists ) throw new ApiError(400, "Video not found");
 
     const user = await User.findById(req.user._id);
 
@@ -475,7 +435,6 @@ const updateVideoViews = asyncHandler(async (req, res) => {
 export {
     getAllVideos,
     publishAVideo,
-    getVideoUploadStatus,
     getVideoById,
     updateVideo,
     deleteVideo,

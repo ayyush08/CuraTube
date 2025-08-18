@@ -64,27 +64,50 @@ export const uploadToCloudinary = async (localFilePath, folder, fileName, resour
 export const getSignedUploadUrl = async (req, res) => {
     try {
         const timestamp = Math.round(new Date().getTime() / 1000);
+        const { title } = req.body;
+        const now = Date.now();
+        const videoFolder = `curatube-videos/${title}-${now}`;
+        const thumbnailFolder = `curatube-thumbnails/${title}-${now}`;
 
         
-        const paramsToSign = {
+        const videoParamsToSign = {
             timestamp,
-            folder: "test-uploads",
+            folder: videoFolder,
         };
-
-        const signature = cloudinary.utils.api_sign_request(
-            paramsToSign,
+        const videoSignature = cloudinary.utils.api_sign_request(
+            videoParamsToSign,
             process.env.CLOUDINARY_API_SECRET
         );
 
-        res.status(200).json(new ApiResponse(200,{
+        const thumbnailParamsToSign = {
             timestamp,
-            signature,
-            apiKey: process.env.CLOUDINARY_API_KEY, 
-            cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-            folder: "test-uploads",
-        },"Signed URL Sent"));
+            folder: thumbnailFolder,
+        };
+        const thumbnailSignature = cloudinary.utils.api_sign_request(
+            thumbnailParamsToSign,
+            process.env.CLOUDINARY_API_SECRET
+        );
+
+        res.status(200).json(
+            new ApiResponse(200, {
+                video: {
+                    timestamp,
+                    signature: videoSignature,
+                    apiKey: process.env.CLOUDINARY_API_KEY,
+                    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+                    folder: videoFolder,
+                },
+                thumbnail: {
+                    timestamp,
+                    signature: thumbnailSignature,
+                    apiKey: process.env.CLOUDINARY_API_KEY,
+                    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+                    folder: thumbnailFolder,
+                },
+            }, "Signed URLs sent")
+        );
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json(new ApiResponse(500, { error: err.message }, "Failed to get signed URLs"));
     }
 };
 
