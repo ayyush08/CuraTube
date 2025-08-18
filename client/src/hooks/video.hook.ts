@@ -32,7 +32,7 @@ export const useInfiniteVideos = ({
         queryKey: ['videos-infinite', { query, sortBy, sortType, userId }],
         queryFn: async ({ pageParam = 1 }) => {
             const res = await getAllVideos({ query, sortBy, sortType, userId, page: pageParam, limit });
-            console.log(res);
+            
 
             return res;
         },
@@ -87,7 +87,7 @@ export const usePublishVideo = (setIsUploading: React.Dispatch<React.SetStateAct
             navigate({
                 to: `/videos/${videoId}`,
             });
-            console.log("Video published successfully", data);
+            console.log("Video published successfully");
 
 
 

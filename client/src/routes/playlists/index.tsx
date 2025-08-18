@@ -23,7 +23,7 @@ function RouteComponent() {
   }
 
   if (playlistsLoading) return <div>Loading...</div>;
-  console.log(playlists);
+  // console.log(playlists);
 
 
   return (

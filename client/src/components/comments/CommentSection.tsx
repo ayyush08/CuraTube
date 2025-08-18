@@ -75,7 +75,6 @@ export default function CommentSection({ videoId }: CommentSectionProps) {
     }, [comments, storedUser?._id]);
 
 
-    console.log("Comments Data:", commentsData?.pages[0]);
     if (commentError || addingCommentError) console.error("Error fetching or adding comments:", commentError || addingCommentError);
     const handleSubmitComment = async () => {
         if (!storedUser) {
@@ -87,7 +86,6 @@ export default function CommentSection({ videoId }: CommentSectionProps) {
             toast.error("Comment cannot be empty")
             return
         }
-        console.log("Posting new comment:", newComment);
         addComment({ videoId, content: newComment });
         setNewComment("")
 

@@ -24,7 +24,7 @@ function RouteComponent() {
     </div>
   );
 
-  console.log(likedVideos);
+  // console.log(likedVideos);
 
   return <div>
     <h1 className='text-3xl p-5 font-bold text-center text-orange-600 '>Your Liked Videos</h1>

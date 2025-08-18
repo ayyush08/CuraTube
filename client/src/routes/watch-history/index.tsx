@@ -16,7 +16,7 @@ function RouteComponent() {
     return
 
   }
-  console.log(watchHistory);
+  // console.log(watchHistory);
   if (isLoading) return (<div>
     <h1 className='text-3xl p-5 font-bold text-center text-orange-600 '>Your Watch History</h1>
     <VideoTileLoader />

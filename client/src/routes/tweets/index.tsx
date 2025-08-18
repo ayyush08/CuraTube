@@ -61,7 +61,7 @@ function RouteComponent() {
 
   const tweets = data?.pages.flatMap((page) => page.tweets) || [];
 
-  console.log("Tweets Data:", data);
+  // console.log("Tweets Data:", data);
   return <section className="flex flex-col w-full">
     {
       storedUser && <TweetWriter />

@@ -44,7 +44,7 @@ function RouteComponent() {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
+      // console.log(user);
       setAvatar(user.avatar);
       setCoverImage(user.coverImage);
       setIsSubscribed(user.isSubscribed);

@@ -59,6 +59,7 @@ export interface SignedRes {
 export const publishVideo = async (formData: FormData): Promise<any> => {
     try {
         const title = formData.get("title") as string;
+        // Get signed URLs for video and thumbnail 
         const sres = await apiClient.post<ApiSuccessResponse>(`/videos/get-signed-url`, { title });
         const signedRes: SignedRes = sres.data;
 
@@ -79,7 +80,7 @@ export const publishVideo = async (formData: FormData): Promise<any> => {
         videoFormData.append("api_key", signedVideo.apiKey);
         videoFormData.append("signature", signedVideo.signature);
         videoFormData.append("timestamp", signedVideo.timestamp);
-
+        
         const videoUploadRes = await axios.post(cloudinary_endpoint, videoFormData, {
             headers: { "Content-Type": "multipart/form-data" },
         });

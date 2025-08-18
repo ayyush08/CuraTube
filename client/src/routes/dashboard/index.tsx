@@ -13,7 +13,7 @@ function RouteComponent() {
   useAuthGuard()
   const { data: stats, isLoading:loadingStats } = useGetChannelStats()
   const { data: recentVideos, isLoading:loadingRecentVideos } = useGetRecentVideos()
-  console.log(recentVideos);
+  // console.log(recentVideos);
 
   return (
     <main className='p-5 flex flex-col justify-center  w-full'>

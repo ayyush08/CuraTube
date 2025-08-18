@@ -14,7 +14,7 @@ const Playlists = ({ userId }: { userId: string | undefined }) => {
     }
 
     if (playlistsLoading) return <div>Loading...</div>;
-    console.log(playlists);
+    // console.log(playlists);
 
 
     return (

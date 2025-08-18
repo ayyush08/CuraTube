@@ -107,7 +107,6 @@ function RouteComponent() {
     setIsPlaylistDialogOpen(true);
   }
 
-  console.log(video, "Video data in video route");
 
   if (subscribeError) console.log(subscribeError);
   if (isError) return <div className='flex justify-center items-center min-h-screen'>Error loading video</div>

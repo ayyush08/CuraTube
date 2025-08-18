@@ -18,13 +18,9 @@ export const Videos = ({ userId }: { userId: string | undefined }) => {
 
     const videos = data?.pages.flatMap((page) => page.videos) || [];
 
-    console.log("Videos data:", videos);
+    // console.log("Videos data:", videos);
 
     const loaderRef = useRef<HTMLDivElement | null>(null);
-    useEffect(() => {
-        console.log("Videos component mounted");
-    }, []);
-
 
 
     useEffect(() => {
