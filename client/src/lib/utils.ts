@@ -13,6 +13,7 @@ export function formatDuration(seconds: number): string {
 }
 
 export function formatViews(views: number): string {
+  if(!views) return "0 views";
   if (views >= 1000000) {
     return `${(views / 1000000).toFixed(1)}M views`
   } else if (views >= 1000) {

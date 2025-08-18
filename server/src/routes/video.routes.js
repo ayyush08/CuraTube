@@ -11,8 +11,11 @@ import {
 } from "../controllers/video.controller.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 import { upload } from "../middlewares/multer.middleware.js"
+import { getSignedUploadUrl } from '../utils/cloudinary.js';
 
 const router = Router();
+
+router.route('/get-signed-url').get(getSignedUploadUrl);
 
 router
     .route("/")

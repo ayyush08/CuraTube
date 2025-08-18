@@ -1,14 +1,14 @@
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs-extra';
 import path from 'path';
-export async function transcodeToHLS(videoPath, outputDir) {
+export async function transcodeToHLS(videoUrl, outputDir) {
     await fs.ensureDir(outputDir); // Ensure output directory exists
     const outputPlaylist = path.join(outputDir, 'playlist.m3u8');
-    console.log('FFmpeg input:', videoPath);
+    console.log('FFmpeg input:', videoUrl);
     console.log('FFmpeg output:', outputPlaylist);
 
     return new Promise((resolve, reject) => {
-        ffmpeg(videoPath)
+        ffmpeg(videoUrl)
             .outputOptions([
                 '-profile:v baseline',
                 '-level 3.0',

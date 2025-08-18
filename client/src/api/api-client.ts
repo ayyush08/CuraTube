@@ -4,14 +4,14 @@ import { persistor, store } from '@/redux/store';
 
 type HealthCheckResponse = {
     statusCode: string;
-    data: number;
+    data: any;
     message: string;
     success: boolean;
 };
 
 export interface ApiSuccessResponse {
     statusCode: string;
-    data: number;
+    data: any;
     message: string;
     success: boolean;
 }

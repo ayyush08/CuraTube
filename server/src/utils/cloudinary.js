@@ -2,6 +2,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import path from 'path';
 import { ApiError } from './ApiError.js';
+import { ApiResponse } from './ApiResponse.js';
 
 const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
 const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
@@ -60,6 +61,32 @@ export const uploadToCloudinary = async (localFilePath, folder, fileName, resour
     }
 };
 
+export const getSignedUploadUrl = async (req, res) => {
+    try {
+        const timestamp = Math.round(new Date().getTime() / 1000);
+
+        
+        const paramsToSign = {
+            timestamp,
+            folder: "test-uploads",
+        };
+
+        const signature = cloudinary.utils.api_sign_request(
+            paramsToSign,
+            process.env.CLOUDINARY_API_SECRET
+        );
+
+        res.status(200).json(new ApiResponse(200,{
+            timestamp,
+            signature,
+            apiKey: process.env.CLOUDINARY_API_KEY, 
+            cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+            folder: "test-uploads",
+        },"Signed URL Sent"));
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 
 
 
