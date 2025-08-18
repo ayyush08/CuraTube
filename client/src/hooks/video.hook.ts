@@ -56,17 +56,15 @@ export const useVideoById = ({ videoId }: { videoId: string }) => {
 }
 
 export const useUpdateViews = ({ videoId }: { videoId: string }) => {
-    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: () => updateVideoViews(videoId),
         onSuccess: () => {
             console.log("Views updated");
-            queryClient.invalidateQueries({ queryKey: ['video', videoId] });
+            
         },
         onError: (error) => {
             console.error("Error updating views", error);
         },
-
     })
 }
 

@@ -43,7 +43,6 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
     if (playlistsLoading) {
         return <div className="text-white">Loading playlists...</div>
     }
-    console.log("Playlists data:", playlists);
 
     let userPlaylists: Playlist[] = []
     if (Array.isArray(playlists)) userPlaylists = playlists

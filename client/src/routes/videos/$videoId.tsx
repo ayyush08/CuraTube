@@ -15,7 +15,7 @@ import type { Video } from '@/types/video.types'
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Heart, Loader2Icon, VideoIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 export const Route = createFileRoute('/videos/$videoId')({
@@ -43,15 +43,18 @@ function RouteComponent() {
   const navigate = useNavigate()
 
 
-  const video: Video = data?.video;
+  // const video: Video = data?.video;
+  const video: Video = useMemo(() => data?.video, [data]);
+
   const suggestedVideos: Video[] = suggestedVideosData?.pages[0].videos || [];
 
-  useEffect(() => {
-    if (video) updateViews();
-  }, [videoId, video, updateViews]);
+  // useEffect(() => {
+  //   if (video) updateViews();
+  // }, [videoId, video, updateViews]);
 
   useEffect(() => {
     if (video) {
+      updateViews();
       setIsVideoLiked(video.isLiked);
       setLikeCount(video.likesCount);
       setSubscribersCount(video.owner.subscribersCount || 0);
@@ -59,7 +62,7 @@ function RouteComponent() {
       setIsPublished(video.isPublished);
 
     }
-  }, [video]);
+  }, [video, updateViews]);
 
   const handleOwnerClick = (channelId: string, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -133,7 +136,7 @@ function RouteComponent() {
               <h1 className="text-2xl md:text-3xl lg:text-3xl text-white font-bold tracking-wide">
                 {video.title}
               </h1>
-
+              <h2 className='text-lg text-orange-500 font-mono italic font-semibold'>{video.views} views</h2>
               <div className="flex items-center gap-5 justify-between  text-xl  p-5 w-full rounded-lg ">
                 <div className='flex items-center gap-2'>
                   <button
