@@ -111,7 +111,7 @@ export const usePublishVideo = (setIsUploading: React.Dispatch<React.SetStateAct
                     else{
                         toast.error("Video processing failed");
                         setIsUploading(false);
-                        
+                        clearInterval(interval)
                     }
                 } catch (err) {
                     console.error("Polling error", err);
@@ -149,7 +149,7 @@ export const useTogglePublishStatus = (setIsPublished: React.Dispatch<React.SetS
     })
 }
 
-export const useDeleteVideo = () => {
+export const useDeleteVideo = (onClose: () => void) => {
     const queryClient = useQueryClient();
     
     return useMutation({
@@ -159,6 +159,8 @@ export const useDeleteVideo = () => {
             queryClient.invalidateQueries({ queryKey: ['videos'] });
             queryClient.invalidateQueries({ queryKey: ['videos-infinite'] });
             queryClient.invalidateQueries({ queryKey: ['recent-videos'] });
+            onClose?.();
+            window.history.back();
         },
         onError: (error) => {
             console.error("Error deleting video", error);

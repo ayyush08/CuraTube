@@ -5,13 +5,12 @@ import { useDeleteVideo } from "@/hooks/video.hook";
 
 export const DeleteVideoDialog = ({ open, videoId, onClose }: { open: boolean, videoId: string, onClose: () => void }) => {
 
-    const { mutate: deleteVideo, isPending: deletePending } = useDeleteVideo();
+    const { mutate: deleteVideo, isPending: deletePending } = useDeleteVideo(onClose);
 
     const handleDelete = () => {
         console.log('Deleting video with ID:', videoId);
         deleteVideo(videoId);
-        onClose();
-        window.history.back(); 
+        
     }
 
     return (
