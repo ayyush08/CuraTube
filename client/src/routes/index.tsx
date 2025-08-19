@@ -1,4 +1,5 @@
 
+import CardSkeleton from '@/components/loaders/CardSkeleton';
 import VideoCard from '@/components/video/VideoCard';
 import { useInfiniteVideos } from '@/hooks/video.hook';
 import type { Video } from '@/types/video.types';
@@ -47,7 +48,9 @@ function RouteComponent() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   
-  if (isLoading ) return <div className='flex justify-center items-center min-h-screen'>Loading...</div>
+  if (isLoading ) return <div className='p-5'>
+    <CardSkeleton count={12} />
+  </div>
   
   if(videos.length === 0 ) return <div className='flex justify-center items-center min-h-screen'>No videos found</div>
   return <div className="p-4 grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-5" >

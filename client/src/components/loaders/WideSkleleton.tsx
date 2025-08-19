@@ -1,12 +1,14 @@
 
 import { Card, CardContent } from '../ui/card'
 
-const VideoTileLoader = () => {
+const WideSkeleton = ({count}:{
+    count: number
+}) => {
     return (
         <Card className="bg-transparent border-none">
             <CardContent>
                 <div className="space-y-4">
-                    {Array.from({ length: 3 }).map((_, i) => (
+                    {Array.from({ length: count }).map((_, i) => (
                         <div key={i} className="flex items-center space-x-4 animate-pulse">
                             <div className="w-32 h-20 bg-muted rounded"></div>
                             <div className="flex-1 space-y-2">
@@ -21,4 +23,4 @@ const VideoTileLoader = () => {
     )
 }
 
-export default VideoTileLoader
+export default WideSkeleton

@@ -24,7 +24,7 @@ export const Route = createFileRoute('/videos/$videoId')({
 
 function RouteComponent() {
   const { videoId } = Route.useParams()
-  const { data, isLoading, isError } = useVideoById({ videoId })
+  const { data, isLoading:loadingVideo, isError } = useVideoById({ videoId })
   const [likeCount, setLikeCount] = useState<number | undefined>(0);
   const [isVideoLiked, setIsVideoLiked] = useState<boolean | undefined>(false)
   const [isSubscribed, setIsSubscribed] = useState<boolean | undefined>(false);
@@ -114,7 +114,7 @@ function RouteComponent() {
   if (subscribeError) console.log(subscribeError);
   if (isError) return <div className='flex justify-center items-center min-h-screen'>Error loading video</div>
   //TODO: make a skeleton that shows loading only for video area
-  if (isLoading) return <div className='flex justify-center items-center min-h-screen'>Loading...</div>
+  if (loadingVideo) return <div className='flex justify-center items-center min-h-screen'>Loading...</div>
   return (
     <>
       <main className="w-full min-h-screen p-4 sm:p-5 flex flex-col lg:flex-row gap-6">

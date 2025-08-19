@@ -2,9 +2,9 @@
 import { useEffect, useRef } from "react";
 import VideoCard from "../video/VideoCard";
 import type { Video } from "@/types/video.types";
-import { Loader2Icon } from "lucide-react";
 import { useInfiniteVideos } from "@/hooks/video.hook";
 import { useAppSelector } from "@/redux/hooks";
+import CardSkeleton from "../loaders/CardSkeleton";
 
 export const Videos = ({ userId }: { userId: string | undefined }) => {
     const storedUser = useAppSelector((state) => state.auth.user);
@@ -49,7 +49,7 @@ export const Videos = ({ userId }: { userId: string | undefined }) => {
         };
     }, [hasNextPage, fetchNextPage]);
 
-    if (isLoadingVideos) return <div>Loading videos...</div>
+    if (isLoadingVideos) return <CardSkeleton count={3} />
 
     if (videos.length === 0) {
         return <div className="text-center text-xl p-4 font-semibold font-mono text-orange-400 w-full">No videos found. <br />
@@ -78,7 +78,7 @@ export const Videos = ({ userId }: { userId: string | undefined }) => {
                         className="col-span-full border-2  border-red-300 text-white text-sm text-center py-4"
                     >
                         {isFetchingNextPage ?
-                            <Loader2Icon className='animate-spin w-4 h-4 inline-block' /> : 'Scroll to load more'}
+                            <CardSkeleton count={3} /> : 'Scroll to load more'}
                     </div>
                 )
             }

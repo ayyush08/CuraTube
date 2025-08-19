@@ -4,6 +4,7 @@ import TweetCard from '../tweets/TweetCard';
 import type { Tweet } from '@/types/tweets.types';
 import { useGetTweets } from '@/hooks/tweets.hooks';
 import { useAppSelector } from '@/redux/hooks';
+import WideSkeleton from '../loaders/WideSkleleton';
 
 
 
@@ -47,7 +48,9 @@ const Tweets = ({userId}:{userId:string | undefined}) => {
 
 
     if (isLoading) {
-        return <div>Loading...</div>
+        return (
+            <WideSkeleton count={4}/>
+        )
     }
 
     if (error) {

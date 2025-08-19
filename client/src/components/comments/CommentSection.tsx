@@ -13,6 +13,7 @@ import moment from "moment"
 import { DeleteCommentDialog } from "./DeleteCommentDialog"
 import { useNavigate } from "@tanstack/react-router"
 import { useToggleCommentLike } from "@/hooks/likes.hook"
+import WideSkeleton from "../loaders/WideSkleleton"
 
 
 
@@ -120,7 +121,10 @@ export default function CommentSection({ videoId }: CommentSectionProps) {
         setEditText("")
     }
     
-    if(isLoading) return <div className="flex justify-center items-center min-h-screen">Loading comments...</div>
+    if(isLoading) return <div className=" min-h-screen">
+        <h3 className="text-xl font-bold text-white">Comments</h3>
+        <WideSkeleton count={2}/>
+    </div>
     return (
         <div className="w-full space-y-6">
             {/* Comment Input */}

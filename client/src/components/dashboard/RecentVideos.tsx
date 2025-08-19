@@ -7,7 +7,7 @@
 import type { Video } from "@/types/video.types"
 
 import VideoTile from "../video/VideoTile"
-import VideoTileLoader from "../loaders/VideoTileLoader"
+import WideSkeleton from "../loaders/WideSkleleton"
 
 interface RecentVideosProps {
     videos: Video[],
@@ -20,7 +20,7 @@ export function RecentVideos({ videos, loading }: RecentVideosProps) {
 
     if (loading) {
         return (
-            <VideoTileLoader/>
+            <WideSkeleton count={3}/>
         )
     }
 

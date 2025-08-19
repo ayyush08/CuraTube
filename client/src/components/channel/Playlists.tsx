@@ -2,6 +2,7 @@ import type { Playlist } from '@/types/playlist.types';
 import { PlaylistCard } from '../playlist/PlaylistCard';
 import { useGetUserPlaylists } from '@/hooks/playlist.hook';
 import { useAppSelector } from '@/redux/hooks';
+import CardSkeleton from '../loaders/CardSkeleton';
 
 
 const Playlists = ({ userId }: { userId: string | undefined }) => {
@@ -13,7 +14,9 @@ const Playlists = ({ userId }: { userId: string | undefined }) => {
         return <div>Error loading playlists</div>
     }
 
-    if (playlistsLoading) return <div>Loading...</div>;
+    if (playlistsLoading) return (
+        <CardSkeleton count={3}/>
+    );
     // console.log(playlists);
 
 

@@ -1,4 +1,4 @@
-import VideoTileLoader from '@/components/loaders/VideoTileLoader'
+import WideSkeleton from '@/components/loaders/WideSkleleton'
 import VideoTile, { type VideoTileProps } from '@/components/video/VideoTile'
 import { useAuthGuard } from '@/hooks/helpers/use-auth-guard'
 import { useWatchHistory } from '@/hooks/user.hook'
@@ -19,7 +19,7 @@ function RouteComponent() {
   // console.log(watchHistory);
   if (isLoading) return (<div>
     <h1 className='text-3xl p-5 font-bold text-center text-orange-600 '>Your Watch History</h1>
-    <VideoTileLoader />
+    <WideSkeleton />
   </div>)
   return <div>
     <h1 className='text-3xl p-5 font-bold text-center text-orange-600 '>Your Watch History</h1>

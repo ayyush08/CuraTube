@@ -1,3 +1,4 @@
+import WideSkeleton from '@/components/loaders/WideSkleleton';
 import TweetCard from '@/components/tweets/TweetCard';
 import TweetWriter from '@/components/tweets/TweetWriter';
 import { useGetTweets } from '@/hooks/tweets.hooks';
@@ -51,7 +52,7 @@ function RouteComponent() {
 
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <WideSkeleton count={5} />
   }
 
   if (error) {

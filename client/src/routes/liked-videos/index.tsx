@@ -1,4 +1,4 @@
-import VideoTileLoader from '@/components/loaders/VideoTileLoader'
+import WideSkeleton from '@/components/loaders/WideSkleleton'
 import VideoTile from '@/components/video/VideoTile'
 import { useAuthGuard } from '@/hooks/helpers/use-auth-guard'
 import { useGetLikedVideos } from '@/hooks/likes.hook'
@@ -20,7 +20,7 @@ function RouteComponent() {
   if (isLoading) return (
     <div>
       <h1 className='text-3xl p-5 font-bold text-center text-orange-600 '>Your Liked Videos</h1>
-      <VideoTileLoader/>
+      <WideSkeleton/>
     </div>
   );
 

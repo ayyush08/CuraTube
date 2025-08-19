@@ -1,3 +1,5 @@
+
+import WideSkeleton from '@/components/loaders/WideSkleleton'
 import { DeletePlaylistDialog } from '@/components/playlist/DeletePlaylistDialog'
 import { DeleteVideoFromPlaylistDialog } from '@/components/playlist/DeleteVidFromPlaylistDialog'
 import { Button } from '@/components/ui/button'
@@ -55,7 +57,13 @@ function RouteComponent() {
       setDescription(playlistVideos.description)
     }
   }, [playlistVideos])
-  if (loadingPlaylist) return <div>Loading...</div>
+  if (loadingPlaylist) return (
+    <>
+    <WideSkeleton count={1}/>
+    <Separator className='mb-8 bg-orange-400 py-[1px] w-full' />
+    <WideSkeleton count={4} />
+    </>
+  )
   if (playlistError) return <div>Error loading playlist</div>
 
 

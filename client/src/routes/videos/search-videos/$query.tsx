@@ -1,3 +1,4 @@
+import WideSkeleton from '@/components/loaders/WideSkleleton';
 import VideoTile from '@/components/video/VideoTile';
 import { useInfiniteVideos } from '@/hooks/video.hook';
 import type { Video } from '@/types/video.types';
@@ -36,7 +37,9 @@ function RouteComponent() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <div>
+      <WideSkeleton count={3} />
+    </div>
   }
 
   if (isError) {

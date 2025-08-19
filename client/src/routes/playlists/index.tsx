@@ -1,3 +1,5 @@
+import CardSkeleton from '@/components/loaders/CardSkeleton';
+import WideSkeleton from '@/components/loaders/WideSkleleton';
 import { PlaylistCard } from '@/components/playlist/PlaylistCard';
 import { useAuthGuard } from '@/hooks/helpers/use-auth-guard';
 import { useGetUserPlaylists } from '@/hooks/playlist.hook';
@@ -22,7 +24,13 @@ function RouteComponent() {
     return <div>Error loading playlists</div>
   }
 
-  if (playlistsLoading) return <div>Loading...</div>;
+  if (playlistsLoading) return (
+  <>
+  <h1 className='text-3xl p-5 font-bold text-center text-orange-600'>All your playlists at one place</h1>
+  <CardSkeleton count={1}  />
+  <WideSkeleton count={5} />
+  </>
+);
   // console.log(playlists);
 
 

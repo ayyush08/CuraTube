@@ -14,6 +14,8 @@ import { Edit3Icon, Loader2Icon } from 'lucide-react'
 import { Videos } from '@/components/channel/Videos'
 import Playlists from '@/components/channel/Playlists'
 import Tweets from '@/components/channel/Tweets'
+import WideSkeleton from '@/components/loaders/WideSkleleton'
+import CardSkeleton from '@/components/loaders/CardSkeleton'
 export const Route = createFileRoute('/channel/$username')({
   component: RouteComponent,
 })
@@ -51,7 +53,12 @@ function RouteComponent() {
       setSubscribersCount(user.subscribers);
     }
   }, [user])
-  if (isLoading) return <div> Loading</div>
+  if (isLoading) return (
+    <div>
+      <WideSkeleton count={1} />
+      <CardSkeleton count={9} />
+    </div>
+  )
   if (isError) console.log(isError);
   if (subscribeError) console.log(subscribeError);
 
