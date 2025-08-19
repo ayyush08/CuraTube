@@ -1,4 +1,5 @@
 import CommentSection from '@/components/comments/CommentSection'
+import VideoSkeleton from '@/components/loaders/VideoSkeleton'
 import PlaylistDialog from '@/components/playlist/PlaylistDialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -114,7 +115,9 @@ function RouteComponent() {
   if (subscribeError) console.log(subscribeError);
   if (isError) return <div className='flex justify-center items-center min-h-screen'>Error loading video</div>
   //TODO: make a skeleton that shows loading only for video area
-  if (loadingVideo) return <div className='flex justify-center items-center min-h-screen'>Loading...</div>
+  if (loadingVideo) return <div className=' min-h-screen'>
+    <VideoSkeleton/>
+  </div>
   return (
     <>
       <main className="w-full min-h-screen p-4 sm:p-5 flex flex-col lg:flex-row gap-6">
