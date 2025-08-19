@@ -20,7 +20,7 @@ function RouteComponent() {
   if (isLoading) return (
     <div>
       <h1 className='text-3xl p-5 font-bold text-center text-orange-600 '>Your Liked Videos</h1>
-      <WideSkeleton/>
+      <WideSkeleton count={4} />
     </div>
   );
 
