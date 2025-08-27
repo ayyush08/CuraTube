@@ -42,7 +42,7 @@ const VideoTile = (
     }
 
     return (
-        <div onClick={() => handleTileClick(video._id)} className='relative flex group  flex-col max-w-screen sm:flex-row gap-5 p-3 sm:items-center hover:bg-orange-950/60 transition-all duration-300 rounded-lg hover:cursor-pointer w-full'>
+        <div onClick={() => handleTileClick(video._id)} className='relative flex group  flex-col max-w-full sm:flex-row gap-5 p-3 sm:items-center hover:bg-orange-950/60 hover:border hover:border-orange-500 transition-all duration-300 rounded-lg hover:cursor-pointer w-full'>
             <div className="relative w-full sm:w-96 h-56 rounded-lg overflow-hidden shrink-0 group-hover:scale-95 transition-all duration-150">
                 <img
                     src={video.thumbnail || "/placeholder.svg"}

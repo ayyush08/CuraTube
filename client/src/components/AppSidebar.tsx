@@ -1,5 +1,5 @@
 
-import { HistoryIcon, Home, Library, LucideLayoutDashboard, Pen, Play, ThumbsUpIcon } from "lucide-react"
+import { HistoryIcon, Home, Library, LucideLayoutDashboard, Pen, ThumbsUpIcon } from "lucide-react"
 
 import {
     Sidebar,
@@ -19,6 +19,7 @@ import { useLocation, useNavigate } from "@tanstack/react-router"
 import { useAppSelector } from "@/redux/hooks"
 
 import { toast } from "sonner"
+import { Logo } from "./Logo"
 
 
 const navigationData = [
@@ -83,12 +84,13 @@ export function AppSidebar() {
             <SidebarHeader >
                 <SidebarMenu >
                     <SidebarMenuItem>
-                        <SidebarMenuButton className="hover:bg-sidebar-accent-foreground-" size="lg" asChild>
-                            <div>
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-600 to-orange-600 text-white">
-                                    <Play className="size-4" />
+                        <SidebarMenuButton className="bg-transparent hover:bg-transparent active:bg-transparent" size="lg" asChild>
+                            <div className="space-x-4">
+                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-white">
+                                    
+                                    <Logo/>
                                 </div>
-                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                <div className="grid flex-1 text-left text-lg leading-tight">
                                     <span className="truncate font-semibold">{APP_NAME}</span>
                                     <span className="truncate text-xs text-muted-foreground">Your Entertainment Hub</span>
                                 </div>
@@ -106,7 +108,7 @@ export function AppSidebar() {
                             {navigationData.map((item) => {
                                 const isActive = location.pathname === item.url
                                 return <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton className={`${isActive ? "bg-sidebar-accent" : ''} p-5 text-lg font-semibold `} asChild>
+                                    <SidebarMenuButton variant={"default"} className={`${isActive ? " border-2 border-orange-500 bg-orange-600/20 text-white hover:bg-orange-500 hover:text-neutral-100 transition-colors duration-300" : ''} p-5 text-lg font-semibold `} asChild>
                                         <p className="cursor-pointer" onClick={(e) => {
                                             e.preventDefault();
                                             handleTabClick(item.url,item.checkAuth);
