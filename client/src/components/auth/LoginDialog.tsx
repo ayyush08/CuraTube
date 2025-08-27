@@ -49,8 +49,11 @@ export function LoginDialog({
 
 
     useEffect(()=>{
-
-    },[identifier,password])
+        if(!open){
+            setIdentifier("")
+            setPassword("")
+        }
+    },[open])
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -60,7 +63,7 @@ export function LoginDialog({
                 </Button>
             </DialogTrigger> */}
 
-            <DialogContent showCloseButton={false} className="sm:max-w-[425px] h-84 border-orange-400/60 bg-orange-950/75">
+            <DialogContent showCloseButton={false} onInteractOutside={e=>e.preventDefault()} className="sm:max-w-[425px] h-84 bg-gradient-to-b from-orange-900 to-black/90 border border-orange-500/40 shadow-lg shadow-black/70 rounded-2xl">
                 <form onSubmit={handleLogin} className="grid gap-4">
                     <DialogHeader>
                         <DialogTitle className="text-center text-2xl font-sans tracking-wide">Login</DialogTitle>
@@ -93,20 +96,20 @@ export function LoginDialog({
 
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button onClick={onClose} variant="outline" type="button" className="cursor-pointer"
+                            <Button onClick={onClose}  type="button" className="cursor-pointer rounded-lg border border-red-500/60 bg-black/60 px-5 py-2 text-red-400 hover:border-red-400 hover:bg-red-500 hover:text-white"
                             disabled={isPending}
                             >
                                 Cancel
                             </Button>
                         </DialogClose>
-                        <Button className="cursor-pointer" type="submit">
+                        <Button className="cursor-pointer rounded-lg border border-orange-500/60 bg-black/60 px-5 py-2 text-orange-400 hover:border-orange-400 hover:bg-orange-500 hover:text-white" type="submit">
                             {isPending ? "Logging In.." : "Login"}
                         </Button>
                     </DialogFooter>
                 </form>
-                <div className="text-center text-sm text-gray-500 mt-2">
+                <div className="text-center text-base text-gray-400 mt-2">
                     Don't have an account?
-                    <Button variant='link' className="cursor-pointer hover:text-blue-500" onClick={() => {
+                    <Button variant='link' className="cursor-pointer hover:text-orange-500 font-bold" onClick={() => {
                         onClose();
                         onSwitchToSignup();
                     }}>

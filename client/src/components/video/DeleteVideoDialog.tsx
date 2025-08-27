@@ -16,7 +16,7 @@ export const DeleteVideoDialog = ({ open, videoId, onClose }: { open: boolean, v
     return (
         <Dialog open={open} onOpenChange={onClose} >
 
-            <DialogContent onInteractOutside={(e) => e.preventDefault()} showCloseButton={false} className="sm:max-w-[450px]   border-orange-400/60 bg-orange-800/20 font-sans z-50 ">
+            <DialogContent onInteractOutside={(e) => e.preventDefault()} showCloseButton={false} className="sm:max-w-[450px]   bg-gradient-to-b from-orange-900 to-black/90 border border-orange-500/40 shadow-lg shadow-black/70 rounded-2xl font-sans z-50 ">
                 <DialogHeader>
                     <DialogTitle >Are you sure you want to delete this video?</DialogTitle>
                     <DialogDescription>
@@ -25,9 +25,9 @@ export const DeleteVideoDialog = ({ open, videoId, onClose }: { open: boolean, v
                 </DialogHeader>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button className='cursor-pointer' disabled={deletePending} variant="outline">Cancel</Button>
+                        <Button className='cursor-pointer rounded-lg border border-green-500/60 bg-black/60 px-5 py-2 text-green-400 hover:border-green-400 hover:bg-green-500/20 hover:text-white' disabled={deletePending}>Cancel</Button>
                     </DialogClose>
-                    <Button disabled={deletePending} className='bg-red-500 hover:bg-red-700 cursor-pointer text-white' onClick={handleDelete} >{
+                    <Button disabled={deletePending} className='cursor-pointer rounded-lg border border-red-500/60 bg-black/60 px-5 py-2 text-red-400 hover:border-red-400 hover:bg-red-500/20 hover:text-white' onClick={handleDelete} >{
                         deletePending ? "Deleting..." : "Delete"
                     }</Button>
                 </DialogFooter>

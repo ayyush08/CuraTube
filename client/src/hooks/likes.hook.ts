@@ -50,7 +50,7 @@ export const useToggleCommentLike = (setCommentLikeStates: React.Dispatch<React.
         mutationFn: (commentId: string) => toggleCommentLike(commentId),
         onSuccess: (data) => {
             console.log("Toggle Comment Like Response:", data);
-            if(data?.isLiked) toast.success("Comment Liked successfully")
+            if(data?.liked) toast.success("Comment Liked successfully")
             else toast.success("Comment Unliked successfully")
             setCommentLikeStates((prevState: any) => ({
                 ...prevState,
@@ -59,8 +59,6 @@ export const useToggleCommentLike = (setCommentLikeStates: React.Dispatch<React.
                     likeCount: data?.likeCount,
                 },
             }));
-            if (data?.liked) toast.success("Comment Liked successfully")
-            else toast.success("Comment Unliked successfully")
         },
         onError: () => {
             toast.error("Failed to toggle like on comment");

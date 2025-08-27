@@ -152,11 +152,11 @@ export default function CommentSection({ videoId }: CommentSectionProps) {
                         <div className="flex justify-end gap-2">
                             
                             <Button
-                                variant="ghost"
+                                
                                 title="Cancel comment"
                                 onClick={() => setNewComment("")}
                                 disabled={addingComment || !newComment.trim()}
-                                className="text-neutral-400 hover:text-white hover:bg-neutral-800"
+                                className="cursor-pointer rounded-lg  bg-black/60 px-5 py-2 text-red-400 hover:border-red-400 hover:bg-red-500/20 hover:text-white"
                             >
                                 Cancel
                             </Button>
@@ -164,7 +164,7 @@ export default function CommentSection({ videoId }: CommentSectionProps) {
                                 title="Post comment"
                                 onClick={handleSubmitComment}
                                 disabled={addingComment || !newComment.trim()}
-                                className={"bg-orange-500 hover:bg-orange-600 text-white"}
+                                className="cursor-pointer rounded-lg  bg-black/60 px-5 py-2 text-orange-500 hover:border-orange-400 hover:bg-orange-500/20 hover:text-white"
                             >
                                 {addingComment ? "Posting..." : `Comment`}
                             </Button>

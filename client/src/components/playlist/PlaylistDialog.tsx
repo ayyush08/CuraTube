@@ -87,7 +87,7 @@ const PlaylistDialog = ({ videoId, open, onClose }: { videoId: string, open: boo
                 <DialogContent
                     showCloseButton={false}
                     onInteractOutside={(e) => e.preventDefault()}
-                    className="bg-neutral-900 border-orange-500 mx-auto  text-white w-full max-w-5xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl rounded-lg p-10 sm:p-6 overflow-y-auto max-h-[90vh]"
+                    className="bg-gradient-to-b from-neutral-900 to-black/90 border border-orange-500/40 shadow-lg shadow-black/70  mx-auto  text-white w-full max-w-5xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl rounded-lg p-10 sm:p-6 overflow-y-auto max-h-[90vh]"
                 >
 
                     <DialogHeader>

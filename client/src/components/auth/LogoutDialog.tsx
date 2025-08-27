@@ -15,7 +15,7 @@ const LogoutDialog = ({ open, onClose }: { open: boolean, onClose: () => void })
     return (
         <Dialog open={open} onOpenChange={onClose}>
 
-            <DialogContent onInteractOutside={(e) => e.preventDefault()} showCloseButton={false} className="sm:max-w-[450px]   border-orange-400/60 bg-orange-950/75 font-sans">
+            <DialogContent onInteractOutside={(e) => e.preventDefault()} showCloseButton={false} className="sm:max-w-[450px]   bg-gradient-to-b from-orange-900 to-black/90 border border-orange-500/40 shadow-lg shadow-black/70 rounded-2xl font-sans">
                 <DialogHeader>
                     <DialogTitle>Are you sure you want to logout?</DialogTitle>
                     <DialogDescription>
@@ -26,9 +26,9 @@ const LogoutDialog = ({ open, onClose }: { open: boolean, onClose: () => void })
                 </DialogHeader>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button className='cursor-pointer' disabled={isPending} variant="outline">Cancel</Button>
+                        <Button className='cursor-pointer rounded-lg border border-red-500/60 bg-black/60 px-5 py-2 text-red-400 hover:border-red-400 hover:bg-red-500 hover:text-white' disabled={isPending}>Cancel</Button>
                     </DialogClose>
-                    <Button className='bg-red-500 hover:bg-red-700 cursor-pointer text-white' onClick={() => handleLogout()} >{
+                    <Button className='rounded-lg border border-orange-500/60 bg-black/60 px-5 py-2 text-orange-400 hover:border-orange-400 hover:bg-orange-500 hover:text-white cursor-pointer' onClick={() => handleLogout()} >{
                         isPending ? "Logging out..." : "Logout"
                         }</Button>
                 </DialogFooter>

@@ -1,5 +1,5 @@
 import { apiClient, type ApiSuccessResponse } from "./api-client";
-import {  type LoginRequest, type RegisterRequest } from "@/types/auth.types";
+import {  type ChangePasswordRequest, type LoginRequest, type RegisterRequest } from "@/types/auth.types";
 
 export const register = async (data: RegisterRequest): Promise<any> => {
     try {
@@ -40,6 +40,17 @@ export const logout = async():Promise<any>=>{
         return res.data
     } catch (error:any) {
         console.error("Error during login:", error);
+        throw error.message;
+    }
+}
+
+
+export const changePassword = async (data:ChangePasswordRequest): Promise<any> => {
+    try {
+        const res = await apiClient.post<ApiSuccessResponse>('/users/change-password', data);
+        return res.data;
+    } catch (error: any) {
+        console.error("Error during change password:", error);
         throw error.message;
     }
 }

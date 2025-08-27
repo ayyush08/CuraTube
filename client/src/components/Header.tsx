@@ -9,7 +9,8 @@ import LogoutDialog from "./auth/LogoutDialog"
 import { useAppSelector } from "@/redux/hooks"
 import { ProfileDropdown } from "./auth/ProfileDropdown"
 import { useIsMobile } from "@/hooks/helpers/use-mobile"
-import { useNavigate } from "@tanstack/react-router"
+import { useLocation, useNavigate } from "@tanstack/react-router"
+import { ChangePasswordDialog } from "./auth/ChangePasswordDialog"
 
 const Header = () => {
     const [activeDialog, setActiveDialog] = useState<string | null>(null)
@@ -18,7 +19,7 @@ const Header = () => {
     console.log("isAuthenticated:", isAuthenticated)
     const navigate = useNavigate()
     const isMobile = useIsMobile()
-
+    const location = useLocation()
 
 
 
@@ -44,20 +45,17 @@ const Header = () => {
             {
                 isAuthenticated ? (
                     <div className="flex items-center  gap-3">
-                        {/* <Button
-                            variant='secondary'
-                            onClick={() => navigate({to:'/tweets'})}
-                            className="p-5 text-base bg-gradient-to-r from-orange-600/50 to-amber-600/40 hover:bg-gradient-to-r hover:from-orange-700 hover:to-amber-700 transition-colors duration-500 text-white cursor-pointer"
-                        >
-                            <Pen/> Tweets
-                        </Button> */}
-                        <Button
-                            variant='secondary'
-                            onClick={() => navigate({ to: '/videos/publish' })}
-                            className="p-5 text-base bg-gradient-to-r from-orange-600/50 to-amber-600/40 hover:bg-gradient-to-r hover:from-orange-700 hover:to-amber-700 transition-colors duration-500 text-white cursor-pointer"
-                        >
-                            <Upload /> Upload Video
-                        </Button>
+                        {
+                            location.pathname !== '/videos/publish' && (
+                                <Button
+                                    variant='secondary'
+                                    onClick={() => navigate({ to: '/videos/publish' })}
+                                    className="sm:p-5 sm:text-base rounded-lg border border-orange-500/60 bg-black/60 px-5 py-2 text-orange-400 hover:border-orange-400 hover:bg-black/80 hover:text-white"
+                                >
+                                    <Upload /> Upload Video
+                                </Button>
+                            )
+                        }
                         <ProfileDropdown user={user} setActiveDialog={setActiveDialog} />
 
                     </div>
@@ -65,13 +63,13 @@ const Header = () => {
                     <div className="flex items-center gap-3">
                         <Button
                             onClick={() => setActiveDialog("login")}
-                            className="sm:p-5 sm:text-base border-2 border-orange-400/60 hover:bg-orange-700/20 bg-orange-900/10 text-white cursor-pointer"
+                            className="sm:p-5 sm:text-base rounded-lg border border-orange-500/60 bg-black/60 px-5 py-2 text-orange-400 hover:border-orange-400 hover:bg-black/80 hover:text-white"
                         >
                             Login
                         </Button>
                         <Button
                             onClick={() => setActiveDialog("signup")}
-                            className="sm:p-5 sm:text-base border-2 border-orange-400/60 bg-orange-900/10 hover:bg-orange-700/20 text-white cursor-pointer"
+                            className="sm:p-5 sm:text-base rounded-lg border border-orange-500/60 bg-black/60 px-5 py-2 text-orange-400 hover:border-orange-400 hover:bg-black/80 hover:text-white"
                         >
                             Signup
                         </Button>
@@ -88,6 +86,10 @@ const Header = () => {
                 open={activeDialog === "signup"}
                 onClose={() => setActiveDialog(null)}
                 onSwitchToLogin={() => setActiveDialog("login")}
+            />
+            <ChangePasswordDialog
+                open={activeDialog === "change-password"}
+                onClose={() => setActiveDialog(null)}
             />
             <LogoutDialog
                 open={activeDialog === "logout"}

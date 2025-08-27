@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {  useState } from "react"
+import { useEffect, useState } from "react"
 import ProfileImageUpload from "./ProfileImageUpload"
 import { useRegisterLogin } from "@/hooks/auth.hooks"
 
@@ -40,51 +40,41 @@ export function SignUpDialog({
     } = useRegisterLogin(onClose)
 
 
-    if(isError) console.log(isError);
-    
+    if (isError) console.log(isError);
+
 
     const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-            if (!formData.coverImage) {
-                alert("Please add a cover image")
-                return
-            }
-            if (!formData.avatar) {
-                alert("Please add profile image")
-                return
-            }
-            createAccount({...formData})
-        // try {
-        //     setIsRegistering(true)
-            
-
-            // console.log("Submitting FormData:", formData)
-            // const res = await register({ ...formData })
-            // if(res){
-            //     const loginUser = await login({
-            //         username: formData.username,
-            //         password: formData.password
-            //     })
-            //     if(loginUser){
-            //         toast.success(`Welcome to CuraTube, ${loginUser.user.username}`)
-            //         dispatch(loginSuccess({...loginUser.user}))
-            //     }
-                
-            // }
-            
-            // onClose()
-        // } catch (error) {
-        //     console.error(error)
-        // } finally {
-        //     setIsRegistering(false)
-        // }
+        if (!formData.coverImage) {
+            alert("Please add a cover image")
+            return
+        }
+        if (!formData.avatar) {
+            alert("Please add profile image")
+            return
+        }
+        createAccount({ ...formData })
+        
 
     }
+
+    useEffect(() => {
+        if (!open) {
+            setFormData({
+                fullName: "",
+                username: "",
+                email: "",
+                password: "",
+                avatar: null,
+                coverImage: null,
+            })
+        }
+    }, [open])
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
 
-            <DialogContent showCloseButton={false} onInteractOutside={(e) => e.preventDefault()} className="sm:max-w-[425px] max-h-screen border-orange-400/60 bg-orange-950/75">
+            <DialogContent showCloseButton={false} onInteractOutside={(e) => e.preventDefault()} className="sm:max-w-[425px] max-h-screen bg-gradient-to-b from-orange-900 to-black/90 border border-orange-500/40 shadow-lg shadow-black/70 rounded-2xl">
 
                 <DialogHeader>
                     <DialogTitle className="text-center text-2xl font-sans tracking-wide">SignUp</DialogTitle>
@@ -142,24 +132,29 @@ export function SignUpDialog({
 
                     <DialogFooter>
                         <DialogClose asChild >
-                            <Button disabled={isPending} onClick={onClose} variant="outline" type="button" className="cursor-pointer">
+                            <Button disabled={isPending} onClick={onClose}  type="button" className="cursor-pointer rounded-lg border border-red-500/60 bg-black/60 px-5 py-2 text-red-400 hover:border-red-400 hover:bg-red-500 hover:text-white">
                                 Cancel
                             </Button>
                         </DialogClose>
-                        <Button className="cursor-pointer" type="submit">
-                            {isPending ? "Creating Account... " : "Create Account"}
+                        <Button
+                            type="submit"
+                            className="rounded-lg border border-orange-500/60 bg-black/60 px-5 py-2 text-orange-400 hover:border-orange-400 hover:bg-orange-500 hover:text-white"
+                        >
+                            {isPending ? "Creating Account..." : "Create Account"}
                         </Button>
+
+
                     </DialogFooter>
                 </form>
-                <div className="text-center text-sm text-gray-500 mt-2">
+                <div className="text-center text-base font-semibold text-gray-400 mt-2">
                     Already have an account?
-                <Button variant='link' className="cursor-pointer hover:text-blue-500" onClick={() => {
-                    onClose();
-                    onSwitchToLogin();
-                }}>
-                    Log in
-                </Button>
-                    </div>
+                    <Button variant='link' className="cursor-pointer hover:text-orange-500 font-bold" onClick={() => {
+                        onClose();
+                        onSwitchToLogin();
+                    }}>
+                        Log in
+                    </Button>
+                </div>
             </DialogContent>
         </Dialog>
     )

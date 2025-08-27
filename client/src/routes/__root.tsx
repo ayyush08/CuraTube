@@ -40,7 +40,7 @@ export function RootLayout() {
                 <AppSidebar />
                 <div className="flex flex-1 flex-col ">
                     <Header />
-                    <Toaster closeButton position="top-center" richColors />
+                    <Toaster duration={1100} position="bottom-center" richColors  className='z-50' />
                     <Outlet />
                 </div>
                 <TanStackRouterDevtools position="bottom-right" />

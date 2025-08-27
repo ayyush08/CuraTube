@@ -10,7 +10,7 @@ import {
 import { useAppSelector } from "@/redux/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 import { useNavigate } from "@tanstack/react-router";
-import { LogOutIcon, User } from "lucide-react";
+import { EyeIcon, LogOutIcon, User } from "lucide-react";
 
 interface DropdownMenuItem {
     name: string;
@@ -37,6 +37,11 @@ export function ProfileDropdown({
             icon: <User className="text-white" />
         },
         {
+            name: "Change Password",
+            onClick: () => setActiveDialog("change-password"),
+            icon: <EyeIcon className="text-white" />
+        },
+        {
             name: "Logout",
             onClick: () => setActiveDialog("logout"),
             icon: <LogOutIcon className="text-white" />
@@ -59,7 +64,7 @@ export function ProfileDropdown({
 
 
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-orange-950/80" align="start"  >
+            <DropdownMenuContent className="w-56 bg-gradient-to-b from-orange-900 to-black/90 border border-orange-500/40 shadow-xl shadow-black/70 rounded-2xl" align="start"  >
                 <DropdownMenuGroup>
                     {
                         dropdownMenuItems.map((item, index) => (

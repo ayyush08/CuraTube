@@ -1,7 +1,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { register, login, logout } from '@/api/auth.api';
-import { type LoginRequest, type RegisterRequest } from '@/types/auth.types';
+import { register, login, logout, changePassword } from '@/api/auth.api';
+import { type ChangePasswordRequest, type LoginRequest, type RegisterRequest } from '@/types/auth.types';
 import { loginSuccess, logout as logoutUser } from '@/redux/authSlice';
 import { toast } from 'sonner';
 import { useAppDispatch } from '@/redux/hooks';
@@ -71,7 +71,7 @@ export const useLogin = (onClose: () => void) => {
         onSuccess: (data) => {
             dispatch(loginSuccess({ ...data.user }));
             queryClient.invalidateQueries({ queryKey: ['current-user'] });
-            queryClient.invalidateQueries({queryKey:['video']})
+            queryClient.invalidateQueries({ queryKey: ['video'] })
             toast.success(`Welcome, ${data.user.username}`);
             onClose();
         },
@@ -98,14 +98,29 @@ export const useLogout = (onClose: () => void) => {
         onSuccess: () => {
             dispatch(logoutUser())
             persistor.purge()
-            
+
             queryClient.invalidateQueries()
-            
+
             toast.dismiss("Logged out")
             onClose()
         },
         onError: (error) => {
 
+            console.error("Mutation error:", error);
+        },
+    })
+}
+
+export const useChangePassword = (onClose: () => void) => {
+    return useMutation({
+        mutationFn: (data: ChangePasswordRequest) => changePassword(data),
+        onSuccess: (data) => {
+            console.log("Password changed successfully:", data);
+            toast.success("Password changed successfully");
+            onClose();
+        },
+        onError: (error: any) => {
+            toast.error(error);
             console.error("Mutation error:", error);
         },
     })
