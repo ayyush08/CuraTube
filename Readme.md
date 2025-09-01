@@ -2,14 +2,13 @@
 
 **CuraTube** is a full-stack video streaming platform that supports a handful of cool features similar to any other video streaming application out there. These features start from user authentication, video uploads, comments, likes,etc to some additional features like tweets and many more.
 
-Built using the MERN stack, it delivers a smooth video experience with HLS(HTTP Live Streaming) and a custom video player built with React.
 ## 🚀 Features
 
 Here’s what CuraTube offers:
 
 - **User Authentication:** Secure sign-up, login, and session management via JWT tokens.
-- **Video Uploads:** Seamless video uploading.
-- **Video Streaming:** Smooth HLS-powered playback in all qualities.
+- **Video Uploads:** Secure video uploading with cloudinary signed uploads.
+- **Video Streaming:** Smooth video playback with cloudinary srcs.
 - **Video Thumbnails:** Add thumbnails for your videos.
 - **Comments:** Engage with others through threaded discussions.
 - **Likes:** Show appreciation for your favorite videos.
@@ -67,7 +66,7 @@ Here’s what CuraTube offers:
 
     CORS_ORIGIN=<your-cors-origin>(e.g., http://localhost:5173)
     VITE_API_BASE_URL=<your-api-base-url>(e.g., http://localhost:3000)
-
+   VITE_CLOUDINARY_CLOUD_NAME=<your-cloudinary-cloud-name>
 
    MONGODB_URI=<your-mongodb-uri>
    CLOUDINARY_API_KEY=<your-cloudinary-api-key>
@@ -86,3 +85,7 @@ Here’s what CuraTube offers:
    ```
 
 6. Open your browser and navigate to `http://localhost:5173` to view the application.
+
+## Contributing
+
+Contributions are welcome! If you have suggestions or improvements, please open an issue or submit a pull request.
