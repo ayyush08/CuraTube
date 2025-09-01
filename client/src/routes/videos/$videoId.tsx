@@ -200,7 +200,8 @@ function RouteComponent() {
               </div>
             </div>
 
-            <div className="fflex flex-col sm:w-[250px] flex-shrink-0 gap-5">
+            <div className="flex flex-col sm:w-[250px] w-full flex-shrink gap-5">
+
               <div className="flex flex-col gap-2">
                 {
                   storedUser?._id === video.owner._id && (
@@ -264,7 +265,8 @@ function RouteComponent() {
         </section>
 
         {/* Suggestions */}
-        <section className="w-full lg:w-[400px] flex-shrink-0 p-5  min-h-[50vh] sm:min-h-[60vh] lg:min-h-screen rounded-xl">
+        <section className="w-full lg:w-[400px] flex-shrink p-5 min-h-[50vh] sm:min-h-[60vh] lg:min-h-screen rounded-xl">
+
           <div className="flex flex-col gap-4 ">
             <h2 className="text-2xl italic font-bold text-center text-orange-500">Suggested Videos</h2>
             {suggestedVideos?.map((vid) => {

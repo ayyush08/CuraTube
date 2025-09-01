@@ -30,8 +30,7 @@ function VideoPlayer({ src, thumbnail, title, duration, autoPlay = true,classNam
             crossOrigin
             autoPlay={autoPlay}
             duration={duration}
-            className={` h-full w-full ${className}`}
-            load="eager"
+            className={` h-auto w-full ${className}`}
         >
             <MediaProvider/>
             <PlyrLayout clickToFullscreen clickToPlay  icons={plyrLayoutIcons} />
