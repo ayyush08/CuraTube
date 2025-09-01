@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useToggleSubscription } from '@/hooks/subscription.hook'
 import { Button } from '@/components/ui/button'
-import { Edit3Icon, Loader2Icon } from 'lucide-react'
+import { CameraIcon, Loader2Icon } from 'lucide-react'
 
 import { Videos } from '@/components/channel/Videos'
 import Playlists from '@/components/channel/Playlists'
@@ -120,21 +120,20 @@ function RouteComponent() {
 
   return (
     <main className='p-5 flex flex-col gap-5 '>
-      {/* //pfp and cover image div */}
+
       <div className='w-full h-72 relative mb-10'>
-        {/* add edit cover image and pfp buttons */}
         {
           updateCoverImagePending ? (
             <div className='h-full w-full border-x-2 border-t-4 border-orange-500 bg-orange-800/20 shadow-lg shadow-teal-500/50 aspect-video rounded-md flex justify-center items-center'>
               <Loader2Icon className='animate-spin w-10 h-10 font-extrabold text-orange-500' />
             </div>
           ) : (
-            <div className="h-full w-full rounded-md  border-x-2 border-t-4 border-orange-500 bg-orange-800/20 shadow-lg shadow-teal-500/50 relative">
+            <div className="h-full w-full rounded-2xl  border-x-2 border-t-4 border-orange-500 bg-orange-800/20 shadow-lg shadow-teal-500/50 relative">
               {/* Avatar image */}
               <img
                 src={coverImage}
                 alt={user?.fullName}
-                className='object-cover h-full w-full '
+                className='object-cover h-full w-full rounded-2xl '
               />
 
               {storedUser?.username === username && (
@@ -146,7 +145,7 @@ function RouteComponent() {
                     onChange={handleUpdateCoverImage}
                     className="hidden"
                   />
-                  <Edit3Icon
+                  <CameraIcon
                     onClick={() => {
                       const input = document.getElementById("cover-image-upload");
                       if (input) input.click();
@@ -185,7 +184,7 @@ function RouteComponent() {
                   onChange={handleUpdateAvatar}
                   className="hidden"
                 />
-                <Edit3Icon
+                <CameraIcon
                   onClick={() => {
                     const input = document.getElementById("avatar-upload");
                     if (input) input.click();
@@ -234,12 +233,12 @@ function RouteComponent() {
       </div>
 
       {/* TODO: a shadcn Tabs component to switch between videos,tweets, comments,etc sections */}
-      <div className="flex w-full  flex-col gap-6 ">
+      <div className="flex w-full  flex-col gap-5 ">
 
         <Tabs defaultValue={TabItems[0].value}>
-          <TabsList className='p-6 bg-orange-600/50 '>
+          <TabsList className='bg-transparent space-x-2.5'>
             {TabItems.map((tab) => (
-              <TabsTrigger className='dark:data-[state=active]:text-black text-white hover:cursor-pointer text-lg data-[state=active]:border-amber-500 border-2 px-5 mx-2 py-4 data-[state=active]:bg-yellow-200/75 transition-all duration-300 hover:border-amber-500 ' key={tab.value} value={tab.value}>
+              <TabsTrigger className='dark:data-[state=active]:text-white text-white hover:cursor-pointer text-lg data-[state=active]:border-orange-500 border-2 p-5 data-[state=active]:bg-orange-900/55 transition-all duration-300 hover:border-amber-500 ' key={tab.value} value={tab.value}>
                 {`${tab.value.charAt(0).toUpperCase()}${tab.value.slice(1)}`}
               </TabsTrigger>
             ))}

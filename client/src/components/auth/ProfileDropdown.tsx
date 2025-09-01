@@ -68,7 +68,7 @@ export function ProfileDropdown({
                 <DropdownMenuGroup>
                     {
                         dropdownMenuItems.map((item, index) => (
-                            <DropdownMenuItem className="hover:bg-orange-700" key={index} onClick={item.onClick}>
+                            <DropdownMenuItem className="hover:bg-orange-700 rounded-2xl transition-all duration-200" key={index} onClick={item.onClick}>
                                 {item.icon}
                                 {item.name}
 

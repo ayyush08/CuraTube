@@ -54,20 +54,20 @@ const TweetCard = (tweet: Tweet) => {
 
 
     return (
-        <Card className="w-full  p-5 rounded-tl-2xl rounded-br-2xl bg-orange-900/25 border-2 border-orange-500">
-            <CardHeader className="p-4 pb-2">
+        <Card className="w-full  px-5 py-2 rounded-tl-2xl rounded-br-2xl  bg-gradient-to-b to-orange-800/50 from-black/90 border border-orange-600/60 hover:border-orange-500 transition-colors shadow-sm hover:shadow-md ring-1 ring-orange-500/10">
+            <CardHeader className="p-4 ">
                 <div className="flex items-start gap-3">
-                    <Avatar className="w-12 h-12">
+                    <Avatar className="w-12 h-12 rounded-full">
                         <AvatarImage src={tweet.owner.avatar} alt={tweet.owner.username} className='object-cover' />
                         <AvatarFallback className="bg-orange-600 text-white">{tweet.owner.fullName}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                         <div className="flex items-center justify-between gap-1">
-                            <p onClick={handleUsernameClick} className='flex flex-col cursor-pointer hover:bg-orange-800/20 p-2 rounded-md transition-colors duration-200'>
-                                <span className="font-semibold text-white text-xl">{tweet.owner.fullName}</span>
-                                <span  className="text-gray-500 text-sm">@{tweet.owner.username}</span>
+                            <p onClick={handleUsernameClick} className='flex flex-col cursor-pointer hover:bg-orange-800/20 p-2 rounded-2xl transition-colors duration-200'>
+                                <span className="font-semibold text-white/90 text-md leading-tight">{tweet.owner.fullName}</span>
+                                <span  className="text-orange-200/60 text-sm">@{tweet.owner.username}</span>
                             </p>
-                            <span className="text-orange-500 italic font-semibold text-base">
+                            <span className="text-orange-500 italic font-semibold text-sm">
                                 Tweeted {moment(tweet.createdAt).fromNow()}
                             </span>
                         </div>
@@ -90,7 +90,7 @@ const TweetCard = (tweet: Tweet) => {
                                     size="sm"
                                     onClick={handleSaveEdit}
                                     disabled={editPending}
-                                    className="bg-orange-600 hover:bg-orange-700 text-white "
+                                    className="bg-orange-600 hover:bg-orange-500 text-white shadow-sm hover:shadow-md transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
                                     {editPending ? 'Saving...' : 'Save'}
                                 </Button>
@@ -108,7 +108,7 @@ const TweetCard = (tweet: Tweet) => {
                         </div>
                     ) : (
                         <div>
-                            <p className="text-white mb-3 leading-relaxed">{tweet.content}</p>
+                            <p className="text-orange-50/90 font-semibold  mb-4 leading-relaxed">{tweet.content}</p>
                             <div className="flex items-center justify-between w-full">
                                 <Button
                                     variant="secondary"
@@ -130,7 +130,7 @@ const TweetCard = (tweet: Tweet) => {
                                             className="text-orange-500 scale-125 hover:text-orange-200 bg-transparent hover:bg-transparent"
                                             onClick={() => setIsEditing(true)}
                                         >
-                                            <EditIcon />
+                                            <EditIcon /> 
                                         </Button>
                                         <Button
 

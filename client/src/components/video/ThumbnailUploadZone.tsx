@@ -48,6 +48,11 @@ export function ThumbnailUploadZone({
                     ? "border-green-500 bg-green-500/10"
                     : "border-orange-500/50 hover:border-orange-400"
                 }`}
+            onClick={() => {
+                if (!dragOver) {
+                    document.getElementById("thumbnail-upload")?.click()
+                }
+            }}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import {  useState } from "react"
 import { LoginDialog } from "./auth/LoginDialog"
 import { SignUpDialog } from "./auth/SignUpDialog"
 import { Input } from "./ui/input"
@@ -11,6 +11,7 @@ import { ProfileDropdown } from "./auth/ProfileDropdown"
 import { useIsMobile } from "@/hooks/helpers/use-mobile"
 import { useLocation, useNavigate } from "@tanstack/react-router"
 import { ChangePasswordDialog } from "./auth/ChangePasswordDialog"
+import { toast } from "sonner"
 
 const Header = () => {
     const [activeDialog, setActiveDialog] = useState<string | null>(null)
@@ -112,17 +113,13 @@ function SearchBar({ onSubmit }: InputWithIconProps) {
     const [value, setValue] = useState("");
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+        if (value.trim() === "") {
+            toast.warning("Search input is empty", { duration: 2000,position:'top-center' });
+            e.preventDefault();
+            return;
+        }
         onSubmit(value.trim());
     };
-    useEffect(() => {
-        if (value.trim() === "") {
-            // This ensures we go back only if we are on a search route
-            if (window.location.pathname.startsWith("/videos/search-videos")) {
-                window.history.back();
-            }
-        }
-    }, [value]);
     return (
         <div className="relative w-fit max-w-xl sm:max-w-2xl sm:w-full xs:max-w-full px-4 py-2 z-10">
             <form onSubmit={handleSubmit}>
