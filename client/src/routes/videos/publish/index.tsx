@@ -64,6 +64,7 @@ function RouteComponent() {
     }
 
     const handleFileUpload = (file: File, type: "video" | "thumbnail") => {
+        if (!file) return
         if (type === "video") {
             setVideoFile(file)
         } else {

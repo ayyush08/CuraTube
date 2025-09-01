@@ -29,21 +29,28 @@ export function VideoUploadZone({
         setDragOver(false)
 
         const files = Array.from(e.dataTransfer.files)
+        console.log(files[0], "file[0");
+
         if (files.length > 0) {
             onFileSelect(files[0])
         }
-        if (files[0].size > 50 * 1024 * 1024) {
-            toast.warning("File size exceeds 50MB");
-            return;
-        }
+
     }
 
     const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
         if (files && files.length > 0) {
+            if (files[0].size > 50 * 1024 * 1024) {
+                toast.warning("File size exceeds 50MB", {
+                    duration: 2000
+                });
+                onFileSelect(null as any)
+                e.target.value = ''
+                return;
+            }
             onFileSelect(files[0])
         }
-        
+
     }
 
     return (
@@ -54,10 +61,16 @@ export function VideoUploadZone({
                     ? "border-green-500 bg-green-500/10"
                     : "border-orange-500/50 hover:border-orange-400 hover:bg-orange-500/5"
                 }`}
+            onClick={() => {
+                if (!dragOver) {
+                    document.getElementById("video-upload")?.click()
+                }
+            }}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
         >
+
             <input type="file" accept={accept} onChange={handleFileInput} className="hidden" id="video-upload" />
 
             {file ? (
