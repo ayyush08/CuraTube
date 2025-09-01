@@ -1,22 +1,28 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
+import helmet from 'helmet'
+import { limiter } from "./middlewares/rate-limiter.middleware.js";
 const app = express();
 
+
+app.use(helmet())
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true,
 }));
+app.use((req, res, next) => {
+    if (req.path.startsWith("/api/v1/healthcheck")) return next();
+    limiter(req, res, next);
+});
 
-
-app.use(express.json({limit: "16kb"}));
-app.use(express.urlencoded({extended: true,limit: "16kb"}));
+app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser())
 
 app.get("/", (req, res) => {
-    res.status(200).json({message: "Welcome to the CuraTube API"})
+    res.status(200).json({ message: "Welcome to the CuraTube API" })
 })
 
 
