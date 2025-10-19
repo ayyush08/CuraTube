@@ -362,7 +362,10 @@ const deletePlaylist = asyncHandler(async (req, res) => {
     await Playlist.findByIdAndDelete(playlistId)
     return res
         .status(200)
-        .json(new ApiResponse(200, null, "Playlist deleted successfully"))
+        .json(new ApiResponse(200, {
+            _id: playlistId,
+            owner: playlist.owner
+        }, "Playlist deleted successfully"))
 })
 
 const updatePlaylist = asyncHandler(async (req, res) => {

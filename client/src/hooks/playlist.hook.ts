@@ -2,6 +2,7 @@ import { addVideoToPlaylist, createPlaylist, deletePlaylist, getPlaylistById, ge
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+
 export const useCreatePlaylist = (onClose?: () => void) => {
     const queryClient = useQueryClient()
     return useMutation({
@@ -9,9 +10,10 @@ export const useCreatePlaylist = (onClose?: () => void) => {
             try {
                 const response = await createPlaylist(data.name, data.description)
                 console.log("Playlist created:", response);
-                
+
                 const addVideo = await addVideoToPlaylist(response._id, data.videoId);
                 console.log("Video added to playlist:", addVideo);
+                return response;
             } catch (error) {
                 console.error("Error creating playlist:", error)
                 toast.error("Failed to create playlist.")
@@ -20,7 +22,7 @@ export const useCreatePlaylist = (onClose?: () => void) => {
         onSuccess: (data) => {
             console.log("Playlist created successfully", data);
             toast.success("Playlist created successfully");
-            queryClient.invalidateQueries({ queryKey: ['playlists'] })
+            queryClient.invalidateQueries({ queryKey: ['playlists', data.owner] })
             onClose?.();
         },
         onError: (error) => {
@@ -32,10 +34,10 @@ export const useCreatePlaylist = (onClose?: () => void) => {
 
 export const useGetUserPlaylists = (userId: string) => {
     return useQuery({
-        queryKey: ['playlists'],
+        queryKey: ['playlists', userId],
         queryFn: () => getUserPlaylists(userId),
-        staleTime: 1000 * 60 * 5, 
-        enabled: !!userId, 
+        staleTime: 1000 * 60 * 5,
+        enabled: !!userId,
     })
 }
 
@@ -44,7 +46,7 @@ export const useAddVideoToPlaylist = (onClose?: () => void) => {
     return useMutation({
         mutationFn: (data: { playlistId: string; videoId: string }) => addVideoToPlaylist(data.playlistId, data.videoId),
         onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ['playlists'] })
+            queryClient.invalidateQueries({ queryKey: ['playlists', data.owner] })
             console.log("Video added to playlist successfully", data);
             onClose?.();
         },
@@ -64,7 +66,7 @@ export const useRemoveVideoFromPlaylist = (onClose?: () => void) => {
         onSuccess: (data) => {
             toast.success("Video removed from playlist successfully");
             console.log("Video removed from playlist successfully", data);
-            queryClient.invalidateQueries({ queryKey: ['playlists'] });
+            queryClient.invalidateQueries({ queryKey: ['playlists', data.owner] });
             queryClient.invalidateQueries({ queryKey: ['playlist', data._id] });
             onClose?.();
         },
@@ -80,8 +82,8 @@ export const useGetPlaylistById = (playlistId: string) => {
     return useQuery({
         queryKey: ['playlist', playlistId],
         queryFn: () => getPlaylistById(playlistId),
-        staleTime: 1000 * 60 * 5, 
-        enabled: !!playlistId, 
+        staleTime: 1000 * 60 * 5,
+        enabled: !!playlistId,
     })
 }
 
@@ -103,7 +105,7 @@ export const useUpdatePlaylist = (setIsEditing: React.Dispatch<React.SetStateAct
             toast.success("Playlist updated successfully");
             console.log("Playlist updated successfully", data);
             queryClient.invalidateQueries({ queryKey: ['playlist', data._id] })
-            queryClient.invalidateQueries({ queryKey: ['playlists'] });
+            queryClient.invalidateQueries({ queryKey: ['playlists', data.owner] });
             setIsEditing(false);
         },
         onError: (error) => {
@@ -127,10 +129,10 @@ export const useDeletePlaylist = (onClose?: () => void) => {
                 throw error;
             }
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
             console.log("Playlist deleted successfully");
             toast.success("Playlist deleted successfully");
-            queryClient.invalidateQueries({ queryKey: ['playlists'] })
+            queryClient.invalidateQueries({ queryKey: ['playlists', data.owner] })
             onClose?.();
             window.history.back();
         },
